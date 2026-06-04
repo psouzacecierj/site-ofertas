@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>BIB UFF - Gestão de Oferta</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f7fc; padding: 20px; }
+        header { background: #1a3a5c; color: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .btn-voltar { background: rgba(255,255,255,0.2); border: none; padding: 8px 16px; border-radius: 6px; color: white; cursor: pointer; }
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .filters { background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .filters input, .filters select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+        th { background: #1a3a5c; color: white; padding: 10px; text-align: left; font-size: 12px; }
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        .polo-cell { text-align: center; cursor: pointer; }
+        .polo-active { background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 11px; }
+        .polo-inactive { background: #f3f4f6; color: #9ca3af; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 11px; text-decoration: line-through; }
+        .toggle-all-btn { background: #fee2e2; color: #991b1b; border: none; padding: 4px 10px; border-radius: 16px; cursor: pointer; font-size: 11px; }
+        .validacao-card { background: #eef2ff; border-radius: 8px; padding: 10px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+        .validacao-ok { background: #d1fae5; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <button class="btn-voltar" onclick="location.href='../index.html'">← Voltar</button>
+        <h2 style="margin-top: 10px;">📚 Biblioteconomia - UFF</h2>
+        <small>Período 2/2026 | Polos: ARE, NFR, PAR, RBO, SGO</small>
+    </div>
+    <div>
+        <button class="btn btn-success" onclick="salvarAlteracoes()">📤 Salvar</button>
+        <button class="btn btn-warning" onclick="conferirValidar()">✓ Validar</button>
+    </div>
+</header>
+
+<div class="validacao-card" id="validacao-box">
+    <span>📋 Status:</span>
+    <span id="status-validacao">⚠️ Não validado</span>
+</div>
+
+<div class="filters">
+    <input type="text" id="search" placeholder="Buscar..." oninput="render()">
+    <select id="filter-periodo" onchange="render()">
+        <option value="">Todos os períodos</option>
+        <option value="01">Período 01</option>
+    </select>
+    <button onclick="resetFilters()">Limpar</button>
+</div>
+
+<div style="overflow-x: auto;">
+    <table>
+        <thead>
+            <tr><th>Período</th><th>Código</th><th>Disciplina</th><th>CH</th>
+                <th>ARE</th><th>NFR</th><th>PAR</th><th>RBO</th><th>SGO</th><th>Ação</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</div>
+
+<script>
+const POLOS = ['ARE', 'NFR', 'PAR', 'RBO', 'SGO'];
+const DISCIPLINAS = [
+    {per:'01', cod:'EAD19001', nome:'Introdução à Tecnologia de Informação e de Comunicação', ch:60, inst:{ARE:'UNIRIO',NFR:'UNIRIO',PAR:'UNIRIO',RBO:'UNIRIO',SGO:'UNIRIO'}},
+    {per:'01', cod:'EAD19002', nome:'Língua Portuguesa', ch:30, inst:{ARE:'UNIRIO',NFR:'UNIRIO',PAR:'UNIRIO',RBO:'UNIRIO',SGO:'UNIRIO'}},
+    {per:'01', cod:'EAD19003', nome:'Introdução à Educação a Distância', ch:30, inst:{ARE:'UNIRIO',NFR:'UNIRIO',PAR:'UNIRIO',RBO:'UNIRIO',SGO:'UNIRIO'}},
+];
+
+const state = {};
+DISCIPLINAS.forEach((d, idx) => { POLOS.forEach(p => { state[`${idx}_${p}`] = 'active'; }); });
+
+let validado = localStorage.getItem('validado_bib_uff') === 'true';
+
+function atualizarValidacaoBox() {
+    const box = document.getElementById('validacao-box');
+    const span = document.getElementById('status-validacao');
+    if (validado) {
+        box.classList.add('validacao-ok');
+        span.innerHTML = '✅ Já validado';
+    } else {
+        box.classList.remove('validacao-ok');
+        span.innerHTML = '⚠️ Clique em "Validar" após conferir';
+    }
+}
+
+function conferirValidar() {
+    localStorage.setItem('validado_bib_uff', 'true');
+    validado = true;
+    atualizarValidacaoBox();
+    alert('✓ Validação registrada!');
+}
+
+function togglePolo(idx, polo) {
+    const key = `${idx}_${polo}`;
+    state[key] = state[key] === 'active' ? 'inactive' : 'active';
+    render();
+}
+
+function toggleAll(idx) {
+    const todasAtivas = POLOS.every(p => state[`${idx}_${p}`] === 'active');
+    const novo = todasAtivas ? 'inactive' : 'active';
+    POLOS.forEach(p => { state[`${idx}_${p}`] = novo; });
+    render();
+}
+
+function salvarAlteracoes() {
+    let alteracoes = [];
+    DISCIPLINAS.forEach((d, idx) => {
+        POLOS.forEach(p => {
+            if (state[`${idx}_${p}`] !== 'active') {
+                alteracoes.push(`[${d.per}] ${d.cod} - ${d.nome} - ${p}: ${state[`${idx}_${p}`] === 'inactive' ? 'REMOVER' : 'INCLUIR'} (${d.inst[p]})`);
+            }
+        });
+    });
+    if (alteracoes.length === 0 && !validado) {
+        alert('Nenhuma alteração. Clique em "Validar" para confirmar.');
+        return;
+    }
+    const blob = new Blob([alteracoes.join('\n')], {type: 'text/csv'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `alteracoes_bib_uff.csv`;
+    link.click();
+    alert('Arquivo gerado! Envie para matrizes.cederj@gmail.com');
+}
+
+function render() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const filterPer = document.getElementById('filter-periodo').value;
+    let activeCount = 0, inactiveCount = 0;
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = '';
+    DISCIPLINAS.forEach((d, idx) => {
+        if (search && !d.nome.toLowerCase().includes(search) && !d.cod.toLowerCase().includes(search)) return;
+        if (filterPer && d.per !== filterPer) return;
+        const tr = document.createElement('tr');
+        let poloCells = '';
+        POLOS.forEach(p => {
+            const status = state[`${idx}_${p}`];
+            const cls = status === 'active' ? 'polo-active' : 'polo-inactive';
+            const txt = status === 'active' ? `✅ ${d.inst[p]}` : `⬜ ${d.inst[p]}`;
+            poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
+            if (status === 'active') activeCount++; else inactiveCount++;
+        });
+        tr.innerHTML = `<td>${d.per}</td><td>${d.cod}</td><td>${d.nome}</td><td>${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        tbody.appendChild(tr);
+    });
+    document.getElementById('count-active').textContent = activeCount;
+    document.getElementById('count-inactive').textContent = inactiveCount;
+}
+
+function resetFilters() {
+    document.getElementById('search').value = '';
+    document.getElementById('filter-periodo').value = '';
+    render();
+}
+
+atualizarValidacaoBox();
+render();
+</script>
+</body>
+</html>
