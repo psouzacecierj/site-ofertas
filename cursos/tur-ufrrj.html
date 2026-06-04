@@ -44,10 +44,15 @@
 </div>
 
 <div class="filters">
-    <input type="text" id="search" placeholder="Buscar..." oninput="render()">
+    <input type="text" id="search" placeholder="Buscar disciplina..." oninput="render()">
     <select id="filter-periodo" onchange="render()">
         <option value="">Todos os períodos</option>
-        <option value="01">Período 01</option>
+        <option value="01">Período 01</option><option value="02">Período 02</option>
+        <option value="03">Período 03</option><option value="04">Período 04</option>
+        <option value="05">Período 05</option><option value="06">Período 06</option>
+        <option value="07">Período 07</option><option value="08">Período 08</option>
+        <option value="Optativas">Optativas</option>
+        <option value="Outros">Outros</option>
     </select>
     <button onclick="resetFilters()">Limpar</button>
 </div>
@@ -65,10 +70,87 @@
 
 <script>
 const POLOS = ['ARE', 'RES', 'RFL', 'SAQ', 'SGO'];
+
 const DISCIPLINAS = [
+    // Período 01
     {per:'01', cod:'EAD01004', nome:'Introdução à Informática', ch:75, inst:{ARE:'UFF',RES:'UFF',RFL:'UFF',SAQ:'UFF',SGO:'UFF'}},
     {per:'01', cod:'EAD10001', nome:'Fundamentos do Turismo', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
     {per:'01', cod:'EAD10004', nome:'História e Turismo', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'01', cod:'EAD10006', nome:'Turismo e Sociedade', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'01', cod:'EAD10008', nome:'Fundamentos Geográficos do Turismo', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'01', cod:'EAD13030', nome:'Ética', ch:60, inst:{ARE:'CEFET',RES:'CEFET',RFL:'CEFET',SAQ:'CEFET',SGO:'CEFET'}},
+    
+    // Período 02
+    {per:'02', cod:'EAD10010', nome:'Turismo e Patrimônio', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD10011', nome:'Estatística', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD10012', nome:'Estudos Antropológicos', ch:60, inst:{ARE:'UNIRIO',RES:'UNIRIO',RFL:'UNIRIO',SAQ:'UNIRIO',SGO:'UNIRIO'}},
+    {per:'02', cod:'EAD10007', nome:'Lazer', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD10002', nome:'Turismo e Meio Ambiente', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD10003', nome:'Economia e Turismo', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD10021', nome:'Legislação Turística', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD00501', nome:'Fundamentos da Educação I', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD00101', nome:'Fundamentos da Educação I', ch:60, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'02', cod:'EAD00201', nome:'Fundamentos da Educação I', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    
+    // Período 03
+    {per:'03', cod:'EAD00202', nome:'Fundamentos da Educação II', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'03', cod:'EAD00102', nome:'Fundamentos da Educação II', ch:60, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'03', cod:'EAD00502', nome:'Fundamentos da Educação II', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'03', cod:'EAD10015', nome:'Introdução à Administração', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'03', cod:'EAD10017', nome:'Métodos e Técnicas de Pesquisa', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'03', cod:'EAD10013', nome:'Hospitalidade', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'03', cod:'EAD10026', nome:'Transporte', ch:60, inst:{ARE:'UNIRIO',RES:'UNIRIO',RFL:'UNIRIO',SAQ:'UNIRIO',SGO:'UNIRIO'}},
+    {per:'03', cod:'EAD10043', nome:'Educação Ambiental', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 04
+    {per:'04', cod:'EAD10050', nome:'Cartografia e Geoprocessamento', ch:60, inst:{ARE:'UNIRIO',RES:'UNIRIO',RFL:'UNIRIO',SAQ:'UNIRIO',SGO:'UNIRIO'}},
+    {per:'04', cod:'EAD10019', nome:'Política Pública de Turismo', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD10022', nome:'Hotelaria', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD10023', nome:'Turismo e Tecnologias', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD00504', nome:'Fundamentos da Educação IV', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD00511', nome:'Prática de Ensino I - Didática', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD00221', nome:'Estágio Supervisionado I', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'04', cod:'EAD00521', nome:'Estágio Supervisionado I', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD00121', nome:'Estágio Supervisionado I', ch:60, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'04', cod:'EAD00104', nome:'Fundamentos da Educação IV', ch:60, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'04', cod:'EAD00111', nome:'Prática de Ensino I - Didática', ch:60, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'04', cod:'EAD00204', nome:'Fundamentos da Educação IV', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'04', cod:'EAD00211', nome:'Prática de Ensino I - Didática', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    
+    // Período 05
+    {per:'05', cod:'EAD00122', nome:'Estágio Supervisionado II', ch:90, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'05', cod:'EAD00522', nome:'Estágio Supervisionado II', ch:90, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'05', cod:'EAD03003', nome:'Educação Especial', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'05', cod:'EAD03033', nome:'Políticas Públicas em Educação', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'05', cod:'EAD00222', nome:'Estágio Supervisionado II', ch:90, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'05', cod:'EAD10025', nome:'Planejamento e Organização do Turismo', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'05', cod:'EAD10027', nome:'Marketing Turístico', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'05', cod:'EAD10028', nome:'Alimentos e Bebidas', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 06
+    {per:'06', cod:'EAD10032', nome:'Projeto Turístico', ch:60, inst:{ARE:'UNIRIO',RES:'UNIRIO',RFL:'UNIRIO',SAQ:'UNIRIO',SGO:'UNIRIO'}},
+    {per:'06', cod:'EAD10033', nome:'Agenciamento', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'06', cod:'EAD10035', nome:'Eventos', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'06', cod:'EAD00223', nome:'Estágio Supervisionado III', ch:120, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'06', cod:'EAD00513', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'06', cod:'EAD03017', nome:'Fundamentos da Educação de Jovens e Adultos', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'06', cod:'EAD00523', nome:'Estágio Supervisionado III', ch:120, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'06', cod:'EAD00123', nome:'Estágio Supervisionado III', ch:120, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'06', cod:'EAD00113', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'06', cod:'EAD00213', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    
+    // Período 07
+    {per:'07', cod:'EAD00124', nome:'Estágio Supervisionado IV', ch:150, inst:{ARE:'UENF',RES:'UENF',RFL:'UENF',SAQ:'UENF',SGO:'UENF'}},
+    {per:'07', cod:'EAD00031', nome:'Libras', ch:60, inst:{ARE:'UFF',RES:'UFF',RFL:'UFF',SAQ:'UFF',SGO:'UFF'}},
+    {per:'07', cod:'EAD00040', nome:'Tópicos Sobre a Diversidade na Educação', ch:60, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'07', cod:'EAD00524', nome:'Estágio Supervisionado IV', ch:150, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'07', cod:'EAD00224', nome:'Estágio Supervisionado IV', ch:150, inst:{ARE:'UERJ',RES:'UERJ',RFL:'UERJ',SAQ:'UERJ',SGO:'UERJ'}},
+    {per:'07', cod:'EAD10051', nome:'Seminário de Trabalho de Conclusão de Curso', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'07', cod:'EAD10046', nome:'Turismo Pedagógico', ch:60, inst:{ARE:'UNIRIO',RES:'UNIRIO',RFL:'UNIRIO',SAQ:'UNIRIO',SGO:'UNIRIO'}},
+    {per:'07', cod:'EAD10047', nome:'Prática de Ensino do Turismo', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 08
+    {per:'08', cod:'EAD10045', nome:'TCC (Trabalho de Conclusão de Curso)', ch:60, inst:{ARE:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',SAQ:'UFRRJ',SGO:'UFRRJ'}},
 ];
 
 const state = {};
@@ -135,9 +217,21 @@ function render() {
     let activeCount = 0, inactiveCount = 0;
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
+    let lastPer = null;
+    
     DISCIPLINAS.forEach((d, idx) => {
         if (search && !d.nome.toLowerCase().includes(search) && !d.cod.toLowerCase().includes(search)) return;
         if (filterPer && d.per !== filterPer) return;
+        
+        if (d.per !== lastPer) {
+            const hr = document.createElement('tr');
+            hr.style.background = '#f1f5f9';
+            const perLabel = d.per === 'Optativas' ? '📖 Disciplinas Optativas / Eletivas' : (d.per === 'Outros' ? '📌 Outros' : `Período ${d.per}`);
+            hr.innerHTML = `<td colspan="${3 + POLOS.length + 2}"><strong>${perLabel}</strong></td>`;
+            tbody.appendChild(hr);
+            lastPer = d.per;
+        }
+        
         const tr = document.createElement('tr');
         let poloCells = '';
         POLOS.forEach(p => {
@@ -147,7 +241,7 @@ function render() {
             poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
             if (status === 'active') activeCount++; else inactiveCount++;
         });
-        tr.innerHTML = `<td>${d.per}</td><td>${d.cod}</td><td>${d.nome}</td><td>${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        tr.innerHTML = `<td>${d.per}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
         tbody.appendChild(tr);
     });
     document.getElementById('count-active').textContent = activeCount;

@@ -44,10 +44,14 @@
 </div>
 
 <div class="filters">
-    <input type="text" id="search" placeholder="Buscar..." oninput="render()">
+    <input type="text" id="search" placeholder="Buscar disciplina..." oninput="render()">
     <select id="filter-periodo" onchange="render()">
         <option value="">Todos os períodos</option>
-        <option value="01">Período 01</option>
+        <option value="01">Período 01</option><option value="02">Período 02</option>
+        <option value="03">Período 03</option><option value="04">Período 04</option>
+        <option value="05">Período 05</option><option value="06">Período 06</option>
+        <option value="07">Período 07</option><option value="08">Período 08</option>
+        <option value="09">Período 09</option><option value="Optativas">Optativas</option>
     </select>
     <button onclick="resetFilters()">Limpar</button>
 </div>
@@ -65,9 +69,117 @@
 
 <script>
 const POLOS = ['ITO', 'NFR', 'PAR', 'SFI', 'SFR'];
+
 const DISCIPLINAS = [
+    // Período 01
     {per:'01', cod:'EAD01004', nome:'Introdução à Informática', ch:75, inst:{ITO:'UFF',NFR:'UFF',PAR:'UFF',SFI:'UFF',SFR:'UFF'}},
     {per:'01', cod:'EAD01073', nome:'Pré-Cálculo para Engenharia', ch:75, inst:{ITO:'UFF',NFR:'UFF',PAR:'UFF',SFI:'UFF',SFR:'UFF'}},
+    {per:'01', cod:'EAD01038', nome:'Matemática Básica', ch:60, inst:{ITO:'UFF',NFR:'UFF',PAR:'UFF',SFI:'UFF',SFR:'UFF'}},
+    {per:'01', cod:'EAD03046', nome:'Português Instrumental 1', ch:60, inst:{ITO:'UNIRIO',NFR:'UNIRIO',PAR:'UNIRIO',SFI:'UNIRIO',SFR:'UNIRIO'}},
+    {per:'01', cod:'EAD07136', nome:'Laboratório de Química Geral I', ch:30, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'01', cod:'EAD07167', nome:'Ensino e Aprendizagem de Química I (EAQ I)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'01', cod:'EAD07176', nome:'Química Geral I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'01', cod:'EAD08121', nome:'Educação a Distância', ch:60, inst:{ITO:'UNIRIO',NFR:'UNIRIO',PAR:'UNIRIO',SFI:'UNIRIO',SFR:'UNIRIO'}},
+    {per:'01', cod:'EAD08226', nome:'Gestão 1', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    
+    // Período 02
+    {per:'02', cod:'EAD03033', nome:'Políticas Públicas em Educação', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'02', cod:'EAD07177', nome:'Química Geral II', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'02', cod:'EAD07168', nome:'Ensino e Aprendizagem de Química II (EAQ II)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'02', cod:'EAD07141', nome:'Laboratório de Química Geral II', ch:30, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'02', cod:'EAD04001', nome:'Introdução às Ciências Físicas I', ch:60, inst:{ITO:'UFRJ',NFR:'UFRJ',PAR:'UFRJ',SFI:'UFRJ',SFR:'UFRJ'}},
+    {per:'02', cod:'EAD01005', nome:'Cálculo I', ch:75, inst:{ITO:'UFF',NFR:'UFF',PAR:'UFF',SFI:'UFF',SFR:'UFF'}},
+    {per:'02', cod:'EAD00501', nome:'Fundamentos da Educação I', ch:60, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'02', cod:'EAD00101', nome:'Fundamentos da Educação I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'02', cod:'EAD00201', nome:'Fundamentos da Educação I', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    
+    // Período 03
+    {per:'03', cod:'EAD00202', nome:'Fundamentos da Educação II', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'03', cod:'EAD00211', nome:'Prática de Ensino I - Didática', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'03', cod:'EAD00102', nome:'Fundamentos da Educação II', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'03', cod:'EAD00111', nome:'Prática de Ensino I - Didática', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'03', cod:'EAD00502', nome:'Fundamentos da Educação II', ch:60, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'03', cod:'EAD01010', nome:'Cálculo II', ch:75, inst:{ITO:'UFF',NFR:'UFF',PAR:'UFF',SFI:'UFF',SFR:'UFF'}},
+    {per:'03', cod:'EAD00511', nome:'Prática de Ensino I - Didática', ch:60, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'03', cod:'EAD04005', nome:'Introdução às Ciências Físicas II', ch:60, inst:{ITO:'UFRJ',NFR:'UFRJ',PAR:'UFRJ',SFI:'UFRJ',SFR:'UFRJ'}},
+    {per:'03', cod:'EAD07143', nome:'Laboratório de Química Geral III', ch:30, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'03', cod:'EAD07169', nome:'Ensino e Aprendizagem de Química III (EAQ III)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'03', cod:'EAD07178', nome:'Química Geral III', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'03', cod:'EAD08225', nome:'Informática em Educação', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    
+    // Período 04
+    {per:'04', cod:'EAD07179', nome:'Química Orgânica I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'04', cod:'EAD07170', nome:'Ensino e Aprendizagem de Química IV (EAQ IV)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'04', cod:'EAD07145', nome:'Laboratório de Química Orgânica I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'04', cod:'EAD07163', nome:'Seminários de Práticas Educativas em Química I', ch:30, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'04', cod:'EAD04009', nome:'Física I a', ch:60, inst:{ITO:'UFRJ',NFR:'UFRJ',PAR:'UFRJ',SFI:'UFRJ',SFR:'UFRJ'}},
+    {per:'04', cod:'EAD04010', nome:'Física I b', ch:60, inst:{ITO:'UFRJ',NFR:'UFRJ',PAR:'UFRJ',SFI:'UFRJ',SFR:'UFRJ'}},
+    {per:'04', cod:'EAD00512', nome:'Prática de Ensino II', ch:60, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'04', cod:'EAD00503', nome:'Fundamentos da Educação III', ch:60, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'04', cod:'EAD00112', nome:'Prática de Ensino II', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'04', cod:'EAD00103', nome:'Fundamentos da Educação III', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'04', cod:'EAD00212', nome:'Prática de Ensino II', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'04', cod:'EAD00203', nome:'Fundamentos da Educação III', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    
+    // Período 05
+    {per:'05', cod:'EAD00213', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'05', cod:'EAD00113', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'05', cod:'EAD00513', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'05', cod:'EAD04018', nome:'Física II b', ch:60, inst:{ITO:'UFRJ',NFR:'UFRJ',PAR:'UFRJ',SFI:'UFRJ',SFR:'UFRJ'}},
+    {per:'05', cod:'EAD03003', nome:'Educação Especial', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'05', cod:'EAD07164', nome:'Seminários de Práticas Educativas em Química II', ch:30, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'05', cod:'EAD07147', nome:'Laboratório de Química Orgânica II', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'05', cod:'EAD07171', nome:'Ensino e Aprendizagem de Química V (EAQ V)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'05', cod:'EAD07180', nome:'Química Orgânica II', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'05', cod:'EAD07182', nome:'Química Inorgânica I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    
+    // Período 06
+    {per:'06', cod:'EAD07181', nome:'Química Orgânica III', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'06', cod:'EAD07172', nome:'Ensino e Aprendizagem de Química VI (EAQ VI)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'06', cod:'EAD07149', nome:'Química Inorgânica II', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'06', cod:'EAD07150', nome:'Laboratório de Química Inorgânica I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'06', cod:'EAD07151', nome:'Química Analítica I', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'06', cod:'EAD07152', nome:'Laboratório de Química Analítica I', ch:30, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'06', cod:'EAD00521', nome:'Estágio Supervisionado I', ch:60, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'06', cod:'EAD00504', nome:'Fundamentos da Educação IV', ch:60, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'06', cod:'EAD00121', nome:'Estágio Supervisionado I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'06', cod:'EAD00104', nome:'Fundamentos da Educação IV', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'06', cod:'EAD00221', nome:'Estágio Supervisionado I', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'06', cod:'EAD00204', nome:'Fundamentos da Educação IV', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    
+    // Período 07
+    {per:'07', cod:'EAD00222', nome:'Estágio Supervisionado II', ch:90, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'07', cod:'EAD00122', nome:'Estágio Supervisionado II', ch:90, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'07', cod:'EAD00522', nome:'Estágio Supervisionado II', ch:90, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'07', cod:'EAD03017', nome:'Fundamentos da Educação de Jovens e Adultos', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'07', cod:'EAD07165', nome:'Seminários de Práticas Educativas em Química III', ch:30, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'07', cod:'EAD07166', nome:'Projeto de TCC', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'07', cod:'EAD07154', nome:'Laboratório de Química Analítica II', ch:30, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'07', cod:'EAD07173', nome:'Ensino e Aprendizagem de Química VII (EAQ VII)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'07', cod:'EAD07185', nome:'Química Analítica II', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'07', cod:'EAD07186', nome:'Métodos Físicos de Análise I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    
+    // Período 08
+    {per:'08', cod:'EAD07187', nome:'Físico Química I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'08', cod:'EAD08174', nome:'Estatística Aplicada à Educação', ch:60, inst:{ITO:'UNIRIO',NFR:'UNIRIO',PAR:'UNIRIO',SFI:'UNIRIO',SFR:'UNIRIO'}},
+    {per:'08', cod:'EAD08242', nome:'Imagem e Educação', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'08', cod:'EAD08252', nome:'Dinâmica e Organização Escolar', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'08', cod:'EAD07174', nome:'Ensino e Aprendizagem de Química VIII (EAQ VIII)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'08', cod:'EAD07156', nome:'Química Ambiental', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'08', cod:'EAD00523', nome:'Estágio Supervisionado III', ch:120, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'08', cod:'EAD00123', nome:'Estágio Supervisionado III', ch:120, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'08', cod:'EAD00223', nome:'Estágio Supervisionado III', ch:120, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    
+    // Período 09
+    {per:'09', cod:'EAD00224', nome:'Estágio Supervisionado IV', ch:150, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'09', cod:'EAD00124', nome:'Estágio Supervisionado IV', ch:150, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'09', cod:'EAD00524', nome:'Estágio Supervisionado IV', ch:150, inst:{ITO:'UFRRJ',NFR:'UFRRJ',PAR:'UFRRJ',SFI:'UFRRJ',SFR:'UFRRJ'}},
+    {per:'09', cod:'EAD00031', nome:'Libras', ch:60, inst:{ITO:'UFF',NFR:'UFF',PAR:'UFF',SFI:'UFF',SFR:'UFF'}},
+    {per:'09', cod:'EAD00040', nome:'Tópicos Sobre a Diversidade na Educação', ch:60, inst:{ITO:'UERJ',NFR:'UERJ',PAR:'UERJ',SFI:'UERJ',SFR:'UERJ'}},
+    {per:'09', cod:'EAD03025', nome:'Movimentos Sociais e Educação', ch:60, inst:{ITO:'UNIRIO',NFR:'UNIRIO',PAR:'UNIRIO',SFI:'UNIRIO',SFR:'UNIRIO'}},
+    {per:'09', cod:'EAD07175', nome:'Ensino e Aprendizagem de Química IX (EAQ IX)', ch:45, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'09', cod:'EAD07159', nome:'Laboratório de Físico Química I', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
+    {per:'09', cod:'EAD07188', nome:'Físico Química II', ch:60, inst:{ITO:'UENF',NFR:'UENF',PAR:'UENF',SFI:'UENF',SFR:'UENF'}},
 ];
 
 const state = {};
@@ -134,9 +246,21 @@ function render() {
     let activeCount = 0, inactiveCount = 0;
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
+    let lastPer = null;
+    
     DISCIPLINAS.forEach((d, idx) => {
         if (search && !d.nome.toLowerCase().includes(search) && !d.cod.toLowerCase().includes(search)) return;
         if (filterPer && d.per !== filterPer) return;
+        
+        if (d.per !== lastPer) {
+            const hr = document.createElement('tr');
+            hr.style.background = '#f1f5f9';
+            const perLabel = d.per === 'Optativas' ? '📖 Disciplinas Optativas / Eletivas' : (d.per === 'Outros' ? '📌 Outros' : `Período ${d.per}`);
+            hr.innerHTML = `<td colspan="${3 + POLOS.length + 2}"><strong>${perLabel}</strong></td>`;
+            tbody.appendChild(hr);
+            lastPer = d.per;
+        }
+        
         const tr = document.createElement('tr');
         let poloCells = '';
         POLOS.forEach(p => {
@@ -146,7 +270,7 @@ function render() {
             poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
             if (status === 'active') activeCount++; else inactiveCount++;
         });
-        tr.innerHTML = `<td>${d.per}</td><td>${d.cod}</td><td>${d.nome}</td><td>${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        tr.innerHTML = `<td>${d.per}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></tr>`;
         tbody.appendChild(tr);
     });
     document.getElementById('count-active').textContent = activeCount;

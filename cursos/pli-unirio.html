@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>PLI UNIRIO - Gestão de Oferta</title>
+    <title>PLI UERJ - Gestão de Oferta</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f7fc; padding: 20px; }
@@ -29,8 +29,8 @@
 <header>
     <div>
         <button class="btn-voltar" onclick="location.href='../index.html'">← Voltar</button>
-        <h2 style="margin-top: 10px;">📖 Licenciatura em Pedagogia - UNIRIO</h2>
-        <small>Período 2/2026 | Polos: BPI, CAN, ITO, MAC, MPE, NAT, NIT, PIR, RBO, RFL, SAQ, VRE</small>
+        <h2 style="margin-top: 10px;">📖 Licenciatura em Pedagogia - UERJ</h2>
+        <small>Período 2/2026 | Polos: ARE, BRO, ITG, MAG, MAR, NFR, NIG, PAR, PET, RES, ROC, SPE, TER, TRI</small>
     </div>
     <div>
         <button class="btn btn-success" onclick="salvarAlteracoes()">📤 Salvar</button>
@@ -44,10 +44,15 @@
 </div>
 
 <div class="filters">
-    <input type="text" id="search" placeholder="Buscar..." oninput="render()">
+    <input type="text" id="search" placeholder="Buscar disciplina..." oninput="render()">
     <select id="filter-periodo" onchange="render()">
         <option value="">Todos os períodos</option>
-        <option value="01">Período 01</option>
+        <option value="01">Período 01</option><option value="02">Período 02</option>
+        <option value="03">Período 03</option><option value="04">Período 04</option>
+        <option value="05">Período 05</option><option value="06">Período 06</option>
+        <option value="07">Período 07</option><option value="08">Período 08</option>
+        <option value="Optativas">Optativas</option>
+        <option value="Outros">Outros</option>
     </select>
     <button onclick="resetFilters()">Limpar</button>
 </div>
@@ -56,7 +61,8 @@
     <table>
         <thead>
             <tr><th>Período</th><th>Código</th><th>Disciplina</th><th>CH</th>
-                <th>BPI</th><th>CAN</th><th>ITO</th><th>MAC</th><th>MPE</th><th>NAT</th><th>NIT</th><th>PIR</th><th>RBO</th><th>RFL</th><th>SAQ</th><th>VRE</th><th>Ação</th>
+                <th>ARE</th><th>BRO</th><th>ITG</th><th>MAG</th><th>MAR</th><th>NFR</th>
+                <th>NIG</th><th>PAR</th><th>PET</th><th>RES</th><th>ROC</th><th>SPE</th><th>TER</th><th>TRI</th><th>Ação</th>
             </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -64,16 +70,84 @@
 </div>
 
 <script>
-const POLOS = ['BPI', 'CAN', 'ITO', 'MAC', 'MPE', 'NAT', 'NIT', 'PIR', 'RBO', 'RFL', 'SAQ', 'VRE'];
+const POLOS = ['ARE', 'BRO', 'ITG', 'MAG', 'MAR', 'NFR', 'NIG', 'PAR', 'PET', 'RES', 'ROC', 'SPE', 'TER', 'TRI'];
+
 const DISCIPLINAS = [
-    {per:'01', cod:'EAD08121', nome:'Educação a Distância', ch:60, inst:{BPI:'UNIRIO',CAN:'UNIRIO',ITO:'UNIRIO',MAC:'UNIRIO',MPE:'UNIRIO',NAT:'UNIRIO',NIT:'UNIRIO',PIR:'UNIRIO',RBO:'UNIRIO',RFL:'UNIRIO',SAQ:'UNIRIO',VRE:'UNIRIO'}},
-    {per:'01', cod:'EAD08101', nome:'Filosofia e Educação', ch:60, inst:{BPI:'UNIRIO',CAN:'UNIRIO',ITO:'UNIRIO',MAC:'UNIRIO',MPE:'UNIRIO',NAT:'UNIRIO',NIT:'UNIRIO',PIR:'UNIRIO',RBO:'UNIRIO',RFL:'UNIRIO',SAQ:'UNIRIO',VRE:'UNIRIO'}},
+    // Período 01
+    {per:'01', cod:'EAD08057', nome:'Psicologia da Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'01', cod:'EAD08058', nome:'Educação Especial Inclusiva', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'01', cod:'EAD08059', nome:'Sociologia da Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'01', cod:'EAD08006', nome:'Alfabetização 1', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'01', cod:'EAD08002', nome:'Informática Instrumental', ch:60, inst:{ARE:'UFF',BRO:'UFF',ITG:'UFF',MAG:'UFF',MAR:'UFF',NFR:'UFF',NIG:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SPE:'UFF',TER:'UFF',TRI:'UFF'}},
+    {per:'01', cod:'EAD08003', nome:'Língua Portuguesa Instrumental', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    
+    // Período 02
+    {per:'02', cod:'EAD08056', nome:'1° Seminário de Práticas Educativas', ch:15, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'02', cod:'EAD08008', nome:'Matemática na Educação 1', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'02', cod:'EAD08009', nome:'Língua Portuguesa na Educação 1', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'02', cod:'EAD08010', nome:'História na Educação 1', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'02', cod:'EAD08012', nome:'Alfabetização 2', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'02', cod:'EAD08035', nome:'Filosofia da Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'02', cod:'EAD08060', nome:'Educação Infantil 1', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    
+    // Período 03
+    {per:'03', cod:'EAD08015', nome:'Políticas Públicas em Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'03', cod:'EAD08016', nome:'Língua Portuguesa na Educação 2', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'03', cod:'EAD08017', nome:'Matemática na Educação 2', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'03', cod:'EAD08018', nome:'História na Educação 2', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'03', cod:'EAD08019', nome:'Educação Infantil 2', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'03', cod:'EAD08020', nome:'2° Seminário de Práticas Educativas', ch:15, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'03', cod:'EAD08021', nome:'História da Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    
+    // Período 04
+    {per:'04', cod:'EAD08022', nome:'Informática na Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'04', cod:'EAD08023', nome:'Literatura na Formação do Leitor', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'04', cod:'EAD08024', nome:'Artes na Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'04', cod:'EAD08025', nome:'Geografia na Educação 1', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'04', cod:'EAD08004', nome:'Didática', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'04', cod:'EAD08027', nome:'Estágio em Educação Infantil', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'04', cod:'EAD08028', nome:'3° Seminário de Práticas Educativas', ch:15, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'04', cod:'EAD08029', nome:'Educação de Jovens e Adultos', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    
+    // Período 05
+    {per:'05', cod:'EAD08030', nome:'Educação e Trabalho', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'05', cod:'EAD08031', nome:'Ciências na Educação 1', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'05', cod:'EAD08032', nome:'Corpo e Movimento', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'05', cod:'EAD08033', nome:'Avaliação da Aprendizagem', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'05', cod:'EAD08034', nome:'Geografia na Educação 2', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'05', cod:'EAD08026', nome:'Gestão 1', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'05', cod:'EAD08036', nome:'Estágio em Educação Fundamental', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'05', cod:'EAD08037', nome:'4° Seminário de Práticas Educativas', ch:15, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    
+    // Período 06
+    {per:'06', cod:'EAD08038', nome:'Metodologia da Pesquisa em Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'06', cod:'EAD08039', nome:'Ciências na Educação 2', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'06', cod:'EAD08040', nome:'Diversidade Cultural e Educação', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'06', cod:'EAD08041', nome:'Espaços Sociais de Formação Humana', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'06', cod:'EAD08042', nome:'Currículo', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'06', cod:'EAD08043', nome:'Gestão 2', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'06', cod:'EAD08044', nome:'Estágio em Educação de Jovens e Adultos', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'06', cod:'EAD08045', nome:'5° Seminário de Práticas Educativas', ch:15, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    
+    // Período 07
+    {per:'07', cod:'EAD08046', nome:'Monografia 1', ch:120, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'07', cod:'EAD08047', nome:'Imagem, Cultura e Tecnologia', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'07', cod:'EAD08048', nome:'Língua Brasileira de Sinais/Libras', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'07', cod:'EAD08049', nome:'Estágio em Educação em Ensino Médio-Normal', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'07', cod:'EAD08050', nome:'6° Seminário de Práticas Educativas', ch:15, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    
+    // Período 08
+    {per:'08', cod:'EAD08051', nome:'Monografia 2', ch:120, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'08', cod:'EAD08052', nome:'Educação a Distância', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'08', cod:'EAD08053', nome:'Estágio em Gestão', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'08', cod:'EAD08054', nome:'Estágio nos Espaços Sociais de Formação Humana', ch:60, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
+    {per:'08', cod:'EAD08055', nome:'7° Seminário de Práticas Educativas', ch:15, inst:{ARE:'UERJ',BRO:'UERJ',ITG:'UERJ',MAG:'UERJ',MAR:'UERJ',NFR:'UERJ',NIG:'UERJ',PAR:'UERJ',PET:'UERJ',RES:'UERJ',ROC:'UERJ',SPE:'UERJ',TER:'UERJ',TRI:'UERJ'}},
 ];
 
 const state = {};
 DISCIPLINAS.forEach((d, idx) => { POLOS.forEach(p => { state[`${idx}_${p}`] = 'active'; }); });
 
-let validado = localStorage.getItem('validado_pli_unirio') === 'true';
+let validado = localStorage.getItem('validado_pli_uerj') === 'true';
 
 function atualizarValidacaoBox() {
     const box = document.getElementById('validacao-box');
@@ -88,7 +162,7 @@ function atualizarValidacaoBox() {
 }
 
 function conferirValidar() {
-    localStorage.setItem('validado_pli_unirio', 'true');
+    localStorage.setItem('validado_pli_uerj', 'true');
     validado = true;
     atualizarValidacaoBox();
     alert('✓ Validação registrada!');
@@ -123,7 +197,7 @@ function salvarAlteracoes() {
     const blob = new Blob([alteracoes.join('\n')], {type: 'text/csv'});
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `alteracoes_pli_unirio.csv`;
+    link.download = `alteracoes_pli_uerj.csv`;
     link.click();
     alert('Arquivo gerado! Envie para matrizes.cederj@gmail.com');
 }
@@ -134,9 +208,21 @@ function render() {
     let activeCount = 0, inactiveCount = 0;
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
+    let lastPer = null;
+    
     DISCIPLINAS.forEach((d, idx) => {
         if (search && !d.nome.toLowerCase().includes(search) && !d.cod.toLowerCase().includes(search)) return;
         if (filterPer && d.per !== filterPer) return;
+        
+        if (d.per !== lastPer) {
+            const hr = document.createElement('tr');
+            hr.style.background = '#f1f5f9';
+            const perLabel = d.per === 'Optativas' ? '📖 Disciplinas Optativas / Eletivas' : (d.per === 'Outros' ? '📌 Outros' : `Período ${d.per}`);
+            hr.innerHTML = `<td colspan="${3 + POLOS.length + 2}"><strong>${perLabel}</strong><tr>`;
+            tbody.appendChild(hr);
+            lastPer = d.per;
+        }
+        
         const tr = document.createElement('tr');
         let poloCells = '';
         POLOS.forEach(p => {
@@ -146,7 +232,7 @@ function render() {
             poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
             if (status === 'active') activeCount++; else inactiveCount++;
         });
-        tr.innerHTML = `<td>${d.per}</td><td>${d.cod}</td><td>${d.nome}</td><td>${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        tr.innerHTML = `<td>${d.per}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
         tbody.appendChild(tr);
     });
     document.getElementById('count-active').textContent = activeCount;

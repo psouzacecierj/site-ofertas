@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>EPR UFF - Gestão de Oferta</title>
+    <title>EME UENF - Gestão de Oferta</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f7fc; padding: 20px; }
@@ -29,8 +29,8 @@
 <header>
     <div>
         <button class="btn-voltar" onclick="location.href='../index.html'">← Voltar</button>
-        <h2 style="margin-top: 10px;">🏭 Engenharia de Produção - UFF</h2>
-        <small>Período 2/2026 | Polos: ARE, CAN, MAC, PAR, SGO</small>
+        <h2 style="margin-top: 10px;">🌡️ Engenharia Meteorológica - UENF</h2>
+        <small>Período 2/2026 | Polos: MAC</small>
     </div>
     <div>
         <button class="btn btn-success" onclick="salvarAlteracoes()">📤 Salvar</button>
@@ -44,10 +44,16 @@
 </div>
 
 <div class="filters">
-    <input type="text" id="search" placeholder="Buscar..." oninput="render()">
+    <input type="text" id="search" placeholder="Buscar disciplina..." oninput="render()">
     <select id="filter-periodo" onchange="render()">
         <option value="">Todos os períodos</option>
-        <option value="01">Período 01</option>
+        <option value="01">Período 01</option><option value="02">Período 02</option>
+        <option value="03">Período 03</option><option value="04">Período 04</option>
+        <option value="05">Período 05</option><option value="06">Período 06</option>
+        <option value="07">Período 07</option><option value="08">Período 08</option>
+        <option value="09">Período 09</option><option value="10">Período 10</option>
+        <option value="Optativas">Optativas</option>
+        <option value="Outros">Outros</option>
     </select>
     <button onclick="resetFilters()">Limpar</button>
 </div>
@@ -56,7 +62,7 @@
     <table>
         <thead>
             <tr><th>Período</th><th>Código</th><th>Disciplina</th><th>CH</th>
-                <th>ARE</th><th>CAN</th><th>MAC</th><th>PAR</th><th>SGO</th><th>Ação</th>
+                <th>MAC</th><th>Ação</th>
             </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -64,17 +70,97 @@
 </div>
 
 <script>
-const POLOS = ['ARE', 'CAN', 'MAC', 'PAR', 'SGO'];
+const POLOS = ['MAC'];
+
 const DISCIPLINAS = [
-    {per:'01', cod:'EAD01077', nome:'Introdução à Informática', ch:60, inst:{ARE:'UFF',CAN:'UFF',MAC:'UFF',PAR:'UFF',SGO:'UFF'}},
-    {per:'01', cod:'EAD04001', nome:'Introdução às Ciências Físicas I', ch:60, inst:{ARE:'UFRJ',CAN:'UFRJ',MAC:'UFRJ',PAR:'UFRJ',SGO:'UFRJ'}},
-    {per:'01', cod:'EAD16001', nome:'Introdução à Engenharia', ch:30, inst:{ARE:'UFF',CAN:'UFF',MAC:'UFF',PAR:'UFF',SGO:'UFF'}},
+    // Período 01
+    {per:'01', cod:'EAD01052', nome:'Geometria Analítica I', ch:60, inst:{MAC:'UFF'}},
+    {per:'01', cod:'EAD01073', nome:'Pré-Cálculo para Engenharia', ch:75, inst:{MAC:'UFF'}},
+    {per:'01', cod:'EAD01077', nome:'Introdução à Informática', ch:60, inst:{MAC:'UFF'}},
+    {per:'01', cod:'EAD04001', nome:'Introdução às Ciências Físicas I', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'01', cod:'EAD16005', nome:'Humanidades e Ciências Sociais', ch:30, inst:{MAC:'UFF'}},
+    {per:'01', cod:'EAD18041', nome:'Introdução a Engenharia Meteorológica', ch:17, inst:{MAC:'UENF'}},
+    {per:'01', cod:'EAD18042', nome:'Introdução às Ciências Atmosféricas', ch:68, inst:{MAC:'UENF'}},
+    
+    // Período 02
+    {per:'02', cod:'EAD18043', nome:'Engenharia Ambiental', ch:34, inst:{MAC:'UENF'}},
+    {per:'02', cod:'EAD18044', nome:'Iniciação à Extensão', ch:17, inst:{MAC:'UENF'}},
+    {per:'02', cod:'EAD18009', nome:'Instrumentos e Métodos de Observação da Atmosfera', ch:51, inst:{MAC:'UENF'}},
+    {per:'02', cod:'EAD16003', nome:'Computação I', ch:45, inst:{MAC:'UFF'}},
+    {per:'02', cod:'EAD16050', nome:'Química', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'02', cod:'EAD04005', nome:'Introdução às Ciências Físicas II', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'02', cod:'EAD01074', nome:'Álgebra Linear', ch:75, inst:{MAC:'UFF'}},
+    {per:'02', cod:'EAD01005', nome:'Cálculo I', ch:75, inst:{MAC:'UFF'}},
+    
+    // Período 03
+    {per:'03', cod:'EAD01010', nome:'Cálculo II', ch:75, inst:{MAC:'UFF'}},
+    {per:'03', cod:'EAD04009', nome:'Física I a', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'03', cod:'EAD04010', nome:'Física I b', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'03', cod:'EAD01076', nome:'Estatística I', ch:45, inst:{MAC:'UFF'}},
+    {per:'03', cod:'EAD16006', nome:'Ciência dos Materiais', ch:30, inst:{MAC:'UFF'}},
+    {per:'03', cod:'EAD16010', nome:'Computação II', ch:45, inst:{MAC:'UFF'}},
+    {per:'03', cod:'EAD18045', nome:'Acompanhamento e Discussão do Tempo I', ch:51, inst:{MAC:'UENF'}},
+    {per:'03', cod:'EAD18046', nome:'Iniciação à Pesquisa Científica', ch:34, inst:{MAC:'UENF'}},
+    
+    // Período 04
+    {per:'04', cod:'EAD18047', nome:'Ciências do Ambiente e Energia', ch:34, inst:{MAC:'UENF'}},
+    {per:'04', cod:'EAD18004', nome:'Climatologia', ch:51, inst:{MAC:'UENF'}},
+    {per:'04', cod:'EAD16007', nome:'Desenho', ch:60, inst:{MAC:'CEFET'}},
+    {per:'04', cod:'EAD16013', nome:'Estatística II', ch:45, inst:{MAC:'UFF'}},
+    {per:'04', cod:'EAD04013', nome:'Física II a', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'04', cod:'EAD04018', nome:'Física II b', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'04', cod:'EAD01015', nome:'Cálculo III', ch:75, inst:{MAC:'UFF'}},
+    {per:'04', cod:'EAD01075', nome:'Equações Diferenciais Ordinárias', ch:45, inst:{MAC:'UFF'}},
+    
+    // Período 05
+    {per:'05', cod:'EAD01022', nome:'Cálculo IV', ch:75, inst:{MAC:'UFF'}},
+    {per:'05', cod:'EAD04023', nome:'Física III a', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'05', cod:'EAD04024', nome:'Física III b', ch:60, inst:{MAC:'UFRJ'}},
+    {per:'05', cod:'EAD16009', nome:'Mecânica Geral', ch:60, inst:{MAC:'UFF'}},
+    {per:'05', cod:'EAD18048', nome:'Cinemática Atmosférica', ch:51, inst:{MAC:'UENF'}},
+    {per:'05', cod:'EAD18049', nome:'Termodinâmica da Atmosfera I', ch:34, inst:{MAC:'UENF'}},
+    {per:'05', cod:'EAD16012', nome:'Resistência dos Materiais', ch:60, inst:{MAC:'CEFET'}},
+    
+    // Período 06
+    {per:'06', cod:'EAD18050', nome:'Termodinâmica da Atmosfera II', ch:34, inst:{MAC:'UENF'}},
+    {per:'06', cod:'EAD18005', nome:'Processamento e Análise de Dados Ambientais', ch:51, inst:{MAC:'UENF'}},
+    {per:'06', cod:'EAD16011', nome:'Fenômenos de Transporte', ch:45, inst:{MAC:'UFF'}},
+    {per:'06', cod:'EAD18011', nome:'Meteorologia Dinâmica I', ch:68, inst:{MAC:'UENF'}},
+    {per:'06', cod:'EAD16004', nome:'Administração', ch:60, inst:{MAC:'CEFET'}},
+    {per:'06', cod:'EAD16014', nome:'Cálculo Numérico', ch:60, inst:{MAC:'CEFET'}},
+    {per:'06', cod:'EAD04028', nome:'Física IV a', ch:60, inst:{MAC:'UFRJ'}},
+    
+    // Período 07
+    {per:'07', cod:'EAD16015', nome:'Economia', ch:60, inst:{MAC:'CEFET'}},
+    {per:'07', cod:'EAD16017', nome:'Eletricidade Aplicada', ch:60, inst:{MAC:'CEFET'}},
+    {per:'07', cod:'EAD18014', nome:'Meteorologia Sinótica', ch:68, inst:{MAC:'UENF'}},
+    {per:'07', cod:'EAD18016', nome:'Meteorologia Dinâmica II', ch:51, inst:{MAC:'UENF'}},
+    {per:'07', cod:'EAD18010', nome:'Radiação Solar e Terrestre', ch:51, inst:{MAC:'UENF'}},
+    {per:'07', cod:'EAD18006', nome:'Variabilidade e Mudanças Climáticas', ch:51, inst:{MAC:'UENF'}},
+    {per:'07', cod:'EAD18053', nome:'Seminários', ch:17, inst:{MAC:'UENF'}},
+    
+    // Período 08
+    {per:'08', cod:'EAD18054', nome:'Meteorologia De Mesoescala', ch:68, inst:{MAC:'UENF'}},
+    {per:'08', cod:'EAD18022', nome:'Micrometeorologia', ch:51, inst:{MAC:'UENF'}},
+    {per:'08', cod:'EAD18015', nome:'Física das Nuvens e Precipitação', ch:51, inst:{MAC:'UENF'}},
+    {per:'08', cod:'EAD18026', nome:'Interação Oceano-Atmosfera', ch:51, inst:{MAC:'UENF'}},
+    
+    // Período 09
+    {per:'09', cod:'EAD18051', nome:'Estágio Curricular Obrigatório', ch:180, inst:{MAC:'UENF'}},
+    {per:'09', cod:'EAD18019', nome:'Hidrometeorologia', ch:51, inst:{MAC:'UENF'}},
+    {per:'09', cod:'EAD18020', nome:'Sensoriamento Remoto da Atmosfera e da Superfície', ch:51, inst:{MAC:'UENF'}},
+    {per:'09', cod:'EAD18055', nome:'Modelagem Numérica Da Atmosfera', ch:85, inst:{MAC:'UENF'}},
+    
+    // Período 10
+    {per:'10', cod:'EAD18013', nome:'Energias Renováveis', ch:51, inst:{MAC:'UENF'}},
+    {per:'10', cod:'EAD18027', nome:'Acompanhamento e Discussão do Tempo II', ch:51, inst:{MAC:'UENF'}},
+    {per:'10', cod:'EAD18028', nome:'Trabalho de Conclusão de Curso', ch:68, inst:{MAC:'UENF'}},
 ];
 
 const state = {};
 DISCIPLINAS.forEach((d, idx) => { POLOS.forEach(p => { state[`${idx}_${p}`] = 'active'; }); });
 
-let validado = localStorage.getItem('validado_epr_uff') === 'true';
+let validado = localStorage.getItem('validado_eme_uenf') === 'true';
 
 function atualizarValidacaoBox() {
     const box = document.getElementById('validacao-box');
@@ -89,7 +175,7 @@ function atualizarValidacaoBox() {
 }
 
 function conferirValidar() {
-    localStorage.setItem('validado_epr_uff', 'true');
+    localStorage.setItem('validado_eme_uenf', 'true');
     validado = true;
     atualizarValidacaoBox();
     alert('✓ Validação registrada!');
@@ -124,7 +210,7 @@ function salvarAlteracoes() {
     const blob = new Blob([alteracoes.join('\n')], {type: 'text/csv'});
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
-    link.download = `alteracoes_epr_uff.csv`;
+    link.download = `alteracoes_eme_uenf.csv`;
     link.click();
     alert('Arquivo gerado! Envie para matrizes.cederj@gmail.com');
 }
@@ -135,9 +221,21 @@ function render() {
     let activeCount = 0, inactiveCount = 0;
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
+    let lastPer = null;
+    
     DISCIPLINAS.forEach((d, idx) => {
         if (search && !d.nome.toLowerCase().includes(search) && !d.cod.toLowerCase().includes(search)) return;
         if (filterPer && d.per !== filterPer) return;
+        
+        if (d.per !== lastPer) {
+            const hr = document.createElement('tr');
+            hr.style.background = '#f1f5f9';
+            const perLabel = d.per === 'Optativas' ? '📖 Disciplinas Optativas / Eletivas' : (d.per === 'Outros' ? '📌 Outros' : `Período ${d.per}`);
+            hr.innerHTML = `<td colspan="${3 + POLOS.length + 2}"><strong>${perLabel}</strong></td>`;
+            tbody.appendChild(hr);
+            lastPer = d.per;
+        }
+        
         const tr = document.createElement('tr');
         let poloCells = '';
         POLOS.forEach(p => {
@@ -147,7 +245,7 @@ function render() {
             poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
             if (status === 'active') activeCount++; else inactiveCount++;
         });
-        tr.innerHTML = `<td>${d.per}</td><td>${d.cod}</td><td>${d.nome}</td><td>${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        tr.innerHTML = `<td>${d.per}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
         tbody.appendChild(tr);
     });
     document.getElementById('count-active').textContent = activeCount;

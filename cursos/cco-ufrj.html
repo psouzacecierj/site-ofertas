@@ -44,10 +44,15 @@
 </div>
 
 <div class="filters">
-    <input type="text" id="search" placeholder="Buscar..." oninput="render()">
+    <input type="text" id="search" placeholder="Buscar disciplina..." oninput="render()">
     <select id="filter-periodo" onchange="render()">
         <option value="">Todos os períodos</option>
-        <option value="01">Período 01</option>
+        <option value="01">Período 01</option><option value="02">Período 02</option>
+        <option value="03">Período 03</option><option value="04">Período 04</option>
+        <option value="05">Período 05</option><option value="06">Período 06</option>
+        <option value="07">Período 07</option><option value="08">Período 08</option>
+        <option value="09">Período 09</option>
+        <option value="Optativas">Optativas</option>
     </select>
     <button onclick="resetFilters()">Limpar</button>
 </div>
@@ -65,10 +70,60 @@
 
 <script>
 const POLOS = ['BRO', 'MIR', 'PAR', 'PET', 'RES', 'ROC', 'SGO'];
+
 const DISCIPLINAS = [
+    // Período 01
     {per:'01', cod:'EAD01077', nome:'Introdução à Informática', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
     {per:'01', cod:'EAD17001', nome:'Teoria da Contabilidade I', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
     {per:'01', cod:'EAD17002', nome:'Contabilidade I', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'01', cod:'EAD17003', nome:'Matemática aplicada à Contabilidade I', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    
+    // Período 02
+    {per:'02', cod:'EAD17004', nome:'Contabilidade II', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'02', cod:'EAD17005', nome:'Matemática aplicada à Contabilidade II', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'02', cod:'EAD17006', nome:'Métodos e Técnicas de Pesquisa em Contabilidade', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'02', cod:'EAD17007', nome:'Matemática Financeira', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    
+    // Período 03
+    {per:'03', cod:'EAD17008', nome:'Contabilidade Intermediária', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'03', cod:'EAD17009', nome:'Contabilidade de Custos', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'03', cod:'EAD17011', nome:'Economia I', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    {per:'03', cod:'EAD17012', nome:'Introdução à Administração e Comportamento Organizacional', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    
+    // Período 04
+    {per:'04', cod:'EAD17013', nome:'Contabilidade Gerencial', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'04', cod:'EAD17014', nome:'Instituições de Direito aplicada à Contabilidade', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'04', cod:'EAD17015', nome:'Economia II', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    {per:'04', cod:'EAD17016', nome:'Contabilidade Avançada I', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    
+    // Período 05
+    {per:'05', cod:'EAD17017', nome:'Contabilidade Avançada II', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'05', cod:'EAD17018', nome:'Legislação Tributária', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'05', cod:'EAD17019', nome:'Métodos Quantitativos I', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    {per:'05', cod:'EAD17020', nome:'Estágio Supervisionado', ch:300, inst:{BRO:'UFF/UFRJ',MIR:'UFF/UFRJ',PAR:'UFF/UFRJ',PET:'UFF/UFRJ',RES:'UFF/UFRJ',ROC:'UFF/UFRJ',SGO:'UFF/UFRJ'}},
+    {per:'05', cod:'EAD17021', nome:'Legislação Empresarial', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    
+    // Período 06
+    {per:'06', cod:'EAD17022', nome:'Orçamento e Planejamento Empresarial', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    {per:'06', cod:'EAD17023', nome:'Métodos Quantitativos II', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    {per:'06', cod:'EAD17024', nome:'Legislação Social e Trabalhista', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'06', cod:'EAD17025', nome:'Contabilidade Tributária', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    
+    // Período 07
+    {per:'07', cod:'EAD17027', nome:'Controladoria', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    {per:'07', cod:'EAD17028', nome:'Análise Econômico-financeira', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'07', cod:'EAD17035', nome:'Projeto de Pesquisa em Contabilidade', ch:60, inst:{BRO:'UFF/UFRJ',MIR:'UFF/UFRJ',PAR:'UFF/UFRJ',PET:'UFF/UFRJ',RES:'UFF/UFRJ',ROC:'UFF/UFRJ',SGO:'UFF/UFRJ'}},
+    {per:'07', cod:'EAD17032', nome:'Orçamento e Planejamento Governamental', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFRJ',RES:'UFF',ROC:'UFRJ',SGO:'UFF'}},
+    
+    // Período 08
+    {per:'08', cod:'EAD17033', nome:'Administração Financeira I', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    {per:'08', cod:'EAD17034', nome:'Auditoria', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'08', cod:'EAD17037', nome:'Contabilidade Governamental', ch:60, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    {per:'08', cod:'EAD17038', nome:'Monografia', ch:180, inst:{BRO:'UFRJ',MIR:'UFRJ',PAR:'UFRJ',PET:'UFRJ',RES:'UFRJ',ROC:'UFRJ',SGO:'UFRJ'}},
+    
+    // Período 09
+    {per:'09', cod:'EAD17041', nome:'Ética Profissional', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
+    {per:'09', cod:'EAD17042', nome:'Perícia Contábil', ch:60, inst:{BRO:'UFF',MIR:'UFF',PAR:'UFF',PET:'UFF',RES:'UFF',ROC:'UFF',SGO:'UFF'}},
 ];
 
 const state = {};
@@ -135,9 +190,21 @@ function render() {
     let activeCount = 0, inactiveCount = 0;
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
+    let lastPer = null;
+    
     DISCIPLINAS.forEach((d, idx) => {
         if (search && !d.nome.toLowerCase().includes(search) && !d.cod.toLowerCase().includes(search)) return;
         if (filterPer && d.per !== filterPer) return;
+        
+        if (d.per !== lastPer) {
+            const hr = document.createElement('tr');
+            hr.style.background = '#f1f5f9';
+            const perLabel = d.per === 'Optativas' ? '📖 Disciplinas Optativas / Eletivas' : (d.per === 'Outros' ? '📌 Outros' : `Período ${d.per}`);
+            hr.innerHTML = `<td colspan="${3 + POLOS.length + 2}"><strong>${perLabel}</strong></td>`;
+            tbody.appendChild(hr);
+            lastPer = d.per;
+        }
+        
         const tr = document.createElement('tr');
         let poloCells = '';
         POLOS.forEach(p => {
@@ -147,7 +214,7 @@ function render() {
             poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
             if (status === 'active') activeCount++; else inactiveCount++;
         });
-        tr.innerHTML = `<td>${d.per}</td><td>${d.cod}</td><td>${d.nome}</td><td>${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        tr.innerHTML = `<td>${d.per}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
         tbody.appendChild(tr);
     });
     document.getElementById('count-active').textContent = activeCount;

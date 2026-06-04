@@ -44,19 +44,25 @@
 </div>
 
 <div class="filters">
-    <input type="text" id="search" placeholder="Buscar..." oninput="render()">
+    <input type="text" id="search" placeholder="Buscar disciplina..." oninput="render()">
     <select id="filter-periodo" onchange="render()">
         <option value="">Todos os períodos</option>
-        <option value="01">Período 01</option>
+        <option value="01">Período 01</option><option value="02">Período 02</option>
+        <option value="03">Período 03</option><option value="04">Período 04</option>
+        <option value="05">Período 05</option><option value="06">Período 06</option>
+        <option value="07">Período 07</option><option value="08">Período 08</option>
+        <option value="Optativas">Optativas</option>
+        <option value="Outros">Outros</option>
     </select>
     <button onclick="resetFilters()">Limpar</button>
 </div>
 
 <div style="overflow-x: auto;">
-    <table>
+    <tr>
         <thead>
             <tr><th>Período</th><th>Código</th><th>Disciplina</th><th>CH</th>
-                <th>BJE</th><th>BRO</th><th>CGR</th><th>ITO</th><th>MAC</th><th>NIG</th><th>PAR</th><th>TRI</th><th>VRE</th><th>Ação</th>
+                <th>BJE</th><th>BRO</th><th>CGR</th><th>ITO</th><th>MAC</th><th>NIG</th>
+                <th>PAR</th><th>TRI</th><th>VRE</th><th>Ação</th>
             </tr>
         </thead>
         <tbody id="tbody"></tbody>
@@ -65,10 +71,77 @@
 
 <script>
 const POLOS = ['BJE', 'BRO', 'CGR', 'ITO', 'MAC', 'NIG', 'PAR', 'TRI', 'VRE'];
+
 const DISCIPLINAS = [
+    // Período 01
     {per:'01', cod:'EAD11001', nome:'Filosofia e Ética', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
     {per:'01', cod:'EAD11002', nome:'Teoria da Administração I', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
     {per:'01', cod:'EAD11003', nome:'Introdução à Economia', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'01', cod:'EAD11004', nome:'Psicologia Organizacional', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'01', cod:'EAD11072', nome:'Introdução a Educação a Distância', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'01', cod:'EAD11069', nome:'Cidadania e Direitos Sociais no Brasil', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'01', cod:'EAD11070', nome:'Ciência Política I', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    
+    // Período 02
+    {per:'02', cod:'EAD11071', nome:'Administração Pública', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'02', cod:'EAD11073', nome:'Temas Contemporâneos da Gestão Pública I', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'02', cod:'EAD11009', nome:'Macroeconomia', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'02', cod:'EAD11010', nome:'Contabilidade Geral', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'02', cod:'EAD11011', nome:'Matemática para Administradores', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'02', cod:'EAD11014', nome:'Sociologia Organizacional', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'02', cod:'EAD11017', nome:'Instituições de Direito Público e Privado', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    
+    // Período 03
+    {per:'03', cod:'EAD11022', nome:'Estatística Aplicada à Administração', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'03', cod:'EAD11074', nome:'Administração Pública Brasileira', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'03', cod:'EAD11075', nome:'Contabilidade Aplicada Ao Setor Público', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'03', cod:'EAD11076', nome:'Gestão Social e Participação Popular', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'03', cod:'EAD11077', nome:'Matemática Financeira I', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'03', cod:'EAD11078', nome:'Temas Contemporâneos da Gestão Pública II', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'03', cod:'EAD11019', nome:'Teoria das Finanças Públicas', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    
+    // Período 04
+    {per:'04', cod:'EAD11079', nome:'Decisão e Informação na Gestão Pública', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'04', cod:'EAD11080', nome:'Gestão do Conhecimento', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'04', cod:'EAD11081', nome:'Organização, Sistemas e Métodos', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'04', cod:'EAD11082', nome:'Planejamento Governamental', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'04', cod:'EAD11083', nome:'Temas Contemporâneos da Gestão Pública III', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'04', cod:'EAD11023', nome:'Direito Administrativo', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'04', cod:'EAD11015', nome:'Economia Brasileira', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    
+    // Período 05
+    {per:'05', cod:'EAD11026', nome:'Gestão de Pessoas no Setor Público', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'05', cod:'EAD11084', nome:'Estratégia Nas Organizações Públicas', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'05', cod:'EAD11085', nome:'Gestão de Projetos Públicos', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'05', cod:'EAD11086', nome:'Governo Eletrônico', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'05', cod:'EAD11087', nome:'Métodos e Técnicas de Estudos', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'05', cod:'EAD11088', nome:'Políticas Públicas', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'05', cod:'EAD11102', nome:'Estágio Curricular Supervisionado I', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    
+    // Período 06
+    {per:'06', cod:'EAD11103', nome:'Estágio Curricular Supervisionado II', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'06', cod:'EAD11062', nome:'Licitação, Contratos e Convênios', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'06', cod:'EAD11089', nome:'Administração de Recursos Materiais e Patrimoniais', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'06', cod:'EAD11090', nome:'Análise e Avaliação de Políticas Públicas', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'06', cod:'EAD11031', nome:'Orçamento Público', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'06', cod:'EAD11005', nome:'Metodologia de Estudo e de Pesquisa em Administração', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    
+    // Período 07
+    {per:'07', cod:'EAD11036', nome:'Auditoria e Controladoria', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'07', cod:'EAD11037', nome:'Negociação e Arbitragem', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'07', cod:'EAD11092', nome:'Inovação na Administração Pública', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'07', cod:'EAD11093', nome:'Regulação de Serviços Públicos', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'07', cod:'EAD11094', nome:'Trabalho de Conclusão de Curso I', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'07', cod:'EAD11104', nome:'Estágio Curricular Supervisionado III', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'07', cod:'EAD11107', nome:'Gestão da Qualidade no Setor Público', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    
+    // Período 08
+    {per:'08', cod:'EAD11061', nome:'Empreendedorismo Governamental', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'08', cod:'EAD11068', nome:'Gestão de Redes de Cooperação na Esfera Pública', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'08', cod:'EAD11095', nome:'Cooperação Internacional', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'08', cod:'EAD11096', nome:'Responsabilidade Social e Terceiro Setor', ch:30, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'08', cod:'EAD11097', nome:'Trabalho de Conclusão de Curso II', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
+    {per:'08', cod:'EAD11042', nome:'Gestão Ambiental e Sustentabilidade', ch:60, inst:{BJE:'UFF',BRO:'UFF',CGR:'UFF',ITO:'UFF',MAC:'UFF',NIG:'UFF',PAR:'UFF',TRI:'UFF',VRE:'UFF'}},
 ];
 
 const state = {};
@@ -135,9 +208,21 @@ function render() {
     let activeCount = 0, inactiveCount = 0;
     const tbody = document.getElementById('tbody');
     tbody.innerHTML = '';
+    let lastPer = null;
+    
     DISCIPLINAS.forEach((d, idx) => {
         if (search && !d.nome.toLowerCase().includes(search) && !d.cod.toLowerCase().includes(search)) return;
         if (filterPer && d.per !== filterPer) return;
+        
+        if (d.per !== lastPer) {
+            const hr = document.createElement('tr');
+            hr.style.background = '#f1f5f9';
+            const perLabel = d.per === 'Optativas' ? '📖 Disciplinas Optativas / Eletivas' : (d.per === 'Outros' ? '📌 Outros' : `Período ${d.per}`);
+            hr.innerHTML = `<td colspan="${3 + POLOS.length + 2}"><strong>${perLabel}</strong></td>`;
+            tbody.appendChild(hr);
+            lastPer = d.per;
+        }
+        
         const tr = document.createElement('tr');
         let poloCells = '';
         POLOS.forEach(p => {
@@ -147,7 +232,7 @@ function render() {
             poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
             if (status === 'active') activeCount++; else inactiveCount++;
         });
-        tr.innerHTML = `<td>${d.per}</td><td>${d.cod}</td><td>${d.nome}</td><td>${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        tr.innerHTML = `<td>${d.per}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
         tbody.appendChild(tr);
     });
     document.getElementById('count-active').textContent = activeCount;
