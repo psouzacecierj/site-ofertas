@@ -2,43 +2,123 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Ofertas - CECIERJ</title>
+
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f7fc; padding: 30px; }
-        h1 { color: #1a3a5c; text-align: center; margin-bottom: 30px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
-        .card { background: white; border-radius: 12px; padding: 20px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: 0.2s; }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
-        .card h3 { color: #1a3a5c; margin-bottom: 8px; }
-        .card p { color: #6b7280; font-size: 13px; }
-        .badge { display: inline-block; background: #e0e7ff; padding: 4px 10px; border-radius: 20px; font-size: 11px; margin-top: 10px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f0f7fc;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #1a3a5c;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .card h3 {
+            color: #1a3a5c;
+            margin-bottom: 8px;
+        }
+
+        .card p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #e0e7ff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
+
     <h1>🎓 Gestão de Oferta de Disciplinas</h1>
+
     <div class="grid" id="cursos-grid"></div>
 
     <script>
         const cursos = [
-            { nome: "Ciências Biológicas", instituicao: "UERJ", arquivo: "cursos/bio-uerj.html", polos: 6 },
-            { nome: "Ciências Biológicas", instituicao: "UFRJ", arquivo: "cursos/bio-ufrj.html", polos: 7 },
-            { nome: "Ciências Biológicas", instituicao: "UENF", arquivo: "cursos/bio-uenf.html", polos: 8 },
-            { nome: "Matemática", instituicao: "UFF", arquivo: "cursos/mat-uff.html", polos: 17 },
-            { nome: "Computação", instituicao: "UFF", arquivo: "cursos/com-uff.html", polos: 19 },
-            { nome: "Física", instituicao: "UFRJ", arquivo: "cursos/fis-ufrj.html", polos: 10 },
-            { nome: "Química", instituicao: "UENF", arquivo: "cursos/qui-uenf.html", polos: 5 },
-            { nome: "Química", instituicao: "UFRJ", arquivo: "cursos/qui-ufrj.html", polos: 5 },
+            {
+                nome: "Licenciatura em Pedagogia",
+                instituicao: "UERJ",
+                arquivo: "cursos/pli-uerj.html",
+                polos: 14
+            },
+            {
+                nome: "Licenciatura em Pedagogia",
+                instituicao: "UENF",
+                arquivo: "cursos/pli-uenf.html",
+                polos: 8
+            },
+            {
+                nome: "Geografia",
+                instituicao: "UERJ",
+                arquivo: "cursos/geo-uerj.html",
+                polos: 11
+            },
+            {
+                nome: "História",
+                instituicao: "UNIRIO",
+                arquivo: "cursos/his-unirio.html",
+                polos: 5
+            }
         ];
 
-        const grid = document.getElementById('cursos-grid');
+        const grid = document.getElementById("cursos-grid");
+
         cursos.forEach(curso => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.onclick = () => location.href = curso.arquivo;
-            card.innerHTML = `<h3>${curso.nome}</h3><p>${curso.instituicao}</p><span class="badge">${curso.polos} polos</span>`;
+            const card = document.createElement("div");
+            card.className = "card";
+
+            card.onclick = () => {
+                location.href = curso.arquivo;
+            };
+
+            card.innerHTML = `
+                <h3>${curso.nome}</h3>
+                <p>${curso.instituicao}</p>
+                <span class="badge">${curso.polos} polos</span>
+            `;
+
             grid.appendChild(card);
         });
     </script>
+
 </body>
 </html>
