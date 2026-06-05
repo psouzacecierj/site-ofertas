@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>ADM UFRRJ - Gestão de Oferta</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f7fc; padding: 20px; }
+        header { background: #1a3a5c; color: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .btn-voltar { background: rgba(255,255,255,0.2); border: none; padding: 8px 16px; border-radius: 6px; color: white; cursor: pointer; }
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 500; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-warning { background: #f59e0b; color: white; }
+        .filters { background: white; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+        .filters input, .filters select { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; }
+        table { width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+        th { background: #1a3a5c; color: white; padding: 10px; text-align: left; font-size: 12px; }
+        td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+        .polo-cell { text-align: center; cursor: pointer; }
+        .polo-active { background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 11px; }
+        .polo-inactive { background: #f3f4f6; color: #9ca3af; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 11px; text-decoration: line-through; }
+        .toggle-all-btn { background: #fee2e2; color: #991b1b; border: none; padding: 4px 10px; border-radius: 16px; cursor: pointer; font-size: 11px; }
+        .validacao-card { background: #eef2ff; border-radius: 8px; padding: 10px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+        .validacao-ok { background: #d1fae5; }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <button class="btn-voltar" onclick="location.href='../index.html'">← Voltar</button>
+        <h2 style="margin-top: 10px;">📊 Administração - UFRRJ</h2>
+        <small>Período 2/2026 | Polos: ARE, BPI, CAN, CFR, ITA, MAC, MAG, MES, PET, PIN, PIR, QUA, RES, RFL, ROC, SAQ, SFI, SGO</small>
+    </div>
+    <div>
+        <button class="btn btn-success" onclick="salvarAlteracoes()">📤 Salvar</button>
+        <button class="btn btn-warning" onclick="conferirValidar()">✓ Validar</button>
+    </div>
+</header>
+
+<div class="validacao-card" id="validacao-box">
+    <span>📋 Status:</span>
+    <span id="status-validacao">⚠️ Não validado</span>
+</div>
+
+<div class="filters">
+    <input type="text" id="search" placeholder="Buscar disciplina..." oninput="render()">
+    <select id="filter-periodo" onchange="render()">
+        <option value="">Todos os períodos</option>
+        <option value="01">Período 01</option><option value="02">Período 02</option>
+        <option value="03">Período 03</option><option value="04">Período 04</option>
+        <option value="05">Período 05</option><option value="06">Período 06</option>
+        <option value="07">Período 07</option><option value="08">Período 08</option>
+        <option value="09">Período 09</option><option value="10">Período 10</option>
+        <option value="Optativas">Optativas</option>
+        <option value="Outros">Outros</option>
+    </select>
+    <button onclick="resetFilters()">Limpar</button>
+</div>
+
+<div style="overflow-x: auto;">
+    <table>
+        <thead>
+            <tr><th>Período</th><th>Código</th><th>Disciplina</th><th>CH</th>
+                <th>ARE</th><th>BPI</th><th>CAN</th><th>CFR</th><th>ITA</th><th>MAC</th>
+                <th>MAG</th><th>MES</th><th>PET</th><th>PIN</th><th>PIR</th><th>QUA</th>
+                <th>RES</th><th>RFL</th><th>ROC</th><th>SAQ</th><th>SFI</th><th>SGO</th><th>Ação</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</div>
+
+<script>
+const POLOS = ['ARE', 'BPI', 'CAN', 'CFR', 'ITA', 'MAC', 'MAG', 'MES', 'PET', 'PIN', 'PIR', 'QUA', 'RES', 'RFL', 'ROC', 'SAQ', 'SFI', 'SGO'];
+
+const DISCIPLINAS = [
+    // Período 01
+    {per:'01', cod:'EAD06004', nome:'Informática Básica', ch:90, inst:{ARE:'UFF',BPI:'UFF',CAN:'UFF',CFR:'UFF',ITA:'UFF',MAC:'UFF',MAG:'UFF',MES:'UFF',PET:'UFF',PIN:'UFF',PIR:'UFF',QUA:'UFF',RES:'UFF',RFL:'UFF',ROC:'UFF',SAQ:'UFF',SFI:'UFF',SGO:'UFF'}},
+    {per:'01', cod:'EAD06006', nome:'Instituições de Direito Público e Privado', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'01', cod:'EAD06081', nome:'Seminários Em Educação a Distância', ch:90, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'01', cod:'EAD06085', nome:'História do Pensamento Administrativo I', ch:60, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 02
+    {per:'02', cod:'EAD06086', nome:'História do Pensamento Administrativo II', ch:60, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD06075', nome:'Métodos Determinísticos I', ch:45, inst:{ARE:'UFF',BPI:'UFF',CAN:'UFF',CFR:'UFF',ITA:'UFF',MAC:'UFF',MAG:'UFF',MES:'UFF',PET:'UFF',PIN:'UFF',PIR:'UFF',QUA:'UFF',RES:'UFF',RFL:'UFF',ROC:'UFF',SAQ:'UFF',SFI:'UFF',SGO:'UFF'}},
+    {per:'02', cod:'EAD06019', nome:'Legislação Comercial', ch:45, inst:{ARE:'UNIRIO',BPI:'UNIRIO',CAN:'UNIRIO',CFR:'UNIRIO',ITA:'UNIRIO',MAC:'UNIRIO',MAG:'UNIRIO',MES:'UNIRIO',PET:'UNIRIO',PIN:'UNIRIO',PIR:'UNIRIO',QUA:'UNIRIO',RES:'UNIRIO',RFL:'UNIRIO',ROC:'UNIRIO',SAQ:'UNIRIO',SFI:'UNIRIO',SGO:'UNIRIO'}},
+    {per:'02', cod:'EAD06005', nome:'Formação Econômica Brasileira', ch:45, inst:{ARE:'UERJ',BPI:'UERJ',CAN:'UERJ',CFR:'UERJ',ITA:'UERJ',MAC:'UERJ',MAG:'UERJ',MES:'UERJ',PET:'UERJ',PIN:'UERJ',PIR:'UERJ',QUA:'UERJ',RES:'UERJ',RFL:'UERJ',ROC:'UERJ',SAQ:'UERJ',SFI:'UERJ',SGO:'UERJ'}},
+    {per:'02', cod:'EAD06011', nome:'Estrutura e Processos Organizacionais', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'02', cod:'EAD06035', nome:'Legislação Social', ch:45, inst:{ARE:'UNIRIO',BPI:'UNIRIO',CAN:'UNIRIO',CFR:'UNIRIO',ITA:'UNIRIO',MAC:'UNIRIO',MAG:'UNIRIO',MES:'UNIRIO',PET:'UNIRIO',PIN:'UNIRIO',PIR:'UNIRIO',QUA:'UNIRIO',RES:'UNIRIO',RFL:'UNIRIO',ROC:'UNIRIO',SAQ:'UNIRIO',SFI:'UNIRIO',SGO:'UNIRIO'}},
+    
+    // Período 03
+    {per:'03', cod:'EAD06002', nome:'Contabilidade Geral I', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'03', cod:'EAD06018', nome:'Análise Microeconômica', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'03', cod:'EAD06077', nome:'Métodos Determinísticos II', ch:45, inst:{ARE:'UFF',BPI:'UFF',CAN:'UFF',CFR:'UFF',ITA:'UFF',MAC:'UFF',MAG:'UFF',MES:'UFF',PET:'UFF',PIN:'UFF',PIR:'UFF',QUA:'UFF',RES:'UFF',RFL:'UFF',ROC:'UFF',SAQ:'UFF',SFI:'UFF',SGO:'UFF'}},
+    {per:'03', cod:'EAD06079', nome:'Método e Técnica de Pesquisa em Administração', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'03', cod:'EAD06083', nome:'Matemática Financeira', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 04
+    {per:'04', cod:'EAD06076', nome:'Métodos Estatísticos I', ch:45, inst:{ARE:'UFF',BPI:'UFF',CAN:'UFF',CFR:'UFF',ITA:'UFF',MAC:'UFF',MAG:'UFF',MES:'UFF',PET:'UFF',PIN:'UFF',PIR:'UFF',QUA:'UFF',RES:'UFF',RFL:'UFF',ROC:'UFF',SAQ:'UFF',SFI:'UFF',SGO:'UFF'}},
+    {per:'04', cod:'EAD06041', nome:'Legislação Tributária', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD06015', nome:'Comportamento Humano nas Organizações', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD06003', nome:'Contabilidade Geral II', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD06012', nome:'Análise Macroeconômica', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'04', cod:'EAD06033', nome:'Desenvolvimento Gerencial', ch:45, inst:{ARE:'UERJ',BPI:'UERJ',CAN:'UERJ',CFR:'UERJ',ITA:'UERJ',MAC:'UERJ',MAG:'UERJ',MES:'UERJ',PET:'UERJ',PIN:'UERJ',PIR:'UERJ',QUA:'UERJ',RES:'UERJ',RFL:'UERJ',ROC:'UERJ',SAQ:'UERJ',SFI:'UERJ',SGO:'UERJ'}},
+    
+    // Período 05
+    {per:'05', cod:'EAD06023', nome:'Sociedade e Organizações', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'05', cod:'EAD06025', nome:'Gestão de Pessoas I', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'05', cod:'EAD06016', nome:'Fundamentos de Finanças', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'05', cod:'EAD06017', nome:'Gestão de Marketing I', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'05', cod:'EAD06008', nome:'Análise das Demonstrações Contábeis', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'05', cod:'EAD06078', nome:'Métodos Estatísticos II', ch:45, inst:{ARE:'UFF',BPI:'UFF',CAN:'UFF',CFR:'UFF',ITA:'UFF',MAC:'UFF',MAG:'UFF',MES:'UFF',PET:'UFF',PIN:'UFF',PIR:'UFF',QUA:'UFF',RES:'UFF',RFL:'UFF',ROC:'UFF',SAQ:'UFF',SFI:'UFF',SGO:'UFF'}},
+    
+    // Período 06
+    {per:'06', cod:'EAD06013', nome:'Contabilidade Gerencial', ch:90, inst:{ARE:'UERJ',BPI:'UERJ',CAN:'UERJ',CFR:'UERJ',ITA:'UERJ',MAC:'UERJ',MAG:'UERJ',MES:'UERJ',PET:'UERJ',PIN:'UERJ',PIR:'UERJ',QUA:'UERJ',RES:'UERJ',RFL:'UERJ',ROC:'UERJ',SAQ:'UERJ',SFI:'UERJ',SGO:'UERJ'}},
+    {per:'06', cod:'EAD06021', nome:'Sistema Financeiro', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'06', cod:'EAD06022', nome:'Gestão de Marketing II', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'06', cod:'EAD06030', nome:'Gestão Financeira', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'06', cod:'EAD06031', nome:'Gestão de Pessoas II', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'06', cod:'EAD06032', nome:'Economia Brasileira Contemporânea', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 07
+    {per:'07', cod:'EAD06036', nome:'Introdução ao Agronegócio', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'07', cod:'EAD06028', nome:'Orçamento, Estrutura e Custo de Capital', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'07', cod:'EAD06029', nome:'Gerencia de Vendas', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'07', cod:'EAD06014', nome:'Análise das Decisões Gerenciais', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'07', cod:'EAD06020', nome:'Gestão da Produção', ch:90, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'07', cod:'EAD06039', nome:'Sistema Integrado de Gestão', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 08
+    {per:'08', cod:'EAD06040', nome:'Administração Brasileira', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'08', cod:'EAD06027', nome:'Logística Empresarial', ch:90, inst:{ARE:'UFF',BPI:'UFF',CAN:'UFF',CFR:'UFF',ITA:'UFF',MAC:'UFF',MAG:'UFF',MES:'UFF',PET:'UFF',PIN:'UFF',PIR:'UFF',QUA:'UFF',RES:'UFF',RFL:'UFF',ROC:'UFF',SAQ:'UFF',SFI:'UFF',SGO:'UFF'}},
+    {per:'08', cod:'EAD06024', nome:'Método, Ideologia e Ética nas Organizações', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'08', cod:'EAD06037', nome:'Estado e Administração Pública', ch:45, inst:{ARE:'UERJ',BPI:'UERJ',CAN:'UERJ',CFR:'UERJ',ITA:'UERJ',MAC:'UERJ',MAG:'UERJ',MES:'UERJ',PET:'UERJ',PIN:'UERJ',PIR:'UERJ',QUA:'UERJ',RES:'UERJ',RFL:'UERJ',ROC:'UERJ',SAQ:'UERJ',SFI:'UERJ',SGO:'UERJ'}},
+    {per:'08', cod:'EAD06038', nome:'Administração de Sistemas de Informação', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 09
+    {per:'09', cod:'EAD06034', nome:'Planejamento e Gestão Estratégicos', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    {per:'09', cod:'EAD06026', nome:'Desenvolvimento do Projeto de Pesquisa', ch:45, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+    
+    // Período 10
+    {per:'10', cod:'EAD06043', nome:'Desenvolvimento da Trabalho de Conclusão de Curso (TCC)', ch:90, inst:{ARE:'UFRRJ',BPI:'UFRRJ',CAN:'UFRRJ',CFR:'UFRRJ',ITA:'UFRRJ',MAC:'UFRRJ',MAG:'UFRRJ',MES:'UFRRJ',PET:'UFRRJ',PIN:'UFRRJ',PIR:'UFRRJ',QUA:'UFRRJ',RES:'UFRRJ',RFL:'UFRRJ',ROC:'UFRRJ',SAQ:'UFRRJ',SFI:'UFRRJ',SGO:'UFRRJ'}},
+];
+
+const state = {};
+DISCIPLINAS.forEach((d, idx) => { POLOS.forEach(p => { state[`${idx}_${p}`] = 'active'; }); });
+
+let validado = localStorage.getItem('validado_adm_ufrrj') === 'true';
+
+function atualizarValidacaoBox() {
+    const box = document.getElementById('validacao-box');
+    const span = document.getElementById('status-validacao');
+    if (validado) {
+        box.classList.add('validacao-ok');
+        span.innerHTML = '✅ Já validado';
+    } else {
+        box.classList.remove('validacao-ok');
+        span.innerHTML = '⚠️ Clique em "Validar" após conferir';
+    }
+}
+
+function conferirValidar() {
+    localStorage.setItem('validado_adm_ufrrj', 'true');
+    validado = true;
+    atualizarValidacaoBox();
+    alert('✓ Validação registrada!');
+}
+
+function togglePolo(idx, polo) {
+    const key = `${idx}_${polo}`;
+    state[key] = state[key] === 'active' ? 'inactive' : 'active';
+    render();
+}
+
+function toggleAll(idx) {
+    const todasAtivas = POLOS.every(p => state[`${idx}_${p}`] === 'active');
+    const novo = todasAtivas ? 'inactive' : 'active';
+    POLOS.forEach(p => { state[`${idx}_${p}`] = novo; });
+    render();
+}
+
+function salvarAlteracoes() {
+    let alteracoes = [];
+    DISCIPLINAS.forEach((d, idx) => {
+        POLOS.forEach(p => {
+            if (state[`${idx}_${p}`] !== 'active') {
+                alteracoes.push(`[${d.per}] ${d.cod} - ${d.nome} - ${p}: ${state[`${idx}_${p}`] === 'inactive' ? 'REMOVER' : 'INCLUIR'} (${d.inst[p]})`);
+            }
+        });
+    });
+    if (alteracoes.length === 0 && !validado) {
+        alert('Nenhuma alteração. Clique em "Validar" para confirmar.');
+        return;
+    }
+    const blob = new Blob([alteracoes.join('\n')], {type: 'text/csv'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `alteracoes_adm_ufrrj.csv`;
+    link.click();
+    alert('Arquivo gerado! Envie para matrizes.cederj@gmail.com');
+}
+
+function render() {
+    const search = document.getElementById('search').value.toLowerCase();
+    const filterPer = document.getElementById('filter-periodo').value;
+    let activeCount = 0, inactiveCount = 0;
+    const tbody = document.getElementById('tbody');
+    tbody.innerHTML = '';
+    let lastPer = null;
+    
+    DISCIPLINAS.forEach((d, idx) => {
+        if (search && !d.nome.toLowerCase().includes(search) && !d.cod.toLowerCase().includes(search)) return;
+        if (filterPer && d.per !== filterPer) return;
+        
+        if (d.per !== lastPer) {
+            const hr = document.createElement('tr');
+            hr.style.background = '#f1f5f9';
+            const perLabel = d.per === 'Optativas' ? '📖 Disciplinas Optativas / Eletivas' : (d.per === 'Outros' ? '📌 Outros' : `Período ${d.per}`);
+            hr.innerHTML = `<td colspan="${3 + POLOS.length + 2}"><strong>${perLabel}</strong></td>`;
+            tbody.appendChild(hr);
+            lastPer = d.per;
+        }
+        
+        const tr = document.createElement('tr');
+        let poloCells = '';
+        POLOS.forEach(p => {
+            const status = state[`${idx}_${p}`];
+            const cls = status === 'active' ? 'polo-active' : 'polo-inactive';
+            const txt = status === 'active' ? `✅ ${d.inst[p]}` : `⬜ ${d.inst[p]}`;
+            poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
+            if (status === 'active') activeCount++; else inactiveCount++;
+        });
+        tr.innerHTML = `<td>${d.per}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        tbody.appendChild(tr);
+    });
+    document.getElementById('count-active').textContent = activeCount;
+    document.getElementById('count-inactive').textContent = inactiveCount;
+}
+
+function resetFilters() {
+    document.getElementById('search').value = '';
+    document.getElementById('filter-periodo').value = '';
+    render();
+}
+
+atualizarValidacaoBox();
+render();
+</script>
+</body>
+</html>
