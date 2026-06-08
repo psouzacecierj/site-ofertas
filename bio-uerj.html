@@ -73,11 +73,10 @@
 <script>
 const POLOS = ['BRO', 'MAG', 'NFR', 'PAR', 'RES', 'SPE'];
 
-// DADOS EXATOS DA PLANILHA - RESPEITANDO CÉLULAS EM BRANCO
-// inst vazio ('') significa célula em branco na planilha
+// DADOS EXATOS DA PLANILHA - RES e SPE em branco quando for o caso
 const DISCIPLINAS = [
     // ==================================================
-    // PERÍODO 01
+    // PERÍODO 01 - TODOS PREENCHIDOS
     // ==================================================
     {per:'01', cod:'EAD01080', nome:'Introdução à Informática', ch:45, 
      inst:{BRO:'UFF', MAG:'UFF', NFR:'UFF', PAR:'UFF', RES:'UFF', SPE:'UFF'}},
@@ -89,107 +88,107 @@ const DISCIPLINAS = [
      inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
     
     // ==================================================
-    // PERÍODO 02 - TODOS PREENCHIDOS
+    // PERÍODO 02 - ATENÇÃO: RES e SPE estão em BRANCO na planilha!
     // ==================================================
     {per:'02', cod:'EAD02112', nome:'Elementos de Química Geral', ch:60, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'02', cod:'EAD02121', nome:'Introdução à Zoologia', ch:75, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'02', cod:'EAD02094', nome:'Biologia Celular I', ch:60, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'02', cod:'EAD00101', nome:'Fundamentos da Educação I', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'02', cod:'EAD00201', nome:'Fundamentos da Educação I', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'02', cod:'EAD00501', nome:'Fundamentos da Educação I', ch:60, 
-     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'UFRRJ', SPE:'UFRRJ'}},
+     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
     
     // ==================================================
-    // PERÍODO 03 - TODOS PREENCHIDOS
+    // PERÍODO 03 - RES e SPE em BRANCO
     // ==================================================
     {per:'03', cod:'EAD00502', nome:'Fundamentos da Educação II', ch:60, 
-     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'UFRRJ', SPE:'UFRRJ'}},
+     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
     {per:'03', cod:'EAD00202', nome:'Fundamentos da Educação II', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'03', cod:'EAD00102', nome:'Fundamentos da Educação II', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'03', cod:'EAD02095', nome:'Biologia Celular II', ch:45, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'03', cod:'EAD02107', nome:'Diversidade Biológica dos Protostomados', ch:75, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'03', cod:'EAD02101', nome:'Conceitos de Física para o Ensino de Ciências', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'03', cod:'EAD02111', nome:'Elementos da Ecologia e Conservação', ch:45, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     
     // ==================================================
-    // PERÍODO 04 - TODOS PREENCHIDOS
+    // PERÍODO 04 - RES e SPE em BRANCO
     // ==================================================
     {per:'04', cod:'EAD02102', nome:'Construção do Conhecimento Linguístico', ch:45, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'04', cod:'EAD02106', nome:'Diversidade Biológica dos Deuterostomados', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'04', cod:'EAD02097', nome:'Bioquímica I', ch:45, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'04', cod:'EAD00103', nome:'Fundamentos da Educação III', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'04', cod:'EAD00203', nome:'Fundamentos da Educação III', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'04', cod:'EAD00111', nome:'Prática de Ensino I - Didática', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'04', cod:'EAD00503', nome:'Fundamentos da Educação III', ch:60, 
-     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'UFRRJ', SPE:'UFRRJ'}},
+     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
     {per:'04', cod:'EAD00211', nome:'Prática de Ensino I - Didática', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'04', cod:'EAD00511', nome:'Prática de Ensino I - Didática', ch:60, 
-     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'UFRRJ', SPE:'UFRRJ'}},
+     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
     
     // ==================================================
-    // PERÍODO 05 - TODOS PREENCHIDOS
+    // PERÍODO 05 - RES e SPE em BRANCO
     // ==================================================
     {per:'05', cod:'EAD00512', nome:'Prática de Ensino II', ch:60, 
-     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'UFRRJ', SPE:'UFRRJ'}},
+     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
     {per:'05', cod:'EAD00212', nome:'Prática de Ensino II', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'05', cod:'EAD00504', nome:'Fundamentos da Educação IV', ch:60, 
-     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'UFRRJ', SPE:'UFRRJ'}},
+     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
     {per:'05', cod:'EAD00112', nome:'Prática de Ensino II', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'05', cod:'EAD00204', nome:'Fundamentos da Educação IV', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'05', cod:'EAD00104', nome:'Fundamentos da Educação IV', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'05', cod:'EAD00031', nome:'Libras', ch:60, 
-     inst:{BRO:'UFF', MAG:'UFF', NFR:'UFF', PAR:'UFF', RES:'UFF', SPE:'UFF'}},
+     inst:{BRO:'UFF', MAG:'UFF', NFR:'UFF', PAR:'UFF', RES:'', SPE:''}},
     {per:'05', cod:'EAD01081', nome:'Elementos de Matemática e Estatística', ch:45, 
-     inst:{BRO:'UFF', MAG:'UFF', NFR:'UFF', PAR:'UFF', RES:'UFF', SPE:'UFF'}},
+     inst:{BRO:'UFF', MAG:'UFF', NFR:'UFF', PAR:'UFF', RES:'', SPE:''}},
     {per:'05', cod:'EAD02098', nome:'Bioquímica II', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'05', cod:'EAD02099', nome:'Botânica I', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     
     // ==================================================
-    // PERÍODO 06 - TODOS PREENCHIDOS
+    // PERÍODO 06 - RES e SPE em BRANCO
     // ==================================================
     {per:'06', cod:'EAD02100', nome:'Botânica II', ch:60, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'06', cod:'EAD02115', nome:'Genética Básica', ch:60, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'06', cod:'EAD02123', nome:'Populações, Comunidades e Conservação', ch:60, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'06', cod:'EAD02118', nome:'Instrumentação para o Ensino de Bioquímica e Biologia Celular', ch:45, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'06', cod:'EAD00041', nome:'Fundamentos da Educação de Jovens e Adultos', ch:45, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'06', cod:'EAD00113', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'06', cod:'EAD00213', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'06', cod:'EAD00513', nome:'Prática de Ensino III - Métodos e Técnicas de Avaliação', ch:60, 
-     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'UFRRJ', SPE:'UFRRJ'}},
+     inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
     
     // ==================================================
-    // PERÍODO 07 - ATENÇÃO! Muitas células em branco na planilha!
+    // PERÍODO 07 - RES e SPE em BRANCO
     // ==================================================
     {per:'07', cod:'EAD00521', nome:'Estágio Supervisionado I', ch:60, 
      inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
@@ -198,29 +197,29 @@ const DISCIPLINAS = [
     {per:'07', cod:'EAD00121', nome:'Estágio Supervisionado I', ch:60, 
      inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'07', cod:'EAD02120', nome:'Instrumentação para o Ensino de Zoologia, Botânica e Ecologia', ch:45, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'07', cod:'EAD02122', nome:'Microbiologia', ch:60, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'07', cod:'EAD02096', nome:'Biologia Molecular', ch:60, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'07', cod:'EAD02093', nome:'Biofísica', ch:45, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     
     // ==================================================
     // PERÍODO 08
     // ==================================================
     {per:'08', cod:'EAD02103', nome:'Corpo Humano I', ch:60, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'08', cod:'EAD02117', nome:'Instrumentação para Aprendizagem em Genética', ch:45, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'08', cod:'EAD02114', nome:'Evolução', ch:60, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'08', cod:'EAD02127', nome:'Trabalho de Conclusão de Curso 1 - Metodologia da Pesquisa (UERJ)', ch:30, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'08', cod:'EAD00122', nome:'Estágio Supervisionado II', ch:90, 
      inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'08', cod:'EAD00042', nome:'Educação Especial', ch:45, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'08', cod:'EAD00222', nome:'Estágio Supervisionado II', ch:90, 
      inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'08', cod:'EAD00522', nome:'Estágio Supervisionado II', ch:90, 
@@ -236,34 +235,34 @@ const DISCIPLINAS = [
     {per:'09', cod:'EAD00123', nome:'Estágio Supervisionado III', ch:120, 
      inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'09', cod:'EAD02128', nome:'Trabalho de Conclusão de Curso 2 - Monografia (UERJ)', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'09', cod:'EAD02116', nome:'Imunologia', ch:45, 
-     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
+     inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'09', cod:'EAD02113', nome:'Ensino de Ciências, Direitos Humanos e Diversidade', ch:45, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'09', cod:'EAD02119', nome:'Instrumentação para o Ensino de Ciências', ch:45, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'09', cod:'EAD02104', nome:'Corpo Humano II', ch:60, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     
     // ==================================================
     // PERÍODO 10
     // ==================================================
     {per:'10', cod:'EAD02109', nome:'Educação Ambiental', ch:45, 
-     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'UFRJ', SPE:'UFRJ'}},
+     inst:{BRO:'UFRJ', MAG:'UFRJ', NFR:'UFRJ', PAR:'UFRJ', RES:'', SPE:''}},
     {per:'10', cod:'EAD02110', nome:'Educação e Saúde', ch:45, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'10', cod:'EAD00124', nome:'Estágio Supervisionado IV', ch:150, 
      inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'', SPE:''}},
     {per:'10', cod:'EAD00043', nome:'Políticas Públicas em Educação', ch:45, 
-     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'UERJ', SPE:'UERJ'}},
+     inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'10', cod:'EAD00224', nome:'Estágio Supervisionado IV', ch:150, 
      inst:{BRO:'UERJ', MAG:'UERJ', NFR:'UERJ', PAR:'UERJ', RES:'', SPE:''}},
     {per:'10', cod:'EAD00524', nome:'Estágio Supervisionado IV', ch:150, 
      inst:{BRO:'UFRRJ', MAG:'UFRRJ', NFR:'UFRRJ', PAR:'UFRRJ', RES:'', SPE:''}},
     
     // ==================================================
-    // OUTROS / OPTATIVAS / ELETIVAS (sem período definido)
+    // OUTROS / OPTATIVAS / ELETIVAS
     // ==================================================
     {per:'Outros', cod:'EAD01040', nome:'Matemática Básica para Biologia', ch:60, 
      inst:{BRO:'UFF', MAG:'UFF', NFR:'UFF', PAR:'UFF', RES:'UFF', SPE:'UFF'}},
