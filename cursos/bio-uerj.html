@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>BIO - Ciências Biológicas - UERJ (EAD) - Grade Curricular 1/2026</title>
+    <title>Gestão de Oferta de Disciplinas - Ciências Biológicas UERJ 1/2026</title>
     <style>
         * {
             margin: 0;
@@ -12,276 +12,635 @@
         }
 
         body {
-            background: #e2e8f0;
+            background: #eef2f5;
             font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-            padding: 40px 20px;
-            color: #0f172a;
+            padding: 32px 24px;
+            color: #1a2c3e;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
             background: white;
-            border-radius: 28px;
-            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.2);
-            overflow-x: auto;
-            overflow-y: visible;
-            padding: 20px 0 30px 0;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
         }
 
-        /* Cabeçalho do curso */
-        .course-header {
-            padding: 10px 24px 0 24px;
-            margin-bottom: 20px;
-            border-bottom: 3px solid #1e3a8a;
+        /* HEADER */
+        .header {
+            background: #1a3a4f;
+            color: white;
+            padding: 20px 28px;
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        .header p {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+        .badge {
+            background: #2d6a4f;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* BARRA DE RESUMO */
+        .summary {
+            background: #f8fafc;
+            padding: 12px 28px;
+            display: flex;
+            gap: 32px;
+            border-bottom: 1px solid #e2e8f0;
             flex-wrap: wrap;
         }
-
-        .course-title h1 {
-            font-size: 1.7rem;
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .stat-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .dot-active { background: #2e7d32; }
+        .dot-inactive { background: #bdbdbd; }
+        .stat-label {
+            font-size: 0.75rem;
+            color: #54708f;
+        }
+        .stat-value {
             font-weight: 700;
-            color: #0c4a6e;
-            letter-spacing: -0.3px;
-        }
-
-        .course-title h2 {
             font-size: 1rem;
+            color: #1a2c3e;
+        }
+
+        /* FILTROS */
+        .filters {
+            padding: 14px 28px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filters input, .filters select {
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            background: white;
+        }
+        .filters input {
+            width: 260px;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            padding: 7px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.75rem;
             font-weight: 500;
-            color: #334155;
-            margin-top: 6px;
+            transition: all 0.15s;
         }
-
-        .badge-year {
-            background: #1e3a8a;
+        .btn-outline:hover {
+            background: #f1f5f9;
+        }
+        .btn-primary {
+            background: #1a3a4f;
             color: white;
-            padding: 6px 14px;
-            border-radius: 60px;
-            font-weight: 600;
-            font-size: 0.85rem;
-            margin-bottom: 8px;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .btn-primary:hover {
+            background: #0f2c3c;
         }
 
-        /* tabela principal */
-        .grade-table {
+        /* TABELA */
+        .table-wrapper {
+            overflow-x: auto;
+            padding: 0 0 24px 0;
+        }
+        table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.8rem;
-            min-width: 1100px;
+            font-size: 0.75rem;
+            min-width: 1000px;
+            background: white;
         }
-
-        .grade-table th {
-            background: #1e293b;
-            color: white;
+        th {
+            background: #f1f5f9;
+            color: #1e3a5f;
             padding: 12px 8px;
+            text-align: center;
             font-weight: 600;
-            font-size: 0.8rem;
-            text-align: center;
-            border: 1px solid #334155;
-            position: sticky;
-            top: 0;
+            border-bottom: 2px solid #cbd5e1;
+            border-right: 1px solid #e2e8f0;
         }
-
-        .grade-table td {
-            border: 1px solid #cbd5e1;
-            padding: 8px 6px;
-            vertical-align: top;
-            background-color: #fff;
-            transition: background 0.1s ease;
-        }
-
-        /* Células de período - agrupamento visual */
-        .period-cell {
-            background-color: #f8fafc;
-            font-weight: 700;
-            text-align: center;
+        td {
+            padding: 10px 6px;
+            border-bottom: 1px solid #eef2f5;
+            border-right: 1px solid #eef2f5;
             vertical-align: middle;
-            font-size: 1rem;
-            background: #eef2ff;
-            border-right: 2px solid #a5b4fc;
         }
-
-        /* Código da disciplina */
-        .codigo {
-            font-family: 'Courier New', 'Fira Code', monospace;
+        .period-cell {
+            text-align: center;
             font-weight: 600;
-            color: #075985;
+            background-color: #fafcff;
+        }
+        .codigo {
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+            color: #1e4663;
             white-space: nowrap;
         }
-
-        /* Nome disciplina */
-        .disciplina {
+        .disciplina-nome {
             font-weight: 500;
-            min-width: 200px;
-            color: #0f172a;
+            min-width: 240px;
+            color: #0f2b3b;
         }
-
-        /* CH */
         .ch {
             text-align: center;
             font-weight: 500;
-            background-color: #fef9e3;
-            white-space: nowrap;
+            background-color: #fefce8;
         }
-
-        /* universidades parceiras (colunas UFF, UENF, UFRJ, UERJ, UFRRJ, UNIRIO) */
-        .uni-cell {
+        /* Células de oferta */
+        .offer-cell {
             text-align: center;
-            font-family: monospace;
-            font-size: 0.75rem;
-            font-weight: 500;
-            background-color: #f9f9ff;
+            cursor: pointer;
+            background-color: white;
+            transition: all 0.05s linear;
         }
-
-        /* destaque para disciplinas de estágio/TCC */
-        .destaque-curso {
-            background-color: #e6f7ec;
-        }
-
-        /* legenda rodapé */
-        .legend {
-            margin: 24px 24px 0 24px;
-            padding-top: 16px;
-            border-top: 1px solid #cbd5e1;
-            font-size: 0.7rem;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 24px;
-            color: #2d3c5e;
-        }
-
-        .legend span {
+        .offer-active {
+            background-color: white;
+            color: #2e7d32;
             font-weight: 600;
         }
-
-        .footer-note {
-            margin-top: 12px;
-            font-size: 0.7rem;
-            text-align: right;
-            color: #475569;
-            padding-right: 24px;
+        .offer-active span {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
-
-        @media (max-width: 800px) {
-            body {
-                padding: 16px 8px;
-            }
-            .grade-table td, .grade-table th {
-                padding: 6px 4px;
-            }
-            .disciplina {
-                min-width: 160px;
-            }
+        .check-green {
+            color: #2e7d32;
+            font-weight: 700;
+        }
+        .offer-inactive {
+            background-color: white;
+            color: #9e9e9e;
+        }
+        /* vazio */
+        .empty-offer {
+            background-color: white;
+        }
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: none;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: #eef2ff;
+            color: #1e3a5f;
+            transition: 0.1s;
+            white-space: nowrap;
+        }
+        .action-btn:hover {
+            background: #d9e4f5;
+        }
+        .section-header td {
+            background-color: #f8fafc;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 10px 16px;
+            color: #1a3a4f;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        .footer-buttons {
+            padding: 16px 28px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            background: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 700px;
+            width: 90%;
+            padding: 24px;
+        }
+        .modal-content textarea {
+            width: 100%;
+            height: 280px;
+            font-family: monospace;
+            margin: 16px 0;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+        }
+        @media (max-width: 780px) {
+            body { padding: 16px; }
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="course-header">
-        <div class="course-title">
-            <h1>📘 2 - BIO - Ciências Biológicas - UERJ</h1>
-            <h2>Universidade do Estado do Rio de Janeiro · Modalidade EAD · 1º semestre / 2026</h2>
-            <p style="font-size: 0.75rem; margin-top: 4px; color: #2c3e66;">Grade curricular oficial — consórcio UERJ / UENF / UFRJ / UFF / UFRRJ / UNIRIO</p>
+    <div class="header">
+        <div>
+            <h1>🌿 Gestão de Oferta de Disciplinas</h1>
+            <p>Ciências Biológicas - UERJ - Consórcio EAD | 1º semestre / 2026</p>
         </div>
-        <div class="badge-year">📅 Ingresso 2026.1</div>
+        <div class="badge">✔️ Controle de oferta por polo</div>
     </div>
 
-    <div style="overflow-x: auto; margin: 0 12px;">
-        <table class="grade-table">
+    <div class="summary">
+        <div class="stat"><div class="stat-dot dot-active"></div><span class="stat-label">Com oferta (✓)</span><span class="stat-value" id="activeCount">0</span></div>
+        <div class="stat"><div class="stat-dot dot-inactive"></div><span class="stat-label">Sem oferta (vazio)</span><span class="stat-value" id="inactiveCount">0</span></div>
+        <div class="stat" style="margin-left: auto;"><span class="stat-label">Total disciplinas:</span><span class="stat-value" id="totalDisc">0</span></div>
+    </div>
+
+    <div class="filters">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar disciplina ou código..." autocomplete="off">
+        <select id="periodFilter">
+            <option value="">Todos os períodos</option>
+            <option value="01">Período 01</option>
+            <option value="02">Período 02</option>
+            <option value="03">Período 03</option>
+            <option value="04">Período 04</option>
+            <option value="05">Período 05</option>
+            <option value="06">Período 06</option>
+            <option value="07">Período 07</option>
+            <option value="08">Período 08</option>
+            <option value="09">Período 09</option>
+            <option value="10">Período 10</option>
+            <option value="Outros">Optativas / Outros</option>
+        </select>
+        <select id="statusFilter">
+            <option value="">Todos os status</option>
+            <option value="active">Com oferta (✓)</option>
+            <option value="inactive">Sem oferta (vazio)</option>
+        </select>
+        <button class="btn-outline" id="resetFiltersBtn">Limpar filtros</button>
+        <button class="btn-primary" id="exportBtn">📋 Exportar alterações</button>
+    </div>
+
+    <div class="table-wrapper">
+        <table id="offerTable">
             <thead>
                 <tr>
-                    <th>Período</th>
-                    <th>Código</th>
-                    <th style="min-width: 210px;">Disciplina</th>
-                    <th>C.H.</th>
-                    <th>UFF</th>
-                    <th>UENF</th>
-                    <th>UFRJ</th>
-                    <th>UERJ</th>
-                    <th>UFRRJ</th>
-                    <th>UNIRIO</th>
+                    <th>Período</th><th>Código</th><th style="text-align:left">Disciplina</th><th>CH</th>
+                    <th>BRO</th><th>MAG</th><th>NFR</th><th>PAR</th><th>RES</th><th>SPE</th><th>Ações</th>
                 </tr>
-                </thead>
-                <tbody>
-                    <!-- DADOS EXTRAÍDOS DO PDF FIELMENTE - PERÍODOS 1 AO 10 + OUTROS -->
-                    <!-- PERÍODO 1 -->
-                    <tr><td class="period-cell">1</td><td class="codigo">EAD01080</td><td class="disciplina">Introdução à Informática</td><td class="ch">45</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td></tr>
-                    <tr><td class="period-cell">1</td><td class="codigo">EAD02105</td><td class="disciplina">Dinâmica da Terra</td><td class="ch">45</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">1</td><td class="codigo">EAD02108</td><td class="disciplina">Diversidade dos Seres Vivos</td><td class="ch">45</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">1</td><td class="codigo">EAD02124</td><td class="disciplina">Seminários em Educação a Distância</td><td class="ch">60</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <!-- PERÍODO 2 -->
-                    <tr><td class="period-cell">2</td><td class="codigo">EAD02112</td><td class="disciplina">Elementos de Química Geral</td><td class="ch">60</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">2</td><td class="codigo">EAD02121</td><td class="disciplina">Introdução à Zoologia</td><td class="ch">75</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">2</td><td class="codigo">EAD02094</td><td class="disciplina">Biologia Celular I</td><td class="ch">60</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">2</td><td class="codigo">EAD00101</td><td class="disciplina">Fundamentos da Educação I</td><td class="ch">60</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">2</td><td class="codigo">EAD00201</td><td class="disciplina">Fundamentos da Educação I</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">2</td><td class="codigo">EAD00501</td><td class="disciplina">Fundamentos da Educação I</td><td class="ch">60</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td></tr>
-                    <!-- PERÍODO 3 -->
-                    <tr><td class="period-cell">3</td><td class="codigo">EAD00502</td><td class="disciplina">Fundamentos da Educação II</td><td class="ch">60</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td></tr>
-                    <tr><td class="period-cell">3</td><td class="codigo">EAD00202</td><td class="disciplina">Fundamentos da Educação II</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">3</td><td class="codigo">EAD00102</td><td class="disciplina">Fundamentos da Educação II</td><td class="ch">60</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">3</td><td class="codigo">EAD02095</td><td class="disciplina">Biologia Celular II</td><td class="ch">45</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">3</td><td class="codigo">EAD02107</td><td class="disciplina">Diversidade Biológica dos Protostomados</td><td class="ch">75</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">3</td><td class="codigo">EAD02101</td><td class="disciplina">Conceitos de Física para o Ensino de Ciências</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">3</td><td class="codigo">EAD02111</td><td class="disciplina">Elementos da Ecologia e Conservação</td><td class="ch">45</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <!-- PERÍODO 4 -->
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD02102</td><td class="disciplina">Construção do Conhecimento Linguístico</td><td class="ch">45</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD02106</td><td class="disciplina">Diversidade Biológica dos Deuterostomados</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD02097</td><td class="disciplina">Bioquímica I</td><td class="ch">45</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD00103</td><td class="disciplina">Fundamentos da Educação III</td><td class="ch">60</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD00203</td><td class="disciplina">Fundamentos da Educação III</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD00111</td><td class="disciplina">Prática de Ensino I - Didática</td><td class="ch">60</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD00503</td><td class="disciplina">Fundamentos da Educação III</td><td class="ch">60</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td></tr>
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD00211</td><td class="disciplina">Prática de Ensino I - Didática</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">4</td><td class="codigo">EAD00511</td><td class="disciplina">Prática de Ensino I - Didática</td><td class="ch">60</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td></tr>
-                    <!-- PERÍODO 5 -->
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD00512</td><td class="disciplina">Prática de Ensino II</td><td class="ch">60</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td></tr>
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD00212</td><td class="disciplina">Prática de Ensino II</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD00504</td><td class="disciplina">Fundamentos da Educação IV</td><td class="ch">60</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td></tr>
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD00112</td><td class="disciplina">Prática de Ensino II</td><td class="ch">60</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD00204</td><td class="disciplina">Fundamentos da Educação IV</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD00104</td><td class="disciplina">Fundamentos da Educação IV</td><td class="ch">60</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <!-- continuidade 5 com outras disciplinas mapeadas página 1 final -->
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD01081</td><td class="disciplina">Matemática Básica para Biologia</td><td class="ch">60</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td></tr>
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD02098</td><td class="disciplina">Bioquímica II</td><td class="ch">75</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">5</td><td class="codigo">EAD02110</td><td class="disciplina">Educação e Saúde</td><td class="ch">45</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    
-                    <!-- PERÍODO 9 (conforme PDF pag3) -->
-                    <tr><td class="period-cell">9</td><td class="codigo">EAD00123</td><td class="disciplina">Estágio Supervisionado III</td><td class="ch">120</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">9</td><td class="codigo">EAD02128</td><td class="disciplina">Trabalho de Conclusão de Curso 2 - Monografia (UERJ)</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">9</td><td class="codigo">EAD02116</td><td class="disciplina">Imunologia</td><td class="ch">45</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">9</td><td class="codigo">EAD02113</td><td class="disciplina">Ensino de Ciências, Direitos Humanos e Diversidade</td><td class="ch">45</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">9</td><td class="codigo">EAD02119</td><td class="disciplina">Instrumentação para o Ensino de Ciências</td><td class="ch">45</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">9</td><td class="codigo">EAD02104</td><td class="disciplina">Corpo Humano II</td><td class="ch">60</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    
-                    <!-- PERÍODO 10 -->
-                    <tr><td class="period-cell">10</td><td class="codigo">EAD02109</td><td class="disciplina">Educação Ambiental</td><td class="ch">45</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">10</td><td class="codigo">EAD02110</td><td class="disciplina">Educação e Saúde</td><td class="ch">45</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">10</td><td class="codigo">EAD00124</td><td class="disciplina">Estágio Supervisionado IV</td><td class="ch">150</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</td></tr>
-                    <tr><td class="period-cell">10</td><td class="codigo">EAD00043</td><td class="disciplina">Políticas Públicas em Educação</td><td class="ch">45</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">10</td><td class="codigo">EAD00224</td><td class="disciplina">Estágio Supervisionado IV</td><td class="ch">150</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">10</td><td class="codigo">EAD00524</td><td class="disciplina">Estágio Supervisionado IV</td><td class="ch">150</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td><td class="uni-cell">UFRRJ</td></tr>
-
-                    <!-- DISCIPLINAS "OUTROS" / ELETIVAS (conforme PDF páginas 3,4,5) -->
-                    <tr><td class="period-cell">Outros</td><td class="codigo">EAD01040</td><td class="disciplina">Matemática Básica para Biologia</td><td class="ch">60</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td><td class="uni-cell">UFF</td></tr>
-                    <tr><td class="period-cell">Outros</td><td class="codigo">EAD02134</td><td class="disciplina">Educação Ambiental e Agenda 30</td><td class="ch">45</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td><td class="uni-cell">UERJ</td></tr>
-                    <tr><td class="period-cell">Outros</td><td class="codigo">EAD02135</td><td class="disciplina">Grandes Temas em Biologia</td><td class="ch">45</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td><td class="uni-cell">UFRJ</td></tr>
-                    <tr><td class="period-cell">Outros</td><td class="codigo">EAD03046</td><td class="disciplina">Português Instrumental 1</td><td class="ch">60</td><td class="uni-cell">UNIRIO</td><td class="uni-cell">UNIRIO</td><td class="uni-cell">UNIRIO</td><td class="uni-cell">UNIRIO</td><td class="uni-cell">UNIRIO</td><td class="uni-cell">UNIRIO</td></tr>
-                    <tr><td class="period-cell">Outros</td><td class="codigo">EAD02082</td><td class="disciplina">Microbiologia Ambiental</td><td class="ch">45</td><td class="uni-cell">UENF</td><td class="uni-cell">UENF</tr><tr><td class="period-cell">Outros</td><td class="codigo">EAD02046</td><td class="disciplina">O Incrível Poder dos Seres Clorofilados</td><td class="ch">45</td><td colspan="6" class="uni-cell">UFRJ (todas)</td></tr>
-                    <!-- adicionamos mais algumas eletivas essenciais listadas no PDF pag4/5 para completude -->
-                </tbody>
+            </thead>
+            <tbody id="tableBody"></tbody>
         </table>
     </div>
-    <div class="legend">
-        <div>🏛️ <span>UFF, UENF, UFRJ, UERJ, UFRRJ, UNIRIO</span> — instituições parceiras no consórcio EAD.</div>
-        <div>📌 Carga horária em horas (CH). Estágios e TCC conforme regimento.</div>
-        <div>✅ Grade curricular fiel ao documento original "2 - BIO - Ciências Biológicas - UERJ 1/2026"</div>
-    </div>
-    <div class="footer-note">
-        * Disciplinas organizadas por período letivo. A relação inclui obrigatórias e eletivas apresentadas no PDF.
+    <div class="footer-buttons">
+        <button class="btn-outline" id="saveChangesBtn">💾 Salvar estado atual (localStorage)</button>
+        <button class="btn-outline" id="resetAllOffersBtn">🔄 Resetar todas as ofertas (volta ao original)</button>
     </div>
 </div>
+
+<div id="exportModal" class="modal">
+    <div class="modal-content">
+        <h3>📄 Alterações realizadas na oferta</h3>
+        <textarea id="exportData" readonly></textarea>
+        <div class="modal-actions">
+            <button class="btn-outline" id="copyExportBtn">Copiar</button>
+            <button class="btn-primary" id="closeModalBtn">Fechar</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // DADOS EXTRAÍDOS DO XLSX FIÉIS À PLANILHA
+    // --------------------------------------------------------------
+    const disciplinasRaw = [
+        {per:"01",cod:"EAD01080",nome:"Introdução à Informática",ch:45,base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}},
+        {per:"01",cod:"EAD02105",nome:"Dinâmica da Terra",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"01",cod:"EAD02108",nome:"Diversidade dos Seres Vivos",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"01",cod:"EAD02124",nome:"Seminários em Educação a Distância",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"02",cod:"EAD02112",nome:"Elementos de Química Geral",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"02",cod:"EAD02121",nome:"Introdução à Zoologia",ch:75,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"02",cod:"EAD02094",nome:"Biologia Celular I",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"02",cod:"EAD00101",nome:"Fundamentos da Educação I",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"02",cod:"EAD00201",nome:"Fundamentos da Educação I",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"02",cod:"EAD00501",nome:"Fundamentos da Educação I",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"03",cod:"EAD00502",nome:"Fundamentos da Educação II",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"03",cod:"EAD00202",nome:"Fundamentos da Educação II",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"03",cod:"EAD00102",nome:"Fundamentos da Educação II",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"03",cod:"EAD02095",nome:"Biologia Celular II",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"03",cod:"EAD02107",nome:"Diversidade Biológica dos Protostomados",ch:75,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"03",cod:"EAD02101",nome:"Conceitos de Física para o Ensino de Ciências",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"03",cod:"EAD02111",nome:"Elementos da Ecologia e Conservação",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"04",cod:"EAD02102",nome:"Construção do Conhecimento Linguístico",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"04",cod:"EAD02106",nome:"Diversidade Biológica dos Deuterostomados",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"04",cod:"EAD02097",nome:"Bioquímica I",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"04",cod:"EAD00103",nome:"Fundamentos da Educação III",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"04",cod:"EAD00203",nome:"Fundamentos da Educação III",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"04",cod:"EAD00111",nome:"Prática de Ensino I - Didática",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"04",cod:"EAD00503",nome:"Fundamentos da Educação III",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"04",cod:"EAD00211",nome:"Prática de Ensino I - Didática",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"04",cod:"EAD00511",nome:"Prática de Ensino I - Didática",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"05",cod:"EAD00512",nome:"Prática de Ensino II",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"05",cod:"EAD00212",nome:"Prática de Ensino II",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"05",cod:"EAD00504",nome:"Fundamentos da Educação IV",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"05",cod:"EAD00112",nome:"Prática de Ensino II",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"05",cod:"EAD00204",nome:"Fundamentos da Educação IV",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"05",cod:"EAD00104",nome:"Fundamentos da Educação IV",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"05",cod:"EAD00031",nome:"Libras",ch:60,base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}},
+        {per:"05",cod:"EAD01081",nome:"Elementos de Matemática e Estatística",ch:45,base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}},
+        {per:"05",cod:"EAD02098",nome:"Bioquímica II",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"05",cod:"EAD02099",nome:"Botânica I",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"06",cod:"EAD02100",nome:"Botânica II",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"06",cod:"EAD02115",nome:"Genética Básica",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"06",cod:"EAD02123",nome:"Populações, Comunidades e Conservação",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"06",cod:"EAD02118",nome:"Instrumentação para o Ensino de Bioquímica e Biologia Celular",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"06",cod:"EAD00041",nome:"Fundamentos da Educação de Jovens e Adultos",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"06",cod:"EAD00113",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"06",cod:"EAD00213",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"06",cod:"EAD00513",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"07",cod:"EAD00521",nome:"Estágio Supervisionado I",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"07",cod:"EAD00221",nome:"Estágio Supervisionado I",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"07",cod:"EAD00121",nome:"Estágio Supervisionado I",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"07",cod:"EAD02120",nome:"Instrumentação para o Ensino de Zoologia, Botânica e Ecologia",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"07",cod:"EAD02122",nome:"Microbiologia",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"07",cod:"EAD02096",nome:"Biologia Molecular",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"07",cod:"EAD02093",nome:"Biofísica",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"08",cod:"EAD02103",nome:"Corpo Humano I",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"08",cod:"EAD02117",nome:"Instrumentação para Aprendizagem em Genética",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"08",cod:"EAD02114",nome:"Evolução",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"08",cod:"EAD02127",nome:"Trabalho de Conclusão de Curso 1 - Metodologia da Pesquisa (UERJ)",ch:30,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"08",cod:"EAD00122",nome:"Estágio Supervisionado II",ch:90,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"08",cod:"EAD00042",nome:"Educação Especial",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"08",cod:"EAD00222",nome:"Estágio Supervisionado II",ch:90,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"08",cod:"EAD00522",nome:"Estágio Supervisionado II",ch:90,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"09",cod:"EAD00523",nome:"Estágio Supervisionado III",ch:120,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        {per:"09",cod:"EAD00223",nome:"Estágio Supervisionado III",ch:120,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"09",cod:"EAD00123",nome:"Estágio Supervisionado III",ch:120,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"09",cod:"EAD02128",nome:"Trabalho de Conclusão de Curso 2 - Monografia (UERJ)",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"09",cod:"EAD02116",nome:"Imunologia",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"09",cod:"EAD02113",nome:"Ensino de Ciências, Direitos Humanos e Diversidade",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"09",cod:"EAD02119",nome:"Instrumentação para o Ensino de Ciências",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"09",cod:"EAD02104",nome:"Corpo Humano II",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"10",cod:"EAD02109",nome:"Educação Ambiental",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"10",cod:"EAD02110",nome:"Educação e Saúde",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"10",cod:"EAD00124",nome:"Estágio Supervisionado IV",ch:150,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"10",cod:"EAD00043",nome:"Políticas Públicas em Educação",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"10",cod:"EAD00224",nome:"Estágio Supervisionado IV",ch:150,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"10",cod:"EAD00524",nome:"Estágio Supervisionado IV",ch:150,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
+        // Optativas / Outros
+        {per:"Outros",cod:"EAD01040",nome:"Matemática Básica para Biologia",ch:60,base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}},
+        {per:"Outros",cod:"EAD02134",nome:"Educação Ambiental e Agenda 30",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"Outros",cod:"EAD02135",nome:"Grandes Temas em Biologia",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"Outros",cod:"EAD03046",nome:"Português Instrumental 1",ch:60,base:{BRO:"UNIRIO",MAG:"UNIRIO",NFR:"UNIRIO",PAR:"UNIRIO",RES:"UNIRIO",SPE:"UNIRIO"}},
+        {per:"Outros",cod:"EAD02082",nome:"Microbiologia Ambiental",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"Outros",cod:"EAD02046",nome:"O Incrível Poder dos Seres Clorofilados",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"Outros",cod:"EAD02047",nome:"Insetos na Educação Básica",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"Outros",cod:"EAD02056",nome:"Instrumentação em Biologia Aquática",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"Outros",cod:"EAD02057",nome:"Tópicos em Biotecnologia",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"Outros",cod:"EAD02075",nome:"Parasitoses e Meio Ambiente",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"Outros",cod:"EAD02076",nome:"Deontologia em Ciências Biológicas",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"Outros",cod:"EAD02077",nome:"Legislação Ambiental",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"Outros",cod:"EAD02078",nome:"Fundamentos da Propriedade Intelectual no Ensino de Ciências",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
+        {per:"Outros",cod:"EAD02080",nome:"Fundamentos da Biogeografia",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"Outros",cod:"EAD02088",nome:"Tópicos em Biossegurança e Bioética",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
+        {per:"Outros",cod:"EAD02089",nome:"Ecossistemas Marinhos e sua Biota",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"Outros",cod:"EAD02090",nome:"Instrumentação em Farmacodependência",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
+        {per:"Outros",cod:"EAD02091",nome:"Bases da Pesquisa Científica",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}}
+    ];
+
+    // Estado de oferta: active = true (mostra check + sigla), false = vazio
+    let offerState = {};  // key: `${cod}_${polo}` -> boolean (true=ativa)
+    const polos = ['BRO', 'MAG', 'NFR', 'PAR', 'RES', 'SPE'];
+
+    function initState() {
+        disciplinasRaw.forEach(d => {
+            polos.forEach(polo => {
+                const key = `${d.cod}_${polo}`;
+                // partimos do princípio que todas as ofertas estão ativas (verde conforme PDF)
+                offerState[key] = true;
+            });
+        });
+        // tentar carregar localStorage se existir
+        const saved = localStorage.getItem('bio_offer_state');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                Object.assign(offerState, parsed);
+            } catch(e) {}
+        }
+    }
+
+    function getOfferText(d, polo) {
+        const key = `${d.cod}_${polo}`;
+        if (offerState[key]) {
+            const sigla = d.base[polo];
+            return `<span class="check-green">✓ ${sigla}</span>`;
+        } else {
+            return '';
+        }
+    }
+
+    function isOfferActive(d, polo) {
+        return offerState[`${d.cod}_${polo}`];
+    }
+
+    function toggleOffer(d, polo) {
+        const key = `${d.cod}_${polo}`;
+        offerState[key] = !offerState[key];
+        saveToLocal();
+        renderTable();
+    }
+
+    function toggleAllForDiscipline(d) {
+        const anyActive = polos.some(p => offerState[`${d.cod}_${p}`]);
+        polos.forEach(polo => {
+            const key = `${d.cod}_${polo}`;
+            offerState[key] = !anyActive;  // se algum ativo, desativa tudo; se nenhum ativo, ativa tudo
+        });
+        saveToLocal();
+        renderTable();
+    }
+
+    function resetAllToOriginal() {
+        polos.forEach(polo => {
+            disciplinasRaw.forEach(d => {
+                const key = `${d.cod}_${polo}`;
+                offerState[key] = true;
+            });
+        });
+        saveToLocal();
+        renderTable();
+    }
+
+    function saveToLocal() {
+        localStorage.setItem('bio_offer_state', JSON.stringify(offerState));
+    }
+
+    function computeStats() {
+        let active=0, inactive=0;
+        disciplinasRaw.forEach(d => {
+            polos.forEach(polo => {
+                if (offerState[`${d.cod}_${polo}`]) active++;
+                else inactive++;
+            });
+        });
+        document.getElementById('activeCount').innerText = active;
+        document.getElementById('inactiveCount').innerText = inactive;
+        document.getElementById('totalDisc').innerText = disciplinasRaw.length;
+    }
+
+    function renderTable() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const periodVal = document.getElementById('periodFilter').value;
+        const statusVal = document.getElementById('statusFilter').value;
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        let lastPeriod = null;
+        const filtered = disciplinasRaw.filter(d => {
+            if (searchTerm && !d.nome.toLowerCase().includes(searchTerm) && !d.cod.toLowerCase().includes(searchTerm)) return false;
+            if (periodVal) {
+                if (periodVal === 'Outros' && d.per !== 'Outros') return false;
+                if (periodVal !== 'Outros' && d.per !== periodVal) return false;
+            }
+            if (statusVal === 'active') {
+                return polos.some(p => offerState[`${d.cod}_${p}`]);
+            }
+            if (statusVal === 'inactive') {
+                return polos.some(p => !offerState[`${d.cod}_${p}`]);
+            }
+            return true;
+        });
+        filtered.forEach(d => {
+            if (d.per !== lastPeriod) {
+                const sectionRow = document.createElement('tr');
+                sectionRow.className = 'section-header';
+                const displayPeriod = d.per === 'Outros' ? '📘 Disciplinas Optativas / Outros' : `📌 Período ${d.per}`;
+                sectionRow.innerHTML = `<td colspan="11"><strong>${displayPeriod}</strong></td>`;
+                tbody.appendChild(sectionRow);
+                lastPeriod = d.per;
+            }
+            const row = tbody.insertRow();
+            // Periodo
+            const perCell = row.insertCell(0); perCell.className = 'period-cell'; perCell.innerText = d.per === 'Outros' ? '—' : d.per;
+            // Codigo
+            const codCell = row.insertCell(1); codCell.className = 'codigo'; codCell.innerText = d.cod;
+            // Disciplina
+            const nomeCell = row.insertCell(2); nomeCell.className = 'disciplina-nome'; nomeCell.innerText = d.nome;
+            // CH
+            const chCell = row.insertCell(3); chCell.className = 'ch'; chCell.innerText = `${d.ch}h`;
+            // Polos
+            polos.forEach(polo => {
+                const cell = row.insertCell();
+                cell.className = 'offer-cell';
+                const isActive = offerState[`${d.cod}_${polo}`];
+                if (isActive) {
+                    cell.innerHTML = `<span class="check-green">✓ ${d.base[polo]}</span>`;
+                    cell.style.cursor = 'pointer';
+                } else {
+                    cell.innerHTML = '';
+                    cell.style.cursor = 'pointer';
+                }
+                cell.onclick = (function(discipl, poloName) { return function() { toggleOffer(discipl, poloName); }; })(d, polo);
+            });
+            // Ação (botão para disciplina)
+            const actionCell = row.insertCell();
+            actionCell.style.textAlign = 'center';
+            const anyActive = polos.some(p => offerState[`${d.cod}_${p}`]);
+            const btnText = anyActive ? '❌ Desativar todos' : '✅ Ativar todos';
+            const btn = document.createElement('button');
+            btn.innerText = btnText;
+            btn.className = 'action-btn';
+            btn.onclick = () => toggleAllForDiscipline(d);
+            actionCell.appendChild(btn);
+        });
+        computeStats();
+    }
+
+    function exportChanges() {
+        let changesList = [];
+        disciplinasRaw.forEach(d => {
+            const changes = polos.filter(p => !offerState[`${d.cod}_${p}`]);
+            if (changes.length > 0) {
+                changesList.push(`[${d.per}] ${d.cod} — ${d.nome}`);
+                changes.forEach(p => {
+                    changesList.push(`  ✗ Polo ${p}: oferta REMOVIDA (está vazio)`);
+                });
+                changesList.push('');
+            }
+        });
+        if (changesList.length === 0) changesList.push('Nenhuma alteração registrada — todas as ofertas estão ativas conforme o padrão.');
+        document.getElementById('exportData').value = changesList.join('\n');
+        document.getElementById('exportModal').style.display = 'flex';
+    }
+
+    function copyExport() {
+        const textarea = document.getElementById('exportData');
+        textarea.select();
+        document.execCommand('copy');
+        alert('Texto copiado para área de transferência');
+    }
+
+    initState();
+    renderTable();
+
+    document.getElementById('searchInput').addEventListener('input', () => renderTable());
+    document.getElementById('periodFilter').addEventListener('change', () => renderTable());
+    document.getElementById('statusFilter').addEventListener('change', () => renderTable());
+    document.getElementById('resetFiltersBtn').addEventListener('click', () => {
+        document.getElementById('searchInput').value = '';
+        document.getElementById('periodFilter').value = '';
+        document.getElementById('statusFilter').value = '';
+        renderTable();
+    });
+    document.getElementById('exportBtn').addEventListener('click', exportChanges);
+    document.getElementById('saveChangesBtn').addEventListener('click', () => {
+        saveToLocal();
+        alert('✅ Configuração de oferta salva no navegador!');
+    });
+    document.getElementById('resetAllOffersBtn').addEventListener('click', () => {
+        if(confirm('⚠️ Atenção: isso irá restaurar todas as ofertas para o padrão inicial (todas ativas). Deseja continuar?')) {
+            resetAllToOriginal();
+        }
+    });
+    document.getElementById('closeModalBtn').addEventListener('click', () => document.getElementById('exportModal').style.display = 'none');
+    document.getElementById('copyExportBtn').addEventListener('click', copyExport);
+    window.onclick = function(e) { if(e.target === document.getElementById('exportModal')) document.getElementById('exportModal').style.display = 'none'; };
+</script>
 </body>
 </html>
