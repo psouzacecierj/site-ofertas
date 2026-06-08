@@ -19,11 +19,13 @@
         .polo-cell { text-align: center; cursor: pointer; }
         .polo-active { background: #d1fae5; color: #065f46; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 11px; }
         .polo-inactive { background: #f3f4f6; color: #9ca3af; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 11px; text-decoration: line-through; }
+        .polo-blocked { background: #f3f4f6; color: #9ca3af; padding: 4px 12px; border-radius: 20px; display: inline-block; font-size: 11px; cursor: not-allowed; }
         .toggle-all-btn { background: #fee2e2; color: #991b1b; border: none; padding: 4px 10px; border-radius: 16px; cursor: pointer; font-size: 11px; }
         .validacao-card { background: #eef2ff; border-radius: 8px; padding: 10px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; }
         .validacao-ok { background: #d1fae5; }
         .section-header { background: #f1f5f9; }
         .section-header td { padding: 8px 14px; font-size: 12px; font-weight: 700; }
+        .center { text-align: center; }
     </style>
 </head>
 <body>
@@ -68,6 +70,11 @@
         </thead>
         <tbody id="tbody"></tbody>
     </table>
+</div>
+
+<div style="display: none;">
+    <span id="count-active"></span>
+    <span id="count-inactive"></span>
 </div>
 
 <script>
@@ -280,12 +287,16 @@ const DISCIPLINAS = [
      inst:{BRO:'UENF', MAG:'UENF', NFR:'UENF', PAR:'UENF', RES:'UENF', SPE:'UENF'}},
 ];
 
-// Estado inicial: se inst estiver vazio -> inactive; se tiver conteúdo -> active
+// Inicialização com o novo estado 'blocked'
 const state = {};
 DISCIPLINAS.forEach((d, idx) => {
     POLOS.forEach(p => {
         const inst = d.inst[p];
-        state[`${idx}_${p}`] = (inst && inst !== '') ? 'active' : 'inactive';
+        if (inst && inst.trim() !== '') {
+            state[`${idx}_${p}`] = 'active';
+        } else {
+            state[`${idx}_${p}`] = 'blocked';
+        }
     });
 });
 
@@ -313,15 +324,23 @@ function conferirValidar() {
 function togglePolo(idx, polo) {
     const key = `${idx}_${polo}`;
     const current = state[key];
-    if (current === 'active') state[key] = 'inactive';
-    else if (current === 'inactive') state[key] = 'active';
+
+    if (current === 'blocked') {
+        return;
+    }
+
+    state[key] = current === 'active' ? 'inactive' : 'active';
     render();
 }
 
 function toggleAll(idx) {
-    const todasAtivas = POLOS.every(p => state[`${idx}_${p}`] === 'active');
+    const polosValidos = POLOS.filter(p => state[`${idx}_${p}`] !== 'blocked');
+    const todasAtivas = polosValidos.every(p => state[`${idx}_${p}`] === 'active');
     const novoStatus = todasAtivas ? 'inactive' : 'active';
-    POLOS.forEach(p => { state[`${idx}_${p}`] = novoStatus; });
+
+    polosValidos.forEach(p => { 
+        state[`${idx}_${p}`] = novoStatus; 
+    });
     render();
 }
 
@@ -330,7 +349,8 @@ function salvarAlteracoes() {
     let temAlteracao = false;
     DISCIPLINAS.forEach((d, idx) => {
         POLOS.forEach(p => {
-            if (state[`${idx}_${p}`] !== 'active') {
+            // Ignora o processamento para células bloqueadas no log de alterações
+            if (state[`${idx}_${p}`] !== 'blocked' && state[`${idx}_${p}`] !== 'active') {
                 temAlteracao = true;
                 const inst = d.inst[p];
                 alteracoes.push(`[${d.per}] ${d.cod} - ${d.nome} - Polo ${p}: ${state[`${idx}_${p}`] === 'inactive' ? 'REMOVER oferta' : 'INCLUIR oferta'} (${inst || 'em branco'})`);
@@ -382,13 +402,30 @@ function render() {
         POLOS.forEach(p => {
             const status = state[`${idx}_${p}`];
             const inst = d.inst[p];
-            const cls = status === 'active' ? 'polo-active' : 'polo-inactive';
-            // TEXTO ALTERADO: "⬜ Sem oferta" para células inativas
-            const txt = status === 'active' ? `✅ ${inst}` : `⬜ Sem oferta`;
-            poloCells += `<td class="polo-cell" onclick="togglePolo(${idx}, '${p}')"><span class="${cls}">${txt}</span></td>`;
-            if (status === 'active') activeCount++; else inactiveCount++;
+            
+            let cls = '';
+            let txt = '';
+            let onclick = '';
+
+            if (status === 'blocked') {
+                cls = 'polo-blocked';
+                txt = '⬜';
+            } else if (status === 'active') {
+                cls = 'polo-active';
+                txt = `✅ ${inst}`;
+                onclick = `onclick="togglePolo(${idx}, '${p}')"`;
+                activeCount++;
+            } else {
+                cls = 'polo-inactive';
+                txt = `⬜ ${inst}`;
+                onclick = `onclick="togglePolo(${idx}, '${p}')"`;
+                inactiveCount++;
+            }
+
+            poloCells += `<td class="polo-cell" ${onclick}><span class="${cls}">${txt}</span></td>`;
         });
-        tr.innerHTML = `<td>${d.per !== 'Outros' ? d.per : 'Opt'}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}</td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Desativar tudo</button></td>`;
+        
+        tr.innerHTML = `<td>${d.per !== 'Outros' ? d.per : 'Opt'}</td><td><code>${d.cod}</code></td><td>${d.nome}</td><td class="center">${d.ch}h</td>${poloCells}<td><button class="toggle-all-btn" onclick="toggleAll(${idx})">✗ Alternar Válidos</button></td>`;
         tbody.appendChild(tr);
     });
     document.getElementById('count-active').textContent = activeCount;
