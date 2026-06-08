@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Gestão de Oferta de Disciplinas - Ciências Biológicas UERJ 1/2026</title>
+    <title>Gestão de Oferta - Ciências Biológicas UERJ 1/2026</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
         body {
             background: #eef2f5;
             font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-            padding: 32px 24px;
+            padding: 24px 20px;
             color: #1a2c3e;
         }
 
@@ -27,11 +27,10 @@
             overflow: hidden;
         }
 
-        /* HEADER */
         .header {
             background: #1a3a4f;
             color: white;
-            padding: 20px 28px;
+            padding: 18px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -39,28 +38,27 @@
             gap: 16px;
         }
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 600;
         }
         .header p {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             opacity: 0.8;
             margin-top: 4px;
         }
         .badge {
             background: #2d6a4f;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 30px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 500;
         }
 
-        /* BARRA DE RESUMO */
         .summary {
             background: #f8fafc;
-            padding: 12px 28px;
+            padding: 10px 24px;
             display: flex;
-            gap: 32px;
+            gap: 28px;
             border-bottom: 1px solid #e2e8f0;
             flex-wrap: wrap;
         }
@@ -70,49 +68,48 @@
             gap: 8px;
         }
         .stat-dot {
-            width: 12px;
-            height: 12px;
+            width: 11px;
+            height: 11px;
             border-radius: 50%;
         }
         .dot-active { background: #2e7d32; }
         .dot-inactive { background: #bdbdbd; }
         .stat-label {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #54708f;
         }
         .stat-value {
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: #1a2c3e;
         }
 
-        /* FILTROS */
         .filters {
-            padding: 14px 28px;
+            padding: 12px 24px;
             background: white;
             border-bottom: 1px solid #e2e8f0;
             display: flex;
-            gap: 16px;
+            gap: 14px;
             flex-wrap: wrap;
             align-items: center;
         }
         .filters input, .filters select {
-            padding: 8px 12px;
+            padding: 7px 12px;
             border: 1px solid #cbd5e1;
             border-radius: 10px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             background: white;
         }
         .filters input {
-            width: 260px;
+            width: 240px;
         }
         .btn-outline {
             background: transparent;
             border: 1px solid #cbd5e1;
-            padding: 7px 14px;
+            padding: 6px 14px;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 500;
             transition: all 0.15s;
         }
@@ -123,38 +120,38 @@
             background: #1a3a4f;
             color: white;
             border: none;
-            padding: 7px 16px;
+            padding: 6px 16px;
             border-radius: 10px;
             cursor: pointer;
             font-weight: 500;
+            font-size: 0.75rem;
         }
         .btn-primary:hover {
             background: #0f2c3c;
         }
 
-        /* TABELA */
         .table-wrapper {
             overflow-x: auto;
-            padding: 0 0 24px 0;
+            padding: 0 0 20px 0;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.75rem;
-            min-width: 1000px;
+            font-size: 0.73rem;
+            min-width: 1100px;
             background: white;
         }
         th {
             background: #f1f5f9;
             color: #1e3a5f;
-            padding: 12px 8px;
+            padding: 10px 6px;
             text-align: center;
             font-weight: 600;
             border-bottom: 2px solid #cbd5e1;
             border-right: 1px solid #e2e8f0;
         }
         td {
-            padding: 10px 6px;
+            padding: 8px 5px;
             border-bottom: 1px solid #eef2f5;
             border-right: 1px solid #eef2f5;
             vertical-align: middle;
@@ -169,10 +166,11 @@
             font-weight: 500;
             color: #1e4663;
             white-space: nowrap;
+            font-size: 0.7rem;
         }
         .disciplina-nome {
             font-weight: 500;
-            min-width: 240px;
+            min-width: 220px;
             color: #0f2b3b;
         }
         .ch {
@@ -180,40 +178,21 @@
             font-weight: 500;
             background-color: #fefce8;
         }
-        /* Células de oferta */
         .offer-cell {
             text-align: center;
             cursor: pointer;
             background-color: white;
             transition: all 0.05s linear;
         }
-        .offer-active {
-            background-color: white;
-            color: #2e7d32;
-            font-weight: 600;
-        }
-        .offer-active span {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
         .check-green {
             color: #2e7d32;
             font-weight: 700;
         }
-        .offer-inactive {
-            background-color: white;
-            color: #9e9e9e;
-        }
-        /* vazio */
-        .empty-offer {
-            background-color: white;
-        }
         .action-btn {
-            padding: 6px 12px;
+            padding: 5px 10px;
             border-radius: 20px;
             border: none;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 600;
             cursor: pointer;
             background: #eef2ff;
@@ -227,17 +206,17 @@
         .section-header td {
             background-color: #f8fafc;
             font-weight: 700;
-            font-size: 0.8rem;
-            padding: 10px 16px;
+            font-size: 0.75rem;
+            padding: 8px 16px;
             color: #1a3a4f;
             border-bottom: 1px solid #cbd5e1;
         }
         .footer-buttons {
-            padding: 16px 28px;
+            padding: 14px 24px;
             border-top: 1px solid #e2e8f0;
             display: flex;
             justify-content: flex-end;
-            gap: 16px;
+            gap: 14px;
             background: white;
         }
         .modal {
@@ -255,16 +234,17 @@
             border-radius: 20px;
             max-width: 700px;
             width: 90%;
-            padding: 24px;
+            padding: 22px;
         }
         .modal-content textarea {
             width: 100%;
-            height: 280px;
+            height: 260px;
             font-family: monospace;
-            margin: 16px 0;
-            padding: 12px;
+            margin: 14px 0;
+            padding: 10px;
             border-radius: 12px;
             border: 1px solid #ccc;
+            font-size: 0.7rem;
         }
         .modal-actions {
             display: flex;
@@ -272,7 +252,7 @@
             justify-content: flex-end;
         }
         @media (max-width: 780px) {
-            body { padding: 16px; }
+            body { padding: 12px; }
         }
     </style>
 </head>
@@ -320,17 +300,14 @@
     <div class="table-wrapper">
         <table id="offerTable">
             <thead>
-                <tr>
-                    <th>Período</th><th>Código</th><th style="text-align:left">Disciplina</th><th>CH</th>
-                    <th>BRO</th><th>MAG</th><th>NFR</th><th>PAR</th><th>RES</th><th>SPE</th><th>Ações</th>
-                </tr>
+                <tr><th>Período</th><th>Código</th><th style="text-align:left">Disciplina</th><th>CH</th><th>BRO</th><th>MAG</th><th>NFR</th><th>PAR</th><th>RES</th><th>SPE</th><th>Ações</th></tr>
             </thead>
             <tbody id="tableBody"></tbody>
         </table>
     </div>
     <div class="footer-buttons">
-        <button class="btn-outline" id="saveChangesBtn">💾 Salvar estado atual (localStorage)</button>
-        <button class="btn-outline" id="resetAllOffersBtn">🔄 Resetar todas as ofertas (volta ao original)</button>
+        <button class="btn-outline" id="saveChangesBtn">💾 Salvar estado (localStorage)</button>
+        <button class="btn-outline" id="resetAllOffersBtn">🔄 Resetar ofertas (original planilha)</button>
     </div>
 </div>
 
@@ -346,118 +323,157 @@
 </div>
 
 <script>
-    // --------------------------------------------------------------
-    // DADOS EXTRAÍDOS DO XLSX FIÉIS À PLANILHA
-    // --------------------------------------------------------------
-    const disciplinasRaw = [
-        {per:"01",cod:"EAD01080",nome:"Introdução à Informática",ch:45,base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}},
-        {per:"01",cod:"EAD02105",nome:"Dinâmica da Terra",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"01",cod:"EAD02108",nome:"Diversidade dos Seres Vivos",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"01",cod:"EAD02124",nome:"Seminários em Educação a Distância",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"02",cod:"EAD02112",nome:"Elementos de Química Geral",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"02",cod:"EAD02121",nome:"Introdução à Zoologia",ch:75,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"02",cod:"EAD02094",nome:"Biologia Celular I",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"02",cod:"EAD00101",nome:"Fundamentos da Educação I",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"02",cod:"EAD00201",nome:"Fundamentos da Educação I",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"02",cod:"EAD00501",nome:"Fundamentos da Educação I",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"03",cod:"EAD00502",nome:"Fundamentos da Educação II",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"03",cod:"EAD00202",nome:"Fundamentos da Educação II",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"03",cod:"EAD00102",nome:"Fundamentos da Educação II",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"03",cod:"EAD02095",nome:"Biologia Celular II",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"03",cod:"EAD02107",nome:"Diversidade Biológica dos Protostomados",ch:75,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"03",cod:"EAD02101",nome:"Conceitos de Física para o Ensino de Ciências",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"03",cod:"EAD02111",nome:"Elementos da Ecologia e Conservação",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"04",cod:"EAD02102",nome:"Construção do Conhecimento Linguístico",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"04",cod:"EAD02106",nome:"Diversidade Biológica dos Deuterostomados",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"04",cod:"EAD02097",nome:"Bioquímica I",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"04",cod:"EAD00103",nome:"Fundamentos da Educação III",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"04",cod:"EAD00203",nome:"Fundamentos da Educação III",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"04",cod:"EAD00111",nome:"Prática de Ensino I - Didática",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"04",cod:"EAD00503",nome:"Fundamentos da Educação III",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"04",cod:"EAD00211",nome:"Prática de Ensino I - Didática",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"04",cod:"EAD00511",nome:"Prática de Ensino I - Didática",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"05",cod:"EAD00512",nome:"Prática de Ensino II",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"05",cod:"EAD00212",nome:"Prática de Ensino II",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"05",cod:"EAD00504",nome:"Fundamentos da Educação IV",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"05",cod:"EAD00112",nome:"Prática de Ensino II",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"05",cod:"EAD00204",nome:"Fundamentos da Educação IV",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"05",cod:"EAD00104",nome:"Fundamentos da Educação IV",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"05",cod:"EAD00031",nome:"Libras",ch:60,base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}},
-        {per:"05",cod:"EAD01081",nome:"Elementos de Matemática e Estatística",ch:45,base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}},
-        {per:"05",cod:"EAD02098",nome:"Bioquímica II",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"05",cod:"EAD02099",nome:"Botânica I",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"06",cod:"EAD02100",nome:"Botânica II",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"06",cod:"EAD02115",nome:"Genética Básica",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"06",cod:"EAD02123",nome:"Populações, Comunidades e Conservação",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"06",cod:"EAD02118",nome:"Instrumentação para o Ensino de Bioquímica e Biologia Celular",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"06",cod:"EAD00041",nome:"Fundamentos da Educação de Jovens e Adultos",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"06",cod:"EAD00113",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"06",cod:"EAD00213",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"06",cod:"EAD00513",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"07",cod:"EAD00521",nome:"Estágio Supervisionado I",ch:60,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"07",cod:"EAD00221",nome:"Estágio Supervisionado I",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"07",cod:"EAD00121",nome:"Estágio Supervisionado I",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"07",cod:"EAD02120",nome:"Instrumentação para o Ensino de Zoologia, Botânica e Ecologia",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"07",cod:"EAD02122",nome:"Microbiologia",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"07",cod:"EAD02096",nome:"Biologia Molecular",ch:60,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"07",cod:"EAD02093",nome:"Biofísica",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"08",cod:"EAD02103",nome:"Corpo Humano I",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"08",cod:"EAD02117",nome:"Instrumentação para Aprendizagem em Genética",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"08",cod:"EAD02114",nome:"Evolução",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"08",cod:"EAD02127",nome:"Trabalho de Conclusão de Curso 1 - Metodologia da Pesquisa (UERJ)",ch:30,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"08",cod:"EAD00122",nome:"Estágio Supervisionado II",ch:90,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"08",cod:"EAD00042",nome:"Educação Especial",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"08",cod:"EAD00222",nome:"Estágio Supervisionado II",ch:90,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"08",cod:"EAD00522",nome:"Estágio Supervisionado II",ch:90,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"09",cod:"EAD00523",nome:"Estágio Supervisionado III",ch:120,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        {per:"09",cod:"EAD00223",nome:"Estágio Supervisionado III",ch:120,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"09",cod:"EAD00123",nome:"Estágio Supervisionado III",ch:120,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"09",cod:"EAD02128",nome:"Trabalho de Conclusão de Curso 2 - Monografia (UERJ)",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"09",cod:"EAD02116",nome:"Imunologia",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"09",cod:"EAD02113",nome:"Ensino de Ciências, Direitos Humanos e Diversidade",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"09",cod:"EAD02119",nome:"Instrumentação para o Ensino de Ciências",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"09",cod:"EAD02104",nome:"Corpo Humano II",ch:60,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"10",cod:"EAD02109",nome:"Educação Ambiental",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"10",cod:"EAD02110",nome:"Educação e Saúde",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"10",cod:"EAD00124",nome:"Estágio Supervisionado IV",ch:150,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"10",cod:"EAD00043",nome:"Políticas Públicas em Educação",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"10",cod:"EAD00224",nome:"Estágio Supervisionado IV",ch:150,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"10",cod:"EAD00524",nome:"Estágio Supervisionado IV",ch:150,base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}},
-        // Optativas / Outros
-        {per:"Outros",cod:"EAD01040",nome:"Matemática Básica para Biologia",ch:60,base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}},
-        {per:"Outros",cod:"EAD02134",nome:"Educação Ambiental e Agenda 30",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"Outros",cod:"EAD02135",nome:"Grandes Temas em Biologia",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"Outros",cod:"EAD03046",nome:"Português Instrumental 1",ch:60,base:{BRO:"UNIRIO",MAG:"UNIRIO",NFR:"UNIRIO",PAR:"UNIRIO",RES:"UNIRIO",SPE:"UNIRIO"}},
-        {per:"Outros",cod:"EAD02082",nome:"Microbiologia Ambiental",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"Outros",cod:"EAD02046",nome:"O Incrível Poder dos Seres Clorofilados",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"Outros",cod:"EAD02047",nome:"Insetos na Educação Básica",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"Outros",cod:"EAD02056",nome:"Instrumentação em Biologia Aquática",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"Outros",cod:"EAD02057",nome:"Tópicos em Biotecnologia",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"Outros",cod:"EAD02075",nome:"Parasitoses e Meio Ambiente",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"Outros",cod:"EAD02076",nome:"Deontologia em Ciências Biológicas",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"Outros",cod:"EAD02077",nome:"Legislação Ambiental",ch:45,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"Outros",cod:"EAD02078",nome:"Fundamentos da Propriedade Intelectual no Ensino de Ciências",ch:60,base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}},
-        {per:"Outros",cod:"EAD02080",nome:"Fundamentos da Biogeografia",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"Outros",cod:"EAD02088",nome:"Tópicos em Biossegurança e Bioética",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}},
-        {per:"Outros",cod:"EAD02089",nome:"Ecossistemas Marinhos e sua Biota",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"Outros",cod:"EAD02090",nome:"Instrumentação em Farmacodependência",ch:45,base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}},
-        {per:"Outros",cod:"EAD02091",nome:"Bases da Pesquisa Científica",ch:45,base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}}
+    // DADOS EXTRAÍDOS DO XLSX COM STATUS (Ativa / Desativa)
+    const disciplinasData = [
+        {per:"01",cod:"EAD01080",nome:"Introdução à Informática",ch:45, base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"01",cod:"EAD02105",nome:"Dinâmica da Terra",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"01",cod:"EAD02108",nome:"Diversidade dos Seres Vivos",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"01",cod:"EAD02124",nome:"Seminários em Educação a Distância",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"02",cod:"EAD02112",nome:"Elementos de Química Geral",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"02",cod:"EAD02121",nome:"Introdução à Zoologia",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"02",cod:"EAD02094",nome:"Biologia Celular I",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"02",cod:"EAD00101",nome:"Fundamentos da Educação I",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"02",cod:"EAD00201",nome:"Fundamentos da Educação I",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"02",cod:"EAD00501",nome:"Fundamentos da Educação I",ch:60, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"03",cod:"EAD00502",nome:"Fundamentos da Educação II",ch:60, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"03",cod:"EAD00202",nome:"Fundamentos da Educação II",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"03",cod:"EAD00102",nome:"Fundamentos da Educação II",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"03",cod:"EAD02095",nome:"Biologia Celular II",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"03",cod:"EAD02107",nome:"Diversidade Biológica dos Protostomados",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"03",cod:"EAD02101",nome:"Conceitos de Física para o Ensino de Ciências",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"03",cod:"EAD02111",nome:"Elementos da Ecologia e Conservação",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"04",cod:"EAD02102",nome:"Construção do Conhecimento Linguístico",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"04",cod:"EAD02106",nome:"Diversidade Biológica dos Deuterostomados",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"04",cod:"EAD02097",nome:"Bioquímica I",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"04",cod:"EAD00103",nome:"Fundamentos da Educação III",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"04",cod:"EAD00203",nome:"Fundamentos da Educação III",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"04",cod:"EAD00111",nome:"Prática de Ensino I - Didática",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"04",cod:"EAD00503",nome:"Fundamentos da Educação III",ch:60, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"04",cod:"EAD00211",nome:"Prática de Ensino I - Didática",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"04",cod:"EAD00511",nome:"Prática de Ensino I - Didática",ch:60, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD00512",nome:"Prática de Ensino II",ch:60, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD00212",nome:"Prática de Ensino II",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD00504",nome:"Fundamentos da Educação IV",ch:60, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD00112",nome:"Prática de Ensino II",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD00204",nome:"Fundamentos da Educação IV",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD00104",nome:"Fundamentos da Educação IV",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD00031",nome:"Libras",ch:60, base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD01081",nome:"Elementos de Matemática e Estatística",ch:45, base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD02098",nome:"Bioquímica II",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"05",cod:"EAD02099",nome:"Botânica I",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"06",cod:"EAD02100",nome:"Botânica II",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"06",cod:"EAD02115",nome:"Genética Básica",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"06",cod:"EAD02123",nome:"Populações, Comunidades e Conservação",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"06",cod:"EAD02118",nome:"Instrumentação para o Ensino de Bioquímica e Biologia Celular",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"06",cod:"EAD00041",nome:"Fundamentos da Educação de Jovens e Adultos",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"06",cod:"EAD00113",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"06",cod:"EAD00213",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"06",cod:"EAD00513",nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação",ch:60, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"07",cod:"EAD00521",nome:"Estágio Supervisionado I",ch:60, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"07",cod:"EAD00221",nome:"Estágio Supervisionado I",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"07",cod:"EAD00121",nome:"Estágio Supervisionado I",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"07",cod:"EAD02120",nome:"Instrumentação para o Ensino de Zoologia, Botânica e Ecologia",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"07",cod:"EAD02122",nome:"Microbiologia",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"07",cod:"EAD02096",nome:"Biologia Molecular",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"07",cod:"EAD02093",nome:"Biofísica",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"08",cod:"EAD02103",nome:"Corpo Humano I",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"08",cod:"EAD02117",nome:"Instrumentação para Aprendizagem em Genética",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"08",cod:"EAD02114",nome:"Evolução",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"08",cod:"EAD02127",nome:"Trabalho de Conclusão de Curso 1 - Metodologia da Pesquisa (UERJ)",ch:30, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"08",cod:"EAD00122",nome:"Estágio Supervisionado II",ch:90, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"08",cod:"EAD00042",nome:"Educação Especial",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"08",cod:"EAD00222",nome:"Estágio Supervisionado II",ch:90, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"08",cod:"EAD00522",nome:"Estágio Supervisionado II",ch:90, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"09",cod:"EAD00523",nome:"Estágio Supervisionado III",ch:120, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"09",cod:"EAD00223",nome:"Estágio Supervisionado III",ch:120, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"09",cod:"EAD00123",nome:"Estágio Supervisionado III",ch:120, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"09",cod:"EAD02128",nome:"Trabalho de Conclusão de Curso 2 - Monografia (UERJ)",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"09",cod:"EAD02116",nome:"Imunologia",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"09",cod:"EAD02113",nome:"Ensino de Ciências, Direitos Humanos e Diversidade",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"09",cod:"EAD02119",nome:"Instrumentação para o Ensino de Ciências",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"09",cod:"EAD02104",nome:"Corpo Humano II",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"10",cod:"EAD02109",nome:"Educação Ambiental",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"10",cod:"EAD02110",nome:"Educação e Saúde",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"10",cod:"EAD00124",nome:"Estágio Supervisionado IV",ch:150, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"10",cod:"EAD00043",nome:"Políticas Públicas em Educação",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"10",cod:"EAD00224",nome:"Estágio Supervisionado IV",ch:150, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"10",cod:"EAD00524",nome:"Estágio Supervisionado IV",ch:150, base:{BRO:"UFRRJ",MAG:"UFRRJ",NFR:"UFRRJ",PAR:"UFRRJ",RES:"UFRRJ",SPE:"UFRRJ"}, status:{BRO:"Ativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD01040",nome:"Matemática Básica para Biologia",ch:60, base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"Outros",cod:"EAD02134",nome:"Educação Ambiental e Agenda 30",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Ativa"}},
+        {per:"Outros",cod:"EAD02135",nome:"Grandes Temas em Biologia",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD03046",nome:"Português Instrumental 1",ch:60, base:{BRO:"UNIRIO",MAG:"UNIRIO",NFR:"UNIRIO",PAR:"UNIRIO",RES:"UNIRIO",SPE:"UNIRIO"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"Outros",cod:"EAD02082",nome:"Microbiologia Ambiental",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02046",nome:"O Incrível Poder dos Seres Clorofilados",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02047",nome:"Insetos na Educação Básica",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02056",nome:"Instrumentação em Biologia Aquática",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02057",nome:"Tópicos em Biotecnologia",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02075",nome:"Parasitoses e Meio Ambiente",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02076",nome:"Deontologia em Ciências Biológicas",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"Outros",cod:"EAD02077",nome:"Legislação Ambiental",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02078",nome:"Fundamentos da Propriedade Intelectual no Ensino de Ciências",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02080",nome:"Fundamentos da Biogeografia",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02088",nome:"Tópicos em Biossegurança e Bioética",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02089",nome:"Ecossistemas Marinhos e sua Biota",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Ativa"}},
+        {per:"Outros",cod:"EAD02090",nome:"Instrumentação em Farmacodependência",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02091",nome:"Bases da Pesquisa Científica",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02081",nome:"Transf. Energia nos Seres Vivos e sua Aplic. no Ensino de Biologia",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02061",nome:"Seminários em Educação a Distância",ch:90, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02067",nome:"Tecnologias Educacionais para o Ensino de Ciências e Biologia",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02070",nome:"Projeto Final",ch:90, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02073",nome:"Biotecnologia Vegetal",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02086",nome:"Instrumentação para Ensino da Evolução",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Desativa",NFR:"Desativa",PAR:"Desativa",RES:"Desativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD03047",nome:"Tópicos em Educação Especial",ch:60, base:{BRO:"UNIRIO",MAG:"UNIRIO",NFR:"UNIRIO",PAR:"UNIRIO",RES:"UNIRIO",SPE:"UNIRIO"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD03048",nome:"Questões Etnicas e de Gênero",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD04001",nome:"Introdução às Ciências Físicas I",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD04005",nome:"Introdução às Ciências Físicas II",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD03003",nome:"Educação Especial",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD03017",nome:"Fundamentos da Educação de Jovens e Adultos",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD03025",nome:"Movimentos Sociais e Educação",ch:60, base:{BRO:"UNIRIO",MAG:"UNIRIO",NFR:"UNIRIO",PAR:"UNIRIO",RES:"UNIRIO",SPE:"UNIRIO"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD03033",nome:"Políticas Públicas em Educação",ch:60, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD01077",nome:"Introdução à Informática",ch:60, base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02001",nome:"Grandes Temas em Biologia",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Ativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02002",nome:"Diversidade dos Seres Vivos",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02004",nome:"Dinâmica da Terra",ch:60, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02005",nome:"Bioquímica I",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02006",nome:"Biologia Celular I",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02007",nome:"Bioquímica II",ch:75, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02008",nome:"Elementos de Ecologia e Conservação",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02009",nome:"Introdução à Zoologia",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02010",nome:"Elementos de Matemática e Estatística",ch:60, base:{BRO:"UFF",MAG:"UFF",NFR:"UFF",PAR:"UFF",RES:"UFF",SPE:"UFF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02012",nome:"Diversidade Biológica dos Protostomados",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02013",nome:"Biologia Celular II",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02014",nome:"Instrumentação para o Ensino de Bioquímica e Biologia Celular",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02015",nome:"Genética Básica",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02016",nome:"Biologia Molecular",ch:75, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02019",nome:"Botânica I",ch:75, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02020",nome:"Diversidade Biológica dos Deuterostomados",ch:75, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02024",nome:"Botânica II",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02025",nome:"Evolução",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02026",nome:"Instrumentação para o Ensino de Genética",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02031",nome:"Populações, Comunidades e Conservação",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02032",nome:"Corpo Humano I",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02033",nome:"Elementos de Química Geral",ch:75, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02034",nome:"Instrumentação para o Ensino de Zoologia, Botânica e Ecologia",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02036",nome:"Corpo Humano II",ch:75, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02037",nome:"Biofísica",ch:45, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02038",nome:"Microbiologia",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02039",nome:"Imunologia",ch:45, base:{BRO:"UENF",MAG:"UENF",NFR:"UENF",PAR:"UENF",RES:"UENF",SPE:"UENF"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02040",nome:"Educação em Saúde",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02041",nome:"Instrumentação para o Ensino de Ciências",ch:45, base:{BRO:"UERJ",MAG:"UERJ",NFR:"UERJ",PAR:"UERJ",RES:"UERJ",SPE:"UERJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}},
+        {per:"Outros",cod:"EAD02044",nome:"Educação Ambiental",ch:60, base:{BRO:"UFRJ",MAG:"UFRJ",NFR:"UFRJ",PAR:"UFRJ",RES:"UFRJ",SPE:"UFRJ"}, status:{BRO:"Desativa",MAG:"Ativa",NFR:"Ativa",PAR:"Ativa",RES:"Ativa",SPE:"Desativa"}}
     ];
 
-    // Estado de oferta: active = true (mostra check + sigla), false = vazio
-    let offerState = {};  // key: `${cod}_${polo}` -> boolean (true=ativa)
     const polos = ['BRO', 'MAG', 'NFR', 'PAR', 'RES', 'SPE'];
+    let offerState = {};
 
     function initState() {
-        disciplinasRaw.forEach(d => {
+        disciplinasData.forEach(d => {
             polos.forEach(polo => {
                 const key = `${d.cod}_${polo}`;
-                // partimos do princípio que todas as ofertas estão ativas (verde conforme PDF)
-                offerState[key] = true;
+                offerState[key] = (d.status[polo] === 'Ativa');
             });
         });
-        // tentar carregar localStorage se existir
-        const saved = localStorage.getItem('bio_offer_state');
+        const saved = localStorage.getItem('bio_offer_state_v2');
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
@@ -466,18 +482,16 @@
         }
     }
 
+    function saveToLocal() {
+        localStorage.setItem('bio_offer_state_v2', JSON.stringify(offerState));
+    }
+
     function getOfferText(d, polo) {
         const key = `${d.cod}_${polo}`;
         if (offerState[key]) {
-            const sigla = d.base[polo];
-            return `<span class="check-green">✓ ${sigla}</span>`;
-        } else {
-            return '';
+            return `<span class="check-green">✓ ${d.base[polo]}</span>`;
         }
-    }
-
-    function isOfferActive(d, polo) {
-        return offerState[`${d.cod}_${polo}`];
+        return '';
     }
 
     function toggleOffer(d, polo) {
@@ -491,30 +505,26 @@
         const anyActive = polos.some(p => offerState[`${d.cod}_${p}`]);
         polos.forEach(polo => {
             const key = `${d.cod}_${polo}`;
-            offerState[key] = !anyActive;  // se algum ativo, desativa tudo; se nenhum ativo, ativa tudo
+            offerState[key] = !anyActive;
         });
         saveToLocal();
         renderTable();
     }
 
     function resetAllToOriginal() {
-        polos.forEach(polo => {
-            disciplinasRaw.forEach(d => {
+        disciplinasData.forEach(d => {
+            polos.forEach(polo => {
                 const key = `${d.cod}_${polo}`;
-                offerState[key] = true;
+                offerState[key] = (d.status[polo] === 'Ativa');
             });
         });
         saveToLocal();
         renderTable();
     }
 
-    function saveToLocal() {
-        localStorage.setItem('bio_offer_state', JSON.stringify(offerState));
-    }
-
     function computeStats() {
-        let active=0, inactive=0;
-        disciplinasRaw.forEach(d => {
+        let active = 0, inactive = 0;
+        disciplinasData.forEach(d => {
             polos.forEach(polo => {
                 if (offerState[`${d.cod}_${polo}`]) active++;
                 else inactive++;
@@ -522,7 +532,7 @@
         });
         document.getElementById('activeCount').innerText = active;
         document.getElementById('inactiveCount').innerText = inactive;
-        document.getElementById('totalDisc').innerText = disciplinasRaw.length;
+        document.getElementById('totalDisc').innerText = disciplinasData.length;
     }
 
     function renderTable() {
@@ -532,7 +542,8 @@
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
         let lastPeriod = null;
-        const filtered = disciplinasRaw.filter(d => {
+
+        const filtered = disciplinasData.filter(d => {
             if (searchTerm && !d.nome.toLowerCase().includes(searchTerm) && !d.cod.toLowerCase().includes(searchTerm)) return false;
             if (periodVal) {
                 if (periodVal === 'Outros' && d.per !== 'Outros') return false;
@@ -546,6 +557,7 @@
             }
             return true;
         });
+
         filtered.forEach(d => {
             if (d.per !== lastPeriod) {
                 const sectionRow = document.createElement('tr');
@@ -555,30 +567,22 @@
                 tbody.appendChild(sectionRow);
                 lastPeriod = d.per;
             }
+
             const row = tbody.insertRow();
-            // Periodo
-            const perCell = row.insertCell(0); perCell.className = 'period-cell'; perCell.innerText = d.per === 'Outros' ? '—' : d.per;
-            // Codigo
-            const codCell = row.insertCell(1); codCell.className = 'codigo'; codCell.innerText = d.cod;
-            // Disciplina
-            const nomeCell = row.insertCell(2); nomeCell.className = 'disciplina-nome'; nomeCell.innerText = d.nome;
-            // CH
-            const chCell = row.insertCell(3); chCell.className = 'ch'; chCell.innerText = `${d.ch}h`;
-            // Polos
+            row.insertCell(0).innerHTML = d.per === 'Outros' ? '—' : `<span class="period-cell">${d.per}</span>`;
+            row.insertCell(1).innerHTML = `<span class="codigo">${d.cod}</span>`;
+            row.insertCell(2).innerHTML = `<span class="disciplina-nome">${d.nome}</span>`;
+            row.insertCell(3).innerHTML = `<span class="ch">${d.ch}h</span>`;
+
             polos.forEach(polo => {
                 const cell = row.insertCell();
                 cell.className = 'offer-cell';
                 const isActive = offerState[`${d.cod}_${polo}`];
-                if (isActive) {
-                    cell.innerHTML = `<span class="check-green">✓ ${d.base[polo]}</span>`;
-                    cell.style.cursor = 'pointer';
-                } else {
-                    cell.innerHTML = '';
-                    cell.style.cursor = 'pointer';
-                }
-                cell.onclick = (function(discipl, poloName) { return function() { toggleOffer(discipl, poloName); }; })(d, polo);
+                cell.innerHTML = isActive ? `<span class="check-green">✓ ${d.base[polo]}</span>` : '';
+                cell.style.cursor = 'pointer';
+                cell.onclick = (function(discipl, p) { return function() { toggleOffer(discipl, p); }; })(d, polo);
             });
-            // Ação (botão para disciplina)
+
             const actionCell = row.insertCell();
             actionCell.style.textAlign = 'center';
             const anyActive = polos.some(p => offerState[`${d.cod}_${p}`]);
@@ -593,27 +597,18 @@
     }
 
     function exportChanges() {
-        let changesList = [];
-        disciplinasRaw.forEach(d => {
-            const changes = polos.filter(p => !offerState[`${d.cod}_${p}`]);
-            if (changes.length > 0) {
-                changesList.push(`[${d.per}] ${d.cod} — ${d.nome}`);
-                changes.forEach(p => {
-                    changesList.push(`  ✗ Polo ${p}: oferta REMOVIDA (está vazio)`);
-                });
-                changesList.push('');
+        const changes = [];
+        disciplinasData.forEach(d => {
+            const inactivePolos = polos.filter(p => !offerState[`${d.cod}_${p}`]);
+            if (inactivePolos.length > 0) {
+                changes.push(`[${d.per}] ${d.cod} — ${d.nome}`);
+                inactivePolos.forEach(p => changes.push(`  ✗ Polo ${p}: oferta REMOVIDA (vazio)`));
+                changes.push('');
             }
         });
-        if (changesList.length === 0) changesList.push('Nenhuma alteração registrada — todas as ofertas estão ativas conforme o padrão.');
-        document.getElementById('exportData').value = changesList.join('\n');
+        if (changes.length === 0) changes.push('Nenhuma alteração — todas as ofertas seguem o padrão original.');
+        document.getElementById('exportData').value = changes.join('\n');
         document.getElementById('exportModal').style.display = 'flex';
-    }
-
-    function copyExport() {
-        const textarea = document.getElementById('exportData');
-        textarea.select();
-        document.execCommand('copy');
-        alert('Texto copiado para área de transferência');
     }
 
     initState();
@@ -631,16 +626,19 @@
     document.getElementById('exportBtn').addEventListener('click', exportChanges);
     document.getElementById('saveChangesBtn').addEventListener('click', () => {
         saveToLocal();
-        alert('✅ Configuração de oferta salva no navegador!');
+        alert('✅ Configuração salva no navegador!');
     });
     document.getElementById('resetAllOffersBtn').addEventListener('click', () => {
-        if(confirm('⚠️ Atenção: isso irá restaurar todas as ofertas para o padrão inicial (todas ativas). Deseja continuar?')) {
-            resetAllToOriginal();
-        }
+        if (confirm('⚠️ Restaurar todas as ofertas para o estado original da planilha?')) resetAllToOriginal();
     });
     document.getElementById('closeModalBtn').addEventListener('click', () => document.getElementById('exportModal').style.display = 'none');
-    document.getElementById('copyExportBtn').addEventListener('click', copyExport);
-    window.onclick = function(e) { if(e.target === document.getElementById('exportModal')) document.getElementById('exportModal').style.display = 'none'; };
+    document.getElementById('copyExportBtn').addEventListener('click', () => {
+        const textarea = document.getElementById('exportData');
+        textarea.select();
+        document.execCommand('copy');
+        alert('Copiado!');
+    });
+    window.onclick = (e) => { if (e.target === document.getElementById('exportModal')) document.getElementById('exportModal').style.display = 'none'; };
 </script>
 </body>
 </html>
