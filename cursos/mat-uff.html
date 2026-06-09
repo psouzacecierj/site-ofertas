@@ -113,7 +113,7 @@
 
 <div class="summary-bar">
   <div class="stat"><div class="stat-dot dot-active"></div><span class="stat-label">Com oferta (✓)</span><span class="stat-val" id="count-active">0</span></div>
-  <div class="stat"><div class="stat-dot dot-inactive"></div><span class="stat-label">Sem oferta (vazio)</span><span class="stat-val" id="count-inactive">0</span></div>
+  <div class="stat"><div class="stat-dot dot-inactive"></div><span class="stat-label">Sem oferta (—)</span><span class="stat-val" id="count-inactive">0</span></div>
   <div style="margin-left:auto; font-size:12px; color:#9ca3af;">Clique na célula para alternar oferta</div>
 </div>
 
@@ -138,7 +138,7 @@
   <select id="filter-status" onchange="applyFilters()">
     <option value="">Todos os status</option>
     <option value="active">Com oferta (✓)</option>
-    <option value="inactive">Sem oferta (vazio)</option>
+    <option value="inactive">Sem oferta (—)</option>
   </select>
   <button class="btn btn-outline" style="border-color:#d1d5db; color:#374151; background:white;" onclick="resetFilters()">Limpar filtros</button>
   <button class="btn btn-primary" onclick="resetAllToOriginal()">🔄 Resetar ofertas (original)</button>
@@ -156,7 +156,7 @@
       <tr><th style="width:55px">Período</th><th style="width:95px">Código</th><th>Disciplina</th><th class="center" style="width:50px">CH</th><th class="center">BJE</th><th class="center">CAN</th><th class="center">CGR</th><th class="center">ITA</th><th class="center">ITO</th><th class="center">MAC</th><th class="center">NIG</th><th class="center">PAR</th><th class="center">PIR</th><th class="center">RBO</th><th class="center">RES</th><th class="center">SAQ</th><th class="center">SFI</th><th class="center">SFR</th><th class="center">SPE</th><th class="center">VRE</th><th class="center" style="width:100px">Ação</th></tr>
     </thead>
     <tbody id="tbody"></tbody>
-  </table>
+   </table>
 </div>
 
 <div class="export-modal" id="export-modal">
@@ -174,19 +174,14 @@
 <div id="toast" class="toast"></div>
 
 <script>
-// POLOS DA PLANILHA MATEMÁTICA UFF 2/2026
 const POLOS = ['BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE'];
 
-// DADOS COMPLETOS EXTRAÍDOS DA PLANILHA (status originais)
-// 'A' = Ativa (com oferta ✓), 'D' = Desativada (sem oferta —)
+// Dados completos extraídos da planilha (status original: 'A' = ativo/✓, 'D' = inativo/—)
 const disciplinasData = [
-  // PERÍODO 01
   {per:"01", cod:"EAD01038", nome:"Matemática Básica", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"01", cod:"EAD01004", nome:"Introdução à Informática", ch:75, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"01", cod:"EAD01060", nome:"Seminários de Educação à Distância", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"01", cod:"EAD03046", nome:"Português Instrumental 1", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
-  
-  // PERÍODO 02
   {per:"02", cod:"EAD01062", nome:"Geometria Plana", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"02", cod:"EAD01082", nome:"Pré-Cálculo", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"02", cod:"EAD00101", nome:"Fundamentos da Educação I", ch:60, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
@@ -195,8 +190,6 @@ const disciplinasData = [
   {per:"02", cod:"EAD00501", nome:"Fundamentos da Educação I", ch:60, status:{BJE:"D",CAN:"D",CGR:"A",ITA:"A",ITO:"D",MAC:"D",NIG:"D",PAR:"D",PIR:"D",RBO:"D",RES:"A",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"D"}},
   {per:"02", cod:"EAD00211", nome:"Prática de Ensino I - Didática", ch:60, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"A",PIR:"A",RBO:"A",RES:"D",SAQ:"A",SFI:"A",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"02", cod:"EAD00511", nome:"Prática de Ensino I - Didática", ch:60, status:{BJE:"D",CAN:"D",CGR:"A",ITA:"A",ITO:"D",MAC:"D",NIG:"D",PAR:"D",PIR:"D",RBO:"D",RES:"A",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"D"}},
-  
-  // PERÍODO 03
   {per:"03", cod:"EAD00502", nome:"Fundamentos da Educação II", ch:60, status:{BJE:"D",CAN:"D",CGR:"A",ITA:"A",ITO:"D",MAC:"D",NIG:"D",PAR:"D",PIR:"D",RBO:"D",RES:"A",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"D"}},
   {per:"03", cod:"EAD00202", nome:"Fundamentos da Educação II", ch:60, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"A",PIR:"A",RBO:"A",RES:"D",SAQ:"A",SFI:"A",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"03", cod:"EAD00102", nome:"Fundamentos da Educação II", ch:60, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
@@ -204,8 +197,6 @@ const disciplinasData = [
   {per:"03", cod:"EAD01087", nome:"Geometria Analítica", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"03", cod:"EAD01083", nome:"Cálculo I", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"03", cod:"EAD01063", nome:"Geometria Espacial", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
-  
-  // PERÍODO 04
   {per:"04", cod:"EAD01084", nome:"Cálculo II", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"04", cod:"EAD01088", nome:"Lógica e Teoria dos Conjuntos", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"04", cod:"EAD01089", nome:"Álgebra Linear I", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
@@ -213,8 +204,6 @@ const disciplinasData = [
   {per:"04", cod:"EAD00103", nome:"Fundamentos da Educação III", ch:60, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
   {per:"04", cod:"EAD00203", nome:"Fundamentos da Educação III", ch:60, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"A",PIR:"A",RBO:"A",RES:"D",SAQ:"A",SFI:"A",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"04", cod:"EAD00503", nome:"Fundamentos da Educação III", ch:60, status:{BJE:"D",CAN:"D",CGR:"A",ITA:"A",ITO:"D",MAC:"D",NIG:"D",PAR:"D",PIR:"D",RBO:"D",RES:"A",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"D"}},
-  
-  // PERÍODO 05
   {per:"05", cod:"EAD01020", nome:"Informática no Ensino da Matemática", ch:75, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"05", cod:"EAD01090", nome:"Álgebra Linear II", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"05", cod:"EAD01091", nome:"Teoria dos Números e Álgebra", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
@@ -223,14 +212,10 @@ const disciplinasData = [
   {per:"05", cod:"EAD00512", nome:"Prática de Ensino II", ch:60, status:{BJE:"D",CAN:"D",CGR:"A",ITA:"A",ITO:"D",MAC:"D",NIG:"D",PAR:"D",PIR:"D",RBO:"D",RES:"A",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"D"}},
   {per:"05", cod:"EAD00212", nome:"Prática de Ensino II", ch:60, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"A",PIR:"A",RBO:"A",RES:"D",SAQ:"A",SFI:"A",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"05", cod:"EAD00112", nome:"Prática de Ensino II", ch:60, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
-  
-  // PERÍODO 06
   {per:"06", cod:"EAD01093", nome:"Introdução à Combinatória de Contagem", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"06", cod:"EAD01094", nome:"Polinômios e Números Complexos", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"06", cod:"EAD01095", nome:"Curvas e Superfícies", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"06", cod:"EAD01096", nome:"Tendências em Educação Matemática", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
-  
-  // PERÍODO 07
   {per:"07", cod:"EAD00104", nome:"Fundamentos da Educação IV", ch:60, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
   {per:"07", cod:"EAD00204", nome:"Fundamentos da Educação IV", ch:60, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"A",PIR:"A",RBO:"A",RES:"D",SAQ:"A",SFI:"A",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"07", cod:"EAD00121", nome:"Estágio Supervisionado I", ch:60, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
@@ -240,8 +225,6 @@ const disciplinasData = [
   {per:"07", cod:"EAD01097", nome:"Estatística para Educação Básica", ch:75, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"07", cod:"EAD01098", nome:"Educação Matemática e Aritmética e Álgebra", ch:75, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"07", cod:"EAD04001", nome:"Introdução às Ciências Físicas I", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
-  
-  // PERÍODO 08
   {per:"08", cod:"EAD04005", nome:"Introdução às Ciências Físicas II", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"08", cod:"EAD01099", nome:"Fundamentos de Análise Real", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"08", cod:"EAD01100", nome:"Laboratório de Projetos de Ensino de Matemática I", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
@@ -251,24 +234,18 @@ const disciplinasData = [
   {per:"08", cod:"EAD00513", nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação", ch:60, status:{BJE:"D",CAN:"D",CGR:"A",ITA:"A",ITO:"D",MAC:"D",NIG:"D",PAR:"D",PIR:"D",RBO:"D",RES:"A",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"D"}},
   {per:"08", cod:"EAD00122", nome:"Estágio Supervisionado II", ch:90, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
   {per:"08", cod:"EAD00113", nome:"Prática de Ensino III - Métodos e Técnicas de Avaliação", ch:60, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
-  
-  // PERÍODO 09
   {per:"09", cod:"EAD00123", nome:"Estágio Supervisionado III", ch:120, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
   {per:"09", cod:"EAD00523", nome:"Estágio Supervisionado III", ch:120, status:{BJE:"D",CAN:"D",CGR:"A",ITA:"A",ITO:"D",MAC:"D",NIG:"D",PAR:"D",PIR:"D",RBO:"D",RES:"A",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"D"}},
   {per:"09", cod:"EAD00223", nome:"Estágio Supervisionado III", ch:120, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"A",PIR:"A",RBO:"A",RES:"D",SAQ:"A",SFI:"A",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"09", cod:"EAD01101", nome:"Laboratório de Projetos de Ensino de Matemática II", ch:40, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"09", cod:"EAD01069", nome:"História da Matemática", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"09", cod:"EAD03017", nome:"Fundamentos da Educação de Jovens e Adultos", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
-  
-  // PERÍODO 10
   {per:"10", cod:"EAD03003", nome:"Educação Especial", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"10", cod:"EAD03033", nome:"Políticas Públicas em Educação", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"10", cod:"EAD00224", nome:"Estágio Supervisionado IV", ch:150, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"A",PIR:"A",RBO:"A",RES:"D",SAQ:"A",SFI:"A",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"10", cod:"EAD00524", nome:"Estágio Supervisionado IV", ch:150, status:{BJE:"D",CAN:"D",CGR:"A",ITA:"A",ITO:"D",MAC:"D",NIG:"D",PAR:"D",PIR:"D",RBO:"D",RES:"A",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"D"}},
   {per:"10", cod:"EAD00124", nome:"Estágio Supervisionado IV", ch:150, status:{BJE:"D",CAN:"A",CGR:"D",ITA:"D",ITO:"A",MAC:"A",NIG:"A",PAR:"D",PIR:"D",RBO:"D",RES:"D",SAQ:"D",SFI:"A",SFR:"A",SPE:"D",VRE:"D"}},
   {per:"10", cod:"EAD00032", nome:"Libras", ch:30, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
-  
-  // OPTATIVAS
   {per:"Opt", cod:"EAD00040", nome:"Tópicos Sobre a Diversidade na Educação", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"Opt", cod:"EAD01102", nome:"Equações Diferenciais", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"Opt", cod:"EAD02143", nome:"Educação Ambiental e Agenda 2030", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
@@ -280,8 +257,6 @@ const disciplinasData = [
   {per:"Opt", cod:"EAD04013", nome:"Física II a", ch:60, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",PIR:"A",RBO:"D",RES:"D",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"Opt", cod:"EAD04018", nome:"Física II b", ch:60, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",PIR:"A",RBO:"D",RES:"D",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"Opt", cod:"EAD01086", nome:"Cálculo IV", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
-  
-  // OUTROS / COMPLEMENTARES
   {per:"Outros", cod:"EAD01065", nome:"Álgebra I", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"Outros", cod:"EAD01066", nome:"Álgebra II", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"Outros", cod:"EAD01067", nome:"Elementos de Análise Real", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
@@ -310,6 +285,7 @@ function initState() {
   disciplinasData.forEach(d => {
     POLOS.forEach(polo => {
       const key = `${d.cod}_${polo}`;
+      // CORREÇÃO: respeita o status original da planilha (A = true / D = false)
       offerState[key] = (d.status[polo] === 'A');
     });
   });
@@ -513,7 +489,6 @@ function renderDisciplinaRow(tbody, d) {
     const cell = row.insertCell();
     cell.className = 'polo-cell';
     const isActive = offerState[`${d.cod}_${polo}`];
-    // Exibe apenas ✓ ou — (sem o nome da instituição, pois não está no PDF)
     cell.innerHTML = isActive ? `<span class="polo-val polo-active">✓</span>` : `<span class="polo-val polo-inactive">—</span>`;
     cell.onclick = (function(discipl, p) { return function() { toggleOffer(discipl, p); }; })(d, polo);
   });
