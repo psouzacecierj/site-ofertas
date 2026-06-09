@@ -71,6 +71,7 @@
   .section-header-opt td { color: #065f46; }
   .section-header-outros { background: #fef3c7; }
   .section-header-outros td { color: #92400e; }
+  .section-spacer td { height: 12px; background: #f4f6f9; border: none; }
 
   .legend { padding: 14px 28px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; border-top: 1px solid #e5e7eb; background: white; }
   .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6b7280; }
@@ -131,8 +132,8 @@
     <option value="08">Período 08</option>
     <option value="09">Período 09</option>
     <option value="10">Período 10</option>
-    <option value="Opt">Optativas</option>
-    <option value="Outros">Outros / Complementares</option>
+    <option value="Opt">📘 Optativas</option>
+    <option value="Outros">📙 Outros / Complementares</option>
   </select>
   <select id="filter-status" onchange="applyFilters()">
     <option value="">Todos os status</option>
@@ -173,7 +174,7 @@
 <div id="toast" class="toast"></div>
 
 <script>
-// DADOS COMPLETOS DO XLSX COM STATUS (extraídos da planilha com coluna Status)
+// DADOS COMPLETOS DO XLSX COM STATUS
 const POLOS = ['BRO', 'MAG', 'NFR', 'PAR', 'RES', 'SPE'];
 
 const disciplinasData = [
@@ -324,14 +325,14 @@ function initState() {
       offerState[key] = (d.status[polo] === 'Ativa');
     });
   });
-  const saved = localStorage.getItem('bio_offer_state_final');
+  const saved = localStorage.getItem('bio_offer_state_final_v2');
   if (saved) {
     try { Object.assign(offerState, JSON.parse(saved)); } catch(e) {}
   }
 }
 
 function saveToLocal() {
-  localStorage.setItem('bio_offer_state_final', JSON.stringify(offerState));
+  localStorage.setItem('bio_offer_state_final_v2', JSON.stringify(offerState));
 }
 
 function getReportText() {
@@ -450,94 +451,95 @@ function renderTable() {
   const statusVal = document.getElementById('filter-status').value;
   
   tbody.innerHTML = '';
-  let lastPeriod = null;
-  let lastMainGroup = null;
   
-  const filtered = disciplinasData.filter(d => {
-    if (searchTerm && !d.nome.toLowerCase().includes(searchTerm) && !d.cod.toLowerCase().includes(searchTerm)) return false;
-    if (periodVal) {
-      if (periodVal === 'Opt' && d.per !== 'Opt') return false;
-      if (periodVal === 'Outros' && d.per !== 'Outros') return false;
-      if (periodVal !== 'Opt' && periodVal !== 'Outros' && d.per !== periodVal) return false;
-    }
-    if (statusVal === 'active') {
-      return POLOS.some(p => offerState[`${d.cod}_${p}`]);
-    }
-    if (statusVal === 'inactive') {
-      return POLOS.some(p => !offerState[`${d.cod}_${p}`]);
-    }
-    return true;
-  });
+  // Separar as disciplinas por tipo
+  const numericPeriods = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'];
+  const optativas = disciplinasData.filter(d => d.per === 'Opt');
+  const outros = disciplinasData.filter(d => d.per === 'Outros');
+  const periodosNumericos = disciplinasData.filter(d => numericPeriods.includes(d.per));
   
-  // Função para verificar se deve adicionar cabeçalho de grupo
-  function addGroupHeader(groupType, groupName, sectionClass) {
-    const groupRow = tbody.insertRow();
-    groupRow.className = sectionClass;
-    groupRow.innerHTML = `<td colspan="11"><strong>${groupName}</strong></td>`;
-    return groupRow;
+  // Filtrar cada grupo
+  function filterDisciplinas(list) {
+    return list.filter(d => {
+      if (searchTerm && !d.nome.toLowerCase().includes(searchTerm) && !d.cod.toLowerCase().includes(searchTerm)) return false;
+      if (periodVal && periodVal !== '' && d.per !== periodVal) return false;
+      if (statusVal === 'active') return POLOS.some(p => offerState[`${d.cod}_${p}`]);
+      if (statusVal === 'inactive') return POLOS.some(p => !offerState[`${d.cod}_${p}`]);
+      return true;
+    });
   }
   
-  let optativasAdded = false;
-  let outrosAdded = false;
+  const filteredNumeric = filterDisciplinas(periodosNumericos);
+  const filteredOpt = filterDisciplinas(optativas);
+  const filteredOutros = filterDisciplinas(outros);
   
-  filtered.forEach(d => {
-    // Grupo OPTATIVAS
-    if (d.per === 'Opt' && !optativasAdded) {
-      if (lastPeriod !== null && lastPeriod !== 'Opt' && lastPeriod !== 'Outros') {
-        // Adiciona linha separadora se veio de períodos numerados
+  let lastNumericPeriod = null;
+  
+  // 1. Períodos numéricos (01 a 10)
+  filteredNumeric.forEach(d => {
+    if (d.per !== lastNumericPeriod) {
+      if (lastNumericPeriod !== null) {
         const spacerRow = tbody.insertRow();
-        spacerRow.innerHTML = `<td colspan="11" style="height: 10px; background: #f4f6f9;"></td>`;
-      }
-      addGroupHeader('Opt', '📘 DISCIPLINAS OPTATIVAS', 'section-header-opt');
-      optativasAdded = true;
-      lastMainGroup = 'Opt';
-    }
-    
-    // Grupo OUTROS
-    if (d.per === 'Outros' && !outrosAdded) {
-      if (optativasAdded || (lastPeriod !== null && lastPeriod !== 'Outros')) {
-        const spacerRow = tbody.insertRow();
-        spacerRow.innerHTML = `<td colspan="11" style="height: 10px; background: #f4f6f9;"></td>`;
-      }
-      addGroupHeader('Outros', '📙 OUTROS / COMPLEMENTARES', 'section-header-outros');
-      outrosAdded = true;
-      lastMainGroup = 'Outros';
-    }
-    
-    // Períodos numerados (01 a 10)
-    if (d.per !== 'Opt' && d.per !== 'Outros' && d.per !== lastPeriod) {
-      if (lastPeriod !== null && lastPeriod !== d.per) {
-        const spacerRow = tbody.insertRow();
-        spacerRow.innerHTML = `<td colspan="11" style="height: 5px; background: #f4f6f9;"></td>`;
+        spacerRow.className = 'section-spacer';
+        spacerRow.innerHTML = `<td colspan="11"></td>`;
       }
       const sectionRow = tbody.insertRow();
       sectionRow.className = 'section-header';
       sectionRow.innerHTML = `<td colspan="11"><strong>📌 PERÍODO ${d.per}</strong></td>`;
-      lastPeriod = d.per;
+      lastNumericPeriod = d.per;
     }
-    
-    const row = tbody.insertRow();
-    row.insertCell(0).innerHTML = `<span class="periodo-badge ${d.per === 'Opt' ? 'periodo-opt' : (d.per === 'Outros' ? 'periodo-outros' : '')}">${d.per === 'Opt' ? 'Opt' : (d.per === 'Outros' ? '—' : d.per)}</span>`;
-    row.insertCell(1).innerHTML = `<span class="disciplina-code">${d.cod}</span>`;
-    row.insertCell(2).innerHTML = `<span class="disciplina-name">${d.nome}</span>`;
-    row.insertCell(3).innerHTML = `<span class="carga">${d.ch}h</span>`;
-    
-    POLOS.forEach(polo => {
-      const cell = row.insertCell();
-      cell.className = 'polo-cell';
-      const isActive = offerState[`${d.cod}_${polo}`];
-      cell.innerHTML = isActive ? `<span class="polo-val polo-active">✓ ${d.inst[polo]}</span>` : `<span class="polo-val polo-inactive">—</span>`;
-      cell.onclick = (function(discipl, p) { return function() { toggleOffer(discipl, p); }; })(d, polo);
-    });
-    
-    const actionCell = row.insertCell();
-    actionCell.className = 'action-cell';
-    const anyActive = POLOS.some(p => offerState[`${d.cod}_${p}`]);
-    const btnText = anyActive ? '❌ Desativar todos' : '✅ Ativar todos';
-    actionCell.innerHTML = `<button class="toggle-btn ${anyActive ? 'toggle-on' : 'toggle-off'}" onclick="toggleAllForDiscipline(disciplinasData.find(disc => disc.cod === '${d.cod}'))">${btnText}</button>`;
+    renderDisciplinaRow(tbody, d);
   });
   
+  // 2. Optativas (se houver)
+  if (filteredOpt.length > 0) {
+    if (filteredNumeric.length > 0) {
+      const spacerRow = tbody.insertRow();
+      spacerRow.className = 'section-spacer';
+      spacerRow.innerHTML = `<td colspan="11"></td>`;
+    }
+    const optHeader = tbody.insertRow();
+    optHeader.className = 'section-header-opt';
+    optHeader.innerHTML = `<td colspan="11"><strong>📘 DISCIPLINAS OPTATIVAS</strong></td>`;
+    filteredOpt.forEach(d => renderDisciplinaRow(tbody, d));
+  }
+  
+  // 3. Outros (se houver)
+  if (filteredOutros.length > 0) {
+    if (filteredNumeric.length > 0 || filteredOpt.length > 0) {
+      const spacerRow = tbody.insertRow();
+      spacerRow.className = 'section-spacer';
+      spacerRow.innerHTML = `<td colspan="11"></td>`;
+    }
+    const outrosHeader = tbody.insertRow();
+    outrosHeader.className = 'section-header-outros';
+    outrosHeader.innerHTML = `<td colspan="11"><strong>📙 OUTROS / COMPLEMENTARES</strong></td>`;
+    filteredOutros.forEach(d => renderDisciplinaRow(tbody, d));
+  }
+  
   updateSummary();
+}
+
+function renderDisciplinaRow(tbody, d) {
+  const row = tbody.insertRow();
+  row.insertCell(0).innerHTML = `<span class="periodo-badge ${d.per === 'Opt' ? 'periodo-opt' : (d.per === 'Outros' ? 'periodo-outros' : '')}">${d.per === 'Opt' ? 'Opt' : (d.per === 'Outros' ? '—' : d.per)}</span>`;
+  row.insertCell(1).innerHTML = `<span class="disciplina-code">${d.cod}</span>`;
+  row.insertCell(2).innerHTML = `<span class="disciplina-name">${d.nome}</span>`;
+  row.insertCell(3).innerHTML = `<span class="carga">${d.ch}h</span>`;
+  
+  POLOS.forEach(polo => {
+    const cell = row.insertCell();
+    cell.className = 'polo-cell';
+    const isActive = offerState[`${d.cod}_${polo}`];
+    cell.innerHTML = isActive ? `<span class="polo-val polo-active">✓ ${d.inst[polo]}</span>` : `<span class="polo-val polo-inactive">—</span>`;
+    cell.onclick = (function(discipl, p) { return function() { toggleOffer(discipl, p); }; })(d, polo);
+  });
+  
+  const actionCell = row.insertCell();
+  actionCell.className = 'action-cell';
+  const anyActive = POLOS.some(p => offerState[`${d.cod}_${p}`]);
+  const btnText = anyActive ? '❌ Desativar todos' : '✅ Ativar todos';
+  actionCell.innerHTML = `<button class="toggle-btn ${anyActive ? 'toggle-on' : 'toggle-off'}" onclick="toggleAllForDiscipline(disciplinasData.find(disc => disc.cod === '${d.cod}'))">${btnText}</button>`;
 }
 
 function updateSummary() {
@@ -587,7 +589,6 @@ function resetFilters() {
   renderTable();
 }
 
-// Tornar toggleAllForDiscipline global
 window.toggleAllForDiscipline = toggleAllForDiscipline;
 window.disciplinasData = disciplinasData;
 
