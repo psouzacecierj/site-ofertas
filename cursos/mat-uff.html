@@ -37,13 +37,13 @@
   .filter-label { font-size: 12px; color: #6b7280; font-weight: 500; }
 
   .table-wrapper { padding: 0 28px 40px; overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-width: 1200px; }
-  thead th { background: #1a3a4f; color: white; padding: 12px 14px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-width: 1400px; }
+  thead th { background: #1a3a4f; color: white; padding: 12px 10px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
   thead th.center { text-align: center; }
   tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: #f9fafb; }
-  td { padding: 10px 14px; vertical-align: middle; font-size: 13px; }
+  td { padding: 10px 10px; vertical-align: middle; font-size: 13px; }
 
   .periodo-badge { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #e0e7ff; color: #3730a3; }
   .periodo-outros { background: #fef3c7; color: #92400e; }
@@ -54,7 +54,7 @@
   .carga { font-size: 12px; color: #9ca3af; }
 
   .polo-cell { text-align: center; padding: 8px 6px; cursor: pointer; }
-  .polo-val { display: inline-block; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
+  .polo-val { display: inline-block; font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 6px; min-width: 36px; text-align: center; }
   .polo-active { background: #dcfce7; color: #166534; }
   .polo-inactive { background: #f3f4f6; color: #9ca3af; }
 
@@ -153,7 +153,7 @@
 <div class="table-wrapper">
   <table id="main-table">
     <thead>
-      <tr><th style="width:60px">Período</th><th style="width:100px">Código</th><th>Disciplina</th><th class="center" style="width:55px">CH</th><th class="center">BJE</th><th class="center">CAN</th><th class="center">CGR</th><th class="center">ITA</th><th class="center">ITO</th><th class="center">MAC</th><th class="center">NIG</th><th class="center">PAR</th><th class="center">PIR</th><th class="center">RBO</th><th class="center">RES</th><th class="center">SAQ</th><th class="center">SFI</th><th class="center">SFR</th><th class="center">SPE</th><th class="center">VRE</th><th class="center" style="width:110px">Ação</th></tr>
+      <tr><th style="width:55px">Período</th><th style="width:95px">Código</th><th>Disciplina</th><th class="center" style="width:50px">CH</th><th class="center">BJE</th><th class="center">CAN</th><th class="center">CGR</th><th class="center">ITA</th><th class="center">ITO</th><th class="center">MAC</th><th class="center">NIG</th><th class="center">PAR</th><th class="center">PIR</th><th class="center">RBO</th><th class="center">RES</th><th class="center">SAQ</th><th class="center">SFI</th><th class="center">SFR</th><th class="center">SPE</th><th class="center">VRE</th><th class="center" style="width:100px">Ação</th></tr>
     </thead>
     <tbody id="tbody"></tbody>
   </table>
@@ -174,14 +174,11 @@
 <div id="toast" class="toast"></div>
 
 <script>
-// ============================================================
 // POLOS DA PLANILHA MATEMÁTICA UFF 2/2026
-// ============================================================
 const POLOS = ['BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE'];
 
-// ============================================================
 // DADOS COMPLETOS EXTRAÍDOS DA PLANILHA (status originais)
-// ============================================================
+// 'A' = Ativa (com oferta ✓), 'D' = Desativada (sem oferta —)
 const disciplinasData = [
   // PERÍODO 01
   {per:"01", cod:"EAD01038", nome:"Matemática Básica", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
@@ -284,7 +281,7 @@ const disciplinasData = [
   {per:"Opt", cod:"EAD04018", nome:"Física II b", ch:60, status:{BJE:"A",CAN:"D",CGR:"D",ITA:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",PIR:"A",RBO:"D",RES:"D",SAQ:"D",SFI:"D",SFR:"D",SPE:"D",VRE:"A"}},
   {per:"Opt", cod:"EAD01086", nome:"Cálculo IV", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   
-  // OUTROS
+  // OUTROS / COMPLEMENTARES
   {per:"Outros", cod:"EAD01065", nome:"Álgebra I", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"Outros", cod:"EAD01066", nome:"Álgebra II", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
   {per:"Outros", cod:"EAD01067", nome:"Elementos de Análise Real", ch:60, status:{BJE:"A",CAN:"A",CGR:"A",ITA:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",PIR:"A",RBO:"A",RES:"A",SAQ:"A",SFI:"A",SFR:"A",SPE:"A",VRE:"A"}},
@@ -359,9 +356,6 @@ function getReportText() {
   return lines.join('\n');
 }
 
-// ============================================================
-// E-MAIL CORRIGIDO PARA matrizes.cederj@gmail.com
-// ============================================================
 function sendEmail() {
   const report = getReportText();
   const subject = encodeURIComponent('Relatório de Oferta - Matemática UFF 2/2026');
@@ -519,6 +513,7 @@ function renderDisciplinaRow(tbody, d) {
     const cell = row.insertCell();
     cell.className = 'polo-cell';
     const isActive = offerState[`${d.cod}_${polo}`];
+    // Exibe apenas ✓ ou — (sem o nome da instituição, pois não está no PDF)
     cell.innerHTML = isActive ? `<span class="polo-val polo-active">✓</span>` : `<span class="polo-val polo-inactive">—</span>`;
     cell.onclick = (function(discipl, p) { return function() { toggleOffer(discipl, p); }; })(d, polo);
   });
