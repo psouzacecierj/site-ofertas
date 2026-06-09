@@ -107,7 +107,7 @@
   <div class="header-actions">
     <button class="btn btn-outline" onclick="window.print()">🖨 Imprimir</button>
     <button class="btn btn-outline" onclick="openExport()">📋 Exportar alterações <span class="changes-count" id="changes-badge">0</span></button>
-    <button class="btn btn-success" onclick="saveAndSendEmail()">✉️ Salvar e enviar para DIRAC</button>
+    <button class="btn btn-success" onclick="saveAndSendEmail()">✉️ Salvar e enviar para Matrizes</button>
   </div>
 </header>
 
@@ -369,11 +369,14 @@ function getReportText() {
   return lines.join('\n');
 }
 
+// ============================================================
+// E-MAIL CORRIGIDO PARA matrizes.cederj@gmail.com
+// ============================================================
 function sendEmail() {
   const report = getReportText();
   const subject = encodeURIComponent('Relatório de Oferta - Ciências Biológicas UERJ 2/2026');
   const body = encodeURIComponent(report);
-  const email = 'esantos@cecierj.edu.br';
+  const email = 'matrizes.cederj@gmail.com';
   window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
   showToast('Abrindo cliente de email...');
 }
@@ -383,7 +386,7 @@ function sendEmailFromModal() {
   const report = textarea.value;
   const subject = encodeURIComponent('Alterações de Oferta - Ciências Biológicas UERJ 2/2026');
   const body = encodeURIComponent(report);
-  const email = 'esantos@cecierj.edu.br';
+  const email = 'matrizes.cederj@gmail.com';
   window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
   showToast('Abrindo cliente de email...');
   closeExport();
@@ -404,7 +407,7 @@ function saveAndSendEmail() {
       sendEmail();
     }
   } else {
-    if (confirm(`Foram registradas ${changedCount} remoções de oferta. Deseja salvar e enviar o relatório por email para DIRAC (esantos@cecierj.edu.br)?`)) {
+    if (confirm(`Foram registradas ${changedCount} remoções de oferta. Deseja salvar e enviar o relatório por email para matrizes.cederj@gmail.com?`)) {
       sendEmail();
     }
   }
