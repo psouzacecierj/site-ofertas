@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão de Oferta — Administração Pública UFF 2/2026</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; color: #1a1a2e; font-size: 14px; }
+
+  header { background: #1a6b5e; color: white; padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  header h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.02em; }
+  header .subtitle { font-size: 12px; opacity: 0.65; margin-top: 2px; }
+  .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+  .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
+  .btn-outline { background: transparent; border: 1.5px solid rgba(255,255,255,0.4); color: white; }
+  .btn-outline:hover { background: rgba(255,255,255,0.1); }
+  .btn-primary { background: #2d6a4f; color: white; }
+  .btn-primary:hover { background: #1f4d3a; }
+  .btn-success { background: #10b981; color: white; }
+  .btn-success:hover { background: #059669; }
+  .btn-email { background: #3b82f6; color: white; }
+  .btn-email:hover { background: #2563eb; }
+
+  .summary-bar { background: white; border-bottom: 1px solid #e5e7eb; padding: 12px 28px; display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .stat { display: flex; align-items: center; gap: 8px; }
+  .stat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .stat-label { font-size: 12px; color: #6b7280; }
+  .stat-val { font-weight: 600; font-size: 14px; }
+  .dot-active { background: #2e7d32; }
+  .dot-inactive { background: #d1d5db; }
+
+  .filters { background: white; border-bottom: 1px solid #e5e7eb; padding: 10px 28px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .filters select, .filters input { padding: 7px 12px; border: 1px solid #d1d5db; border-radius: 6px; font-size: 13px; color: #1a1a2e; background: white; }
+  .filters input { width: 240px; }
+  .filter-label { font-size: 12px; color: #6b7280; font-weight: 500; }
+
+  .table-wrapper { padding: 0 28px 40px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-width: 1400px; }
+  thead th { background: #1a6b5e; color: white; padding: 12px 8px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
+  thead th.center { text-align: center; }
+  tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f9fafb; }
+  td { padding: 10px 8px; vertical-align: middle; font-size: 12px; }
+
+  .periodo-badge { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #e0e7ff; color: #3730a3; }
+  .periodo-outros { background: #fef3c7; color: #92400e; }
+  .periodo-opt { background: #d1fae5; color: #065f46; }
+
+  .disciplina-code { font-family: 'Courier New', monospace; font-size: 11px; color: #6b7280; }
+  .disciplina-name { font-weight: 500; color: #111827; }
+  .carga { font-size: 11px; color: #9ca3af; }
+
+  .polo-cell { text-align: center; padding: 8px 3px; cursor: pointer; }
+  .polo-val { display: inline-block; font-size: 9px; font-weight: 600; padding: 3px 5px; border-radius: 5px; }
+  .polo-active { background: #dcfce7; color: #166534; }
+  .polo-inactive { background: #f3f4f6; color: #9ca3af; }
+
+  .action-cell { text-align: center; padding: 8px 10px; }
+  .toggle-btn { padding: 4px 10px; border-radius: 20px; border: none; cursor: pointer; font-size: 10px; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
+  .toggle-on { background: #dcfce7; color: #166534; }
+  .toggle-on:hover { background: #bbf7d0; }
+  .toggle-off { background: #fee2e2; color: #991b1b; }
+  .toggle-off:hover { background: #fecaca; }
+
+  .section-header { background: #f1f5f9; }
+  .section-header td { padding: 8px 14px; font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 0.06em; text-transform: uppercase; }
+  .section-header-opt { background: #ecfdf5; }
+  .section-header-opt td { color: #065f46; }
+  .section-header-outros { background: #fef3c7; }
+  .section-header-outros td { color: #92400e; }
+  .section-spacer td { height: 12px; background: #f4f6f9; border: none; }
+
+  .legend { padding: 14px 28px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; border-top: 1px solid #e5e7eb; background: white; }
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #6b7280; }
+  .legend-pill { padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 500; }
+
+  .export-modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+  .export-modal.open { display: flex; }
+  .modal-box { background: white; border-radius: 12px; padding: 24px; max-width: 600px; width: 90%; }
+  .modal-box h2 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .modal-box textarea { width: 100%; height: 200px; font-family: monospace; font-size: 11px; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; resize: vertical; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 14px; justify-content: flex-end; flex-wrap: wrap; }
+
+  .changes-count { background: #f59e0b; color: white; border-radius: 10px; padding: 1px 8px; font-size: 11px; font-weight: 700; margin-left: 6px; display: none; }
+  .changes-count.visible { display: inline; }
+
+  .toast { position: fixed; bottom: 30px; right: 30px; background: #1f4d3a; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; z-index: 200; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+  .toast.show { opacity: 1; }
+
+  @media print {
+    header .header-actions, .filters, .legend, .action-cell, thead th:last-child { display: none !important; }
+    body { background: white; }
+    .table-wrapper { padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>🏛️ Gestão de Oferta de Disciplinas</h1>
+    <div class="subtitle">Administração Pública - UFF - Consórcio EAD | 2º semestre / 2026</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="window.print()">🖨 Imprimir</button>
+    <button class="btn btn-outline" onclick="openExport()">📋 Exportar alterações <span class="changes-count" id="changes-badge">0</span></button>
+    <button class="btn btn-success" onclick="saveAndSendEmail()">✉️ Salvar e enviar para DIRAC</button>
+  </div>
+</header>
+
+<div class="summary-bar">
+  <div class="stat"><div class="stat-dot dot-active"></div><span class="stat-label">Com oferta (✓)</span><span class="stat-val" id="count-active">0</span></div>
+  <div class="stat"><div class="stat-dot dot-inactive"></div><span class="stat-label">Sem oferta (vazio)</span><span class="stat-val" id="count-inactive">0</span></div>
+  <div style="margin-left:auto; font-size:12px; color:#9ca3af;">Clique na célula para alternar oferta</div>
+</div>
+
+<div class="filters">
+  <span class="filter-label">Filtrar:</span>
+  <input type="text" id="search" placeholder="Buscar disciplina ou código..." oninput="applyFilters()">
+  <select id="filter-periodo" onchange="applyFilters()">
+    <option value="">Todos os períodos</option>
+    <option value="01">Período 01</option>
+    <option value="02">Período 02</option>
+    <option value="03">Período 03</option>
+    <option value="04">Período 04</option>
+    <option value="05">Período 05</option>
+    <option value="06">Período 06</option>
+    <option value="07">Período 07</option>
+    <option value="08">Período 08</option>
+    <option value="Opt">📘 Optativas</option>
+    <option value="Outros">📙 Outros / Complementares</option>
+  </select>
+  <select id="filter-status" onchange="applyFilters()">
+    <option value="">Todos os status</option>
+    <option value="active">Com oferta (✓)</option>
+    <option value="inactive">Sem oferta (vazio)</option>
+  </select>
+  <button class="btn btn-outline" style="border-color:#d1d5db; color:#374151; background:white;" onclick="resetFilters()">Limpar filtros</button>
+  <button class="btn btn-primary" onclick="resetAllToOriginal()">🔄 Resetar ofertas (original)</button>
+</div>
+
+<div class="legend">
+  <span class="legend-item"><span class="legend-pill polo-active">✓ UFF</span> Oferta ativa (verde)</span>
+  <span class="legend-item"><span class="legend-pill polo-inactive">—</span> Sem oferta (vazio/branco)</span>
+  <span class="legend-item"><span class="legend-pill" style="background:#eef2ff;">🔘</span> Clique na célula para alternar</span>
+</div>
+
+<div class="table-wrapper">
+  <table id="main-table">
+    <thead>
+      <tr><th style="width:55px">Período</th><th style="width:90px">Código</th><th>Disciplina</th><th class="center" style="width:45px">CH</th><th class="center">BJE</th><th class="center">BRO</th><th class="center">CGR</th><th class="center">ITO</th><th class="center">MAC</th><th class="center">NIG</th><th class="center">PAR</th><th class="center">TRI</th><th class="center">VRE</th><th class="center" style="width:100px">Ação</th></tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+</div>
+
+<div class="export-modal" id="export-modal">
+  <div class="modal-box">
+    <h2>📋 Alterações realizadas na oferta</h2>
+    <textarea id="export-text" readonly></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline" style="border-color:#d1d5db; color:#374151;" onclick="copyExport()">📋 Copiar</button>
+      <button class="btn btn-email" onclick="sendEmailFromModal()">✉️ Enviar por email</button>
+      <button class="btn btn-primary" onclick="closeExport()">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// POLOS DA ADMINISTRAÇÃO PÚBLICA - UFF
+const POLOS = ['BJE', 'BRO', 'CGR', 'ITO', 'MAC', 'NIG', 'PAR', 'TRI', 'VRE'];
+
+// DADOS COMPLETOS DA PLANILHA ADMINISTRAÇÃO PÚBLICA UFF
+const disciplinasData = [
+  {per:"01",cod:"EAD11001",nome:"Filosofia e Ética",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"01",cod:"EAD11002",nome:"Teoria da Administração I",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"01",cod:"EAD11003",nome:"Introdução à Economia",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"01",cod:"EAD11004",nome:"Psicologia Organizacional",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"01",cod:"EAD11072",nome:"Introdução a Educação a Distância",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"01",cod:"EAD11069",nome:"Cidadania e Direitos Sociais no Brasil",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"01",cod:"EAD11070",nome:"Ciência Política I",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"02",cod:"EAD11071",nome:"Administração Pública",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"02",cod:"EAD11073",nome:"Temas Contemporâneos da Gestão Pública I",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"02",cod:"EAD11009",nome:"Macroeconomia",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"02",cod:"EAD11010",nome:"Contabilidade Geral",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"02",cod:"EAD11011",nome:"Matemática para Administradores",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"02",cod:"EAD11014",nome:"Sociologia Organizacional",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"02",cod:"EAD11017",nome:"Instituições de Direito Público e Privado",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"03",cod:"EAD11022",nome:"Estatística Aplicada à Administração",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"03",cod:"EAD11074",nome:"Administração Pública Brasileira",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"03",cod:"EAD11075",nome:"Contabilidade Aplicada Ao Setor Público",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"03",cod:"EAD11076",nome:"Gestão Social e Participação Popular",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"03",cod:"EAD11077",nome:"Matemática Financeira I",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"03",cod:"EAD11078",nome:"Temas Contemporâneos da Gestão Pública II",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"03",cod:"EAD11019",nome:"Teoria das Finanças Públicas",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"04",cod:"EAD11079",nome:"Decisão e Informação na Gestão Pública",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"04",cod:"EAD11080",nome:"Gestão do Conhecimento",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"04",cod:"EAD11081",nome:"Organização, Sistemas e Métodos",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"04",cod:"EAD11082",nome:"Planejamento Governamental",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"04",cod:"EAD11083",nome:"Temas Contemporâneos da Gestão Pública III",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"04",cod:"EAD11023",nome:"Direito Administrativo",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"04",cod:"EAD11015",nome:"Economia Brasileira",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"05",cod:"EAD11026",nome:"Gestão de Pessoas no Setor Público",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"05",cod:"EAD11084",nome:"Estratégia Nas Organizações Públicas",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"05",cod:"EAD11085",nome:"Gestão de Projetos Públicos",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"05",cod:"EAD11086",nome:"Governo Eletrônico",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"05",cod:"EAD11087",nome:"Métodos e Técnicas de Estudos",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"05",cod:"EAD11088",nome:"Políticas Públicas",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"05",cod:"EAD11102",nome:"Estágio Curricular Supervisionado I",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"06",cod:"EAD11103",nome:"Estágio Curricular Supervisionado II",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"06",cod:"EAD11062",nome:"Licitação, Contratos e Convênios",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"06",cod:"EAD11089",nome:"Administração de Recursos Materiais e Patrimoniais",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"06",cod:"EAD11090",nome:"Análise e Avaliação de Políticas Públicas",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"06",cod:"EAD11031",nome:"Orçamento Público",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"06",cod:"EAD11005",nome:"Metodologia de Estudo e de Pesquisa em Administração",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"07",cod:"EAD11036",nome:"Auditoria e Controladoria",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"07",cod:"EAD11037",nome:"Negociação e Arbitragem",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"07",cod:"EAD11092",nome:"Inovação na Administração Pública",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"07",cod:"EAD11093",nome:"Regulação de Serviços Públicos",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"07",cod:"EAD11094",nome:"Trabalho de Conclusão de Curso I",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"07",cod:"EAD11104",nome:"Estágio Curricular Supervisionado III",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"07",cod:"EAD11107",nome:"Gestão da Qualidade no Setor Público",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"08",cod:"EAD11061",nome:"Empreendedorismo Governamental",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"08",cod:"EAD11068",nome:"Gestão de Redes de Cooperação na Esfera Pública",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"08",cod:"EAD11095",nome:"Cooperação Internacional",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"08",cod:"EAD11096",nome:"Responsabilidade Social e Terceiro Setor",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"08",cod:"EAD11097",nome:"Trabalho de Conclusão de Curso II",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"08",cod:"EAD11042",nome:"Gestão Ambiental e Sustentabilidade",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Opt",cod:"EAD11091",nome:"Gestão de Operações e Logística I",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Opt",cod:"EAD00032",nome:"Libras",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"D",BRO:"D",CGR:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"D",TRI:"D",VRE:"D"}},
+  {per:"Opt",cod:"EAD01061",nome:"Matemática Básica para Administração Pública",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"D",BRO:"D",CGR:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"D",TRI:"D",VRE:"D"}},
+  {per:"Opt",cod:"EAD11098",nome:"Direito e Legislação Tributária",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Opt",cod:"EAD11099",nome:"Marketing e Sociedade",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Opt",cod:"EAD11100",nome:"Redação Oficial",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Opt",cod:"EAD11101",nome:"Tópicos Especiais de Gestão Municipal",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"D",BRO:"D",CGR:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"D",TRI:"D",VRE:"D"}},
+  {per:"Opt",cod:"EAD11105",nome:"Tecnologia Social",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Opt",cod:"EAD11106",nome:"Políticas Públicas e Planejamento do Território",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Opt",cod:"EAD11108",nome:"Atividades Complementares de Extensão - Administração Pública",ch:15,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"D",BRO:"D",CGR:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"D",TRI:"D",VRE:"D"}},
+  {per:"Outros",cod:"EAD11020",nome:"Organização, Processos e Tomada de Decisão",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11021",nome:"Sistemas de Informação e Comunicação no Setor Público",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11038",nome:"Tecnologia e Inovação",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11039",nome:"Gestão da Regulação",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11041",nome:"Políticas Públicas e Sociedade",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11063",nome:"Gestão da Qualidade no Setor Público",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11065",nome:"Gestão de Marketing",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11066",nome:"Gestão Social e Economia Solidária",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11067",nome:"Diversidade, Relações Etnicas e Direitos Humanos",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"D",BRO:"D",CGR:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"D",TRI:"D",VRE:"D"}},
+  {per:"Outros",cod:"EAD00031",nome:"Libras",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"D",BRO:"D",CGR:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"D",TRI:"D",VRE:"D"}},
+  {per:"Outros",cod:"EAD01004",nome:"Introdução à Informática",ch:75,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"D",BRO:"D",CGR:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"D",TRI:"D",VRE:"D"}},
+  {per:"Outros",cod:"EAD11012",nome:"Seminário Temático I",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11013",nome:"Teorias da Administração Pública",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11006",nome:"Seminário Integrador",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11007",nome:"Ciência Política",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11008",nome:"Teoria da Administração II",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11032",nome:"Administração Estratégica",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11033",nome:"Gestão de Operações e Logística II",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11034",nome:"Elaboração e Gestão de Projetos",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11035",nome:"Estágio Supervisionado Curricular II",ch:150,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11027",nome:"Gestão de Operações e Logistica I",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11028",nome:"Matemática Financeira e Análise de Investimento",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11029",nome:"Legislação Tributária e Direito Comercial",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11030",nome:"Estágio Supervisionado Curricular I",ch:150,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11016",nome:"Contabilidade Pública",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11018",nome:"Seminário Temático II",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11024",nome:"Seminário Temático III",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11025",nome:"Planejamento e Programação na Administração Pública",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11043",nome:"Relações Internacionais",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11046",nome:"Informática para Administradores",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"D",BRO:"D",CGR:"D",ITO:"D",MAC:"D",NIG:"D",PAR:"D",TRI:"D",VRE:"D"}},
+  {per:"Outros",cod:"EAD11048",nome:"Redação Oficial",ch:60,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11049",nome:"Seminário Gestão Municipal I",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11050",nome:"Seminário Gestão Municipal II",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11051",nome:"Seminário Gestão Municipal III",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11052",nome:"Seminário Gestão Governamental I",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11053",nome:"Seminário Gestão Governamental II",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11054",nome:"Seminário Gestão Governamental III",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11055",nome:"Seminário Gestão da Saúde Publica I",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11056",nome:"Seminário Gestão da Saúde Publica II",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11057",nome:"Seminário Gestão da Saúde Publica III",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11058",nome:"Seminário Gestão Municipal IV",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11059",nome:"Seminário Gestão Governamental IV",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"A",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}},
+  {per:"Outros",cod:"EAD11060",nome:"Seminário Gestão da Saúde Publica IV",ch:30,inst:{BJE:"UFF",BRO:"UFF",CGR:"UFF",ITO:"UFF",MAC:"UFF",NIG:"UFF",PAR:"UFF",TRI:"UFF",VRE:"UFF"}, status:{BJE:"A",BRO:"A",CGR:"A",ITO:"A",MAC:"D",NIG:"A",PAR:"A",TRI:"A",VRE:"A"}}
+];
+
+let offerState = {};
+
+function initState() {
+  disciplinasData.forEach(d => {
+    POLOS.forEach(polo => {
+      const key = `${d.cod}_${polo}`;
+      const statusValue = d.status[polo];
+      offerState[key] = (statusValue === 'A');
+    });
+  });
+  const saved = localStorage.getItem('apu_offer_state_uff_v1');
+  if (saved) {
+    try { Object.assign(offerState, JSON.parse(saved)); } catch(e) {}
+  }
+}
+
+function saveToLocal() {
+  localStorage.setItem('apu_offer_state_uff_v1', JSON.stringify(offerState));
+}
+
+function getReportText() {
+  const lines = [];
+  lines.push('RELATÓRIO DE OFERTA DE DISCIPLINAS - ADMINISTRAÇÃO PÚBLICA UFF 2/2026');
+  lines.push('=' .repeat(60));
+  lines.push(`Data: ${new Date().toLocaleString('pt-BR')}`);
+  lines.push('');
+  
+  let totalChanges = 0;
+  disciplinasData.forEach(d => {
+    const inactivePolos = POLOS.filter(p => !offerState[`${d.cod}_${p}`]);
+    if (inactivePolos.length > 0) {
+      totalChanges++;
+      lines.push(`📌 [${d.per}] ${d.cod} — ${d.nome}`);
+      inactivePolos.forEach(p => {
+        lines.push(`   ✗ Polo ${p}: oferta REMOVIDA (vazio)`);
+      });
+      lines.push('');
+    }
+  });
+  
+  if (totalChanges === 0) {
+    lines.push('✅ Nenhuma alteração — todas as ofertas seguem o padrão original da planilha.');
+  } else {
+    lines.push(`📊 Total de disciplinas com alteração: ${totalChanges}`);
+    lines.push(`📊 Total de remoções de oferta: ${disciplinasData.reduce((acc, d) => acc + POLOS.filter(p => !offerState[`${d.cod}_${p}`]).length, 0)}`);
+  }
+  
+  lines.push('');
+  lines.push('---');
+  lines.push('Enviado pelo sistema de Gestão de Oferta de Disciplinas - Administração Pública UFF');
+  
+  return lines.join('\n');
+}
+
+function sendEmail() {
+  const report = getReportText();
+  const subject = encodeURIComponent('Relatório de Oferta - Administração Pública UFF 2/2026');
+  const body = encodeURIComponent(report);
+  const email = 'matrizes.cederj@gmail.com';
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  showToast('Abrindo cliente de email...');
+}
+
+function sendEmailFromModal() {
+  const textarea = document.getElementById('export-text');
+  const report = textarea.value;
+  const subject = encodeURIComponent('Alterações de Oferta - Administração Pública UFF 2/2026');
+  const body = encodeURIComponent(report);
+  const email = 'matrizes.cederj@gmail.com';
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  showToast('Abrindo cliente de email...');
+  closeExport();
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function saveAndSendEmail() {
+  saveToLocal();
+  const changedCount = disciplinasData.reduce((acc, d) => acc + POLOS.filter(p => !offerState[`${d.cod}_${p}`]).length, 0);
+  if (changedCount === 0) {
+    if (confirm('Nenhuma alteração foi feita. Deseja enviar um relatório confirmando que tudo está conforme o original?')) {
+      sendEmail();
+    }
+  } else {
+    if (confirm(`Foram registradas ${changedCount} remoções de oferta. Deseja salvar e enviar o relatório por email para matrizes.cederj@gmail.com?`)) {
+      sendEmail();
+    }
+  }
+}
+
+function toggleOffer(d, polo) {
+  const key = `${d.cod}_${polo}`;
+  offerState[key] = !offerState[key];
+  saveToLocal();
+  renderTable();
+  updateChangesBadge();
+}
+
+function toggleAllForDiscipline(d) {
+  const anyActive = POLOS.some(p => offerState[`${d.cod}_${p}`]);
+  POLOS.forEach(polo => {
+    const key = `${d.cod}_${polo}`;
+    offerState[key] = !anyActive;
+  });
+  saveToLocal();
+  renderTable();
+  updateChangesBadge();
+}
+
+function resetAllToOriginal() {
+  if (confirm('⚠️ Atenção: isso irá restaurar todas as ofertas para o estado original da planilha. Deseja continuar?')) {
+    disciplinasData.forEach(d => {
+      POLOS.forEach(polo => {
+        const key = `${d.cod}_${polo}`;
+        const statusValue = d.status[polo];
+        offerState[key] = (statusValue === 'A');
+      });
+    });
+    saveToLocal();
+    renderTable();
+    updateChangesBadge();
+    showToast('Ofertas restauradas para o padrão original');
+  }
+}
+
+function renderTable() {
+  const tbody = document.getElementById('tbody');
+  const searchTerm = document.getElementById('search').value.toLowerCase();
+  const periodVal = document.getElementById('filter-periodo').value;
+  const statusVal = document.getElementById('filter-status').value;
+  
+  tbody.innerHTML = '';
+  
+  const numericPeriods = ['01', '02', '03', '04', '05', '06', '07', '08'];
+  const optativas = disciplinasData.filter(d => d.per === 'Opt');
+  const outros = disciplinasData.filter(d => d.per === 'Outros');
+  const periodosNumericos = disciplinasData.filter(d => numericPeriods.includes(d.per));
+  
+  function filterDisciplinas(list) {
+    return list.filter(d => {
+      if (searchTerm && !d.nome.toLowerCase().includes(searchTerm) && !d.cod.toLowerCase().includes(searchTerm)) return false;
+      if (periodVal && periodVal !== '' && d.per !== periodVal) return false;
+      if (statusVal === 'active') return POLOS.some(p => offerState[`${d.cod}_${p}`]);
+      if (statusVal === 'inactive') return POLOS.some(p => !offerState[`${d.cod}_${p}`]);
+      return true;
+    });
+  }
+  
+  const filteredNumeric = filterDisciplinas(periodosNumericos);
+  const filteredOpt = filterDisciplinas(optativas);
+  const filteredOutros = filterDisciplinas(outros);
+  
+  let lastNumericPeriod = null;
+  
+  filteredNumeric.forEach(d => {
+    if (d.per !== lastNumericPeriod) {
+      if (lastNumericPeriod !== null) {
+        const spacerRow = tbody.insertRow();
+        spacerRow.className = 'section-spacer';
+        spacerRow.innerHTML = `<td colspan="13"></td>`;
+      }
+      const sectionRow = tbody.insertRow();
+      sectionRow.className = 'section-header';
+      sectionRow.innerHTML = `<td colspan="13"><strong>📌 PERÍODO ${d.per}</strong></td>`;
+      lastNumericPeriod = d.per;
+    }
+    renderDisciplinaRow(tbody, d);
+  });
+  
+  if (filteredOpt.length > 0) {
+    if (filteredNumeric.length > 0) {
+      const spacerRow = tbody.insertRow();
+      spacerRow.className = 'section-spacer';
+      spacerRow.innerHTML = `<td colspan="13"></td>`;
+    }
+    const optHeader = tbody.insertRow();
+    optHeader.className = 'section-header-opt';
+    optHeader.innerHTML = `<td colspan="13"><strong>📘 DISCIPLINAS OPTATIVAS</strong></td>`;
+    filteredOpt.forEach(d => renderDisciplinaRow(tbody, d));
+  }
+  
+  if (filteredOutros.length > 0) {
+    if (filteredNumeric.length > 0 || filteredOpt.length > 0) {
+      const spacerRow = tbody.insertRow();
+      spacerRow.className = 'section-spacer';
+      spacerRow.innerHTML = `<td colspan="13"></td>`;
+    }
+    const outrosHeader = tbody.insertRow();
+    outrosHeader.className = 'section-header-outros';
+    outrosHeader.innerHTML = `<td colspan="13"><strong>📙 OUTROS / COMPLEMENTARES</strong></td>`;
+    filteredOutros.forEach(d => renderDisciplinaRow(tbody, d));
+  }
+  
+  updateSummary();
+}
+
+function renderDisciplinaRow(tbody, d) {
+  const row = tbody.insertRow();
+  row.insertCell(0).innerHTML = `<span class="periodo-badge ${d.per === 'Opt' ? 'periodo-opt' : (d.per === 'Outros' ? 'periodo-outros' : '')}">${d.per === 'Opt' ? 'Opt' : (d.per === 'Outros' ? '—' : d.per)}</span>`;
+  row.insertCell(1).innerHTML = `<span class="disciplina-code">${d.cod}</span>`;
+  row.insertCell(2).innerHTML = `<span class="disciplina-name">${d.nome}</span>`;
+  row.insertCell(3).innerHTML = `<span class="carga">${d.ch}h</span>`;
+  
+  POLOS.forEach(polo => {
+    const cell = row.insertCell();
+    cell.className = 'polo-cell';
+    const isActive = offerState[`${d.cod}_${polo}`];
+    const instName = d.inst[polo] || '—';
+    cell.innerHTML = isActive ? `<span class="polo-val polo-active">✓ ${instName}</span>` : `<span class="polo-val polo-inactive">—</span>`;
+    cell.onclick = (function(discipl, p) { return function() { toggleOffer(discipl, p); }; })(d, polo);
+  });
+  
+  const actionCell = row.insertCell();
+  actionCell.className = 'action-cell';
+  const anyActive = POLOS.some(p => offerState[`${d.cod}_${p}`]);
+  const btnText = anyActive ? '❌ Desativar todos' : '✅ Ativar todos';
+  actionCell.innerHTML = `<button class="toggle-btn ${anyActive ? 'toggle-on' : 'toggle-off'}" onclick="toggleAllForDiscipline(disciplinasData.find(disc => disc.cod === '${d.cod}'))">${btnText}</button>`;
+}
+
+function updateSummary() {
+  let active = 0, inactive = 0;
+  disciplinasData.forEach(d => {
+    POLOS.forEach(polo => {
+      if (offerState[`${d.cod}_${polo}`]) active++;
+      else inactive++;
+    });
+  });
+  document.getElementById('count-active').innerText = active;
+  document.getElementById('count-inactive').innerText = inactive;
+}
+
+function updateChangesBadge() {
+  let changes = 0;
+  disciplinasData.forEach(d => {
+    changes += POLOS.filter(p => !offerState[`${d.cod}_${p}`]).length;
+  });
+  const badge = document.getElementById('changes-badge');
+  badge.textContent = changes;
+  badge.classList.toggle('visible', changes > 0);
+}
+
+function openExport() {
+  const report = getReportText();
+  document.getElementById('export-text').value = report;
+  document.getElementById('export-modal').classList.add('open');
+}
+
+function closeExport() {
+  document.getElementById('export-modal').classList.remove('open');
+}
+
+function copyExport() {
+  const textarea = document.getElementById('export-text');
+  textarea.select();
+  document.execCommand('copy');
+  showToast('Copiado para área de transferência!');
+}
+
+function applyFilters() { renderTable(); }
+function resetFilters() {
+  document.getElementById('search').value = '';
+  document.getElementById('filter-periodo').value = '';
+  document.getElementById('filter-status').value = '';
+  renderTable();
+}
+
+window.toggleAllForDiscipline = toggleAllForDiscipline;
+window.disciplinasData = disciplinasData;
+
+initState();
+renderTable();
+updateChangesBadge();
+
+document.getElementById('export-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeExport();
+});
+</script>
+</body>
+</html>
