@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gestão de Oferta — Licenciatura em Administração UFRRJ 2/2026</title>
+<title>Gestão de Oferta — Tecnologia em Design Gráfico IFF 2/2026</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f6f9; color: #1a1a2e; font-size: 14px; }
 
-  header { background: #2d6a4f; color: white; padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  header { background: #2c3e50; color: white; padding: 18px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
   header h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.02em; }
   header .subtitle { font-size: 12px; opacity: 0.65; margin-top: 2px; }
   .header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -16,8 +16,8 @@
   .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-size: 13px; font-weight: 500; transition: all 0.15s; }
   .btn-outline { background: transparent; border: 1.5px solid rgba(255,255,255,0.4); color: white; }
   .btn-outline:hover { background: rgba(255,255,255,0.1); }
-  .btn-primary { background: #1a5276; color: white; }
-  .btn-primary:hover { background: #0e3a5a; }
+  .btn-primary { background: #2d6a4f; color: white; }
+  .btn-primary:hover { background: #1f4d3a; }
   .btn-success { background: #10b981; color: white; }
   .btn-success:hover { background: #059669; }
   .btn-email { background: #3b82f6; color: white; }
@@ -37,28 +37,27 @@
   .filter-label { font-size: 12px; color: #6b7280; font-weight: 500; }
 
   .table-wrapper { padding: 0 28px 40px; overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-width: 1400px; }
-  thead th { background: #2d6a4f; color: white; padding: 12px 8px; text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-width: 1000px; }
+  thead th { background: #2c3e50; color: white; padding: 12px 10px; text-align: left; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
   thead th.center { text-align: center; }
   tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: #f9fafb; }
-  td { padding: 10px 8px; vertical-align: middle; font-size: 12px; }
+  td { padding: 10px 10px; vertical-align: middle; font-size: 13px; }
 
   .periodo-badge { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #e0e7ff; color: #3730a3; }
-  .periodo-opt { background: #d1fae5; color: #065f46; }
 
-  .disciplina-code { font-family: 'Courier New', monospace; font-size: 11px; color: #6b7280; }
+  .disciplina-code { font-family: 'Courier New', monospace; font-size: 12px; color: #6b7280; }
   .disciplina-name { font-weight: 500; color: #111827; }
-  .carga { font-size: 11px; color: #9ca3af; }
+  .carga { font-size: 12px; color: #9ca3af; }
 
-  .polo-cell { text-align: center; padding: 8px 3px; cursor: pointer; }
-  .polo-val { display: inline-block; font-size: 9px; font-weight: 600; padding: 3px 5px; border-radius: 5px; }
+  .polo-cell { text-align: center; padding: 8px 6px; cursor: pointer; }
+  .polo-val { display: inline-block; font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px; }
   .polo-active { background: #dcfce7; color: #166534; }
   .polo-inactive { background: #f3f4f6; color: #9ca3af; }
 
   .action-cell { text-align: center; padding: 8px 10px; }
-  .toggle-btn { padding: 4px 10px; border-radius: 20px; border: none; cursor: pointer; font-size: 10px; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
+  .toggle-btn { padding: 5px 14px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
   .toggle-on { background: #dcfce7; color: #166534; }
   .toggle-on:hover { background: #bbf7d0; }
   .toggle-off { background: #fee2e2; color: #991b1b; }
@@ -66,8 +65,6 @@
 
   .section-header { background: #f1f5f9; }
   .section-header td { padding: 8px 14px; font-size: 11px; font-weight: 700; color: #475569; letter-spacing: 0.06em; text-transform: uppercase; }
-  .section-header-opt { background: #ecfdf5; }
-  .section-header-opt td { color: #065f46; }
   .section-spacer td { height: 12px; background: #f4f6f9; border: none; }
 
   .legend { padding: 14px 28px; display: flex; gap: 20px; flex-wrap: wrap; align-items: center; border-top: 1px solid #e5e7eb; background: white; }
@@ -98,8 +95,8 @@
 
 <header>
   <div>
-    <h1>📚 Gestão de Oferta de Disciplinas</h1>
-    <div class="subtitle">Licenciatura em Administração - UFRRJ - Consórcio EAD | 2º semestre / 2026</div>
+    <h1>🎨 Gestão de Oferta de Disciplinas</h1>
+    <div class="subtitle">Tecnologia em Design Gráfico - IFF - Consórcio EAD | 2º semestre / 2026</div>
   </div>
   <div class="header-actions">
     <button class="btn btn-outline" onclick="window.print()">🖨 Imprimir</button>
@@ -124,6 +121,7 @@
     <option value="03">Período 03</option>
     <option value="04">Período 04</option>
     <option value="05">Período 05</option>
+    <option value="06">Período 06</option>
   </select>
   <select id="filter-status" onchange="applyFilters()">
     <option value="">Todos os status</option>
@@ -135,7 +133,7 @@
 </div>
 
 <div class="legend">
-  <span class="legend-item"><span class="legend-pill polo-active">✓ UFRRJ</span> Oferta ativa (verde)</span>
+  <span class="legend-item"><span class="legend-pill polo-active">✓ IFF</span> Oferta ativa (verde)</span>
   <span class="legend-item"><span class="legend-pill polo-inactive">—</span> Sem oferta (vazio/branco)</span>
   <span class="legend-item"><span class="legend-pill" style="background:#eef2ff;">🔘</span> Clique na célula para alternar</span>
 </div>
@@ -143,7 +141,7 @@
 <div class="table-wrapper">
   <table id="main-table">
     <thead>
-      <tr><th style="width:55px">Período</th><th style="width:90px">Código</th><th>Disciplina</th><th class="center" style="width:45px">CH</th><th class="center">CGR</th><th class="center">DCA</th><th class="center">MAC</th><th class="center">NIG</th><th class="center">PET</th><th class="center">ROC</th><th class="center">SGO</th><th class="center">VRE</th><th class="center" style="width:100px">Ação</th></tr>
+      <tr><th style="width:60px">Período</th><th style="width:100px">Código</th><th>Disciplina</th><th class="center" style="width:55px">CH</th><th class="center">MAG</th><th class="center">NAT</th><th class="center">PTY</th><th class="center">ROS</th><th class="center">SFR</th><th class="center" style="width:110px">Ação</th></tr>
     </thead>
     <tbody id="tbody"></tbody>
   </table>
@@ -164,42 +162,38 @@
 <div id="toast" class="toast"></div>
 
 <script>
-// POLOS DA LICENCIATURA EM ADMINISTRAÇÃO - UFRRJ
-const POLOS = ['CGR', 'DCA', 'MAC', 'NIG', 'PET', 'ROC', 'SGO', 'VRE'];
+// POLOS DO DESIGN GRÁFICO - IFF
+const POLOS = ['MAG', 'NAT', 'PTY', 'ROS', 'SFR'];
 
-// DADOS COMPLETOS DA PLANILHA LICENCIATURA EM ADMINISTRAÇÃO UFRRJ
+// DADOS COMPLETOS DA PLANILHA DESIGN GRÁFICO IFF
 const disciplinasData = [
-  {per:"01",cod:"EAD21001",nome:"Currículo e Gestão do Trabalho Escolar",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21002",nome:"Fundamentos da Educação Filosofia, Sociologia e Administração",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21003",nome:"Psicologia da Educação: Gênero, Direitos Hum. e Inclusão na Gestão",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21004",nome:"Didática e Avaliação e Administração",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21005",nome:"Práticas Pedagógicas de Adm. no Ens. Médio e Estágio I",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21020",nome:"Estágio 1",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21025",nome:"NEPE - Produção de Material Didático",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD01077",nome:"Introdução à Informática",ch:60,inst:{CGR:"UFF",DCA:"UFF",MAC:"UFF",NIG:"UFF",PET:"UFF",ROC:"UFF",SGO:"UFF",VRE:"UFF"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"02",cod:"EAD08048",nome:"Língua Brasileira de Sinais/Libras",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21026",nome:"NEPE - Educação Ambiental",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21021",nome:"Estágio 2",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21006",nome:"Gestão Estratégica e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21007",nome:"Questões Econômicas no Ambiente Escolar",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21008",nome:"Gestão Educativa 1",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21009",nome:"Política da Organização Educacional e Administração",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21010",nome:"Equidade e Educação: EJA e Relações Étnico-raciais em Enisno de Adm.",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21011",nome:"Empreendedorismo no Ambiente Escolar",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21012",nome:"Gestão Educativa 2",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21013",nome:"Gestão de Pessoas e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21014",nome:"Contabilidade e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21015",nome:"Marketing e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21016",nome:"Finanças e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21022",nome:"Estágio 3",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21027",nome:"NEPE - Direitos Humanos",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"04",cod:"EAD21028",nome:"NEPE - Educação Étnico Racial",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"04",cod:"EAD21023",nome:"Estágio 4",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"04",cod:"EAD21017",nome:"Plano de Negócios e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"04",cod:"EAD21018",nome:"Trabalho de Conclusão de Curso 1",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"05",cod:"EAD21019",nome:"Trabalho de Conclusão de Curso 2",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"05",cod:"EAD21024",nome:"Estágio 5",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"05",cod:"EAD21029",nome:"NEPE - Cibercultura e Educação",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}}
+  {per:"01",cod:"EAD01077",nome:"Introdução à Informática",ch:60,inst:{MAG:"UFF",NAT:"UFF",PTY:"UFF",ROS:"UFF",SFR:"UFF"}, status:{MAG:"A",NAT:"A",PTY:"A",ROS:"A",SFR:"A"}},
+  {per:"01",cod:"EAD11072",nome:"Introdução a Educação a Distância",ch:30,inst:{MAG:"UFF",NAT:"UFF",PTY:"UFF",ROS:"UFF",SFR:"UFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"01",cod:"EAD20001",nome:"Percepção Visual",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"A",NAT:"A",PTY:"A",ROS:"A",SFR:"A"}},
+  {per:"01",cod:"EAD20002",nome:"Desenho de Observação",ch:60,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"A",NAT:"A",PTY:"A",ROS:"A",SFR:"A"}},
+  {per:"01",cod:"EAD20003",nome:"História da Arte",ch:60,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"A",NAT:"A",PTY:"A",ROS:"A",SFR:"A"}},
+  {per:"01",cod:"EAD20006",nome:"Composição Visual",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"A",NAT:"A",PTY:"A",ROS:"A",SFR:"A"}},
+  {per:"02",cod:"EAD20007",nome:"Oficina Básica de Projetos",ch:60,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"02",cod:"EAD20008",nome:"História Das Técnicas e do Design",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"02",cod:"EAD20004",nome:"Imagens, Símbolos e Sinais",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"02",cod:"EAD20005",nome:"Desenho Anatômico",ch:60,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"02",cod:"EAD20012",nome:"Tipografia",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"02",cod:"EAD20015",nome:"Metodologia do Projeto Criativo",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"03",cod:"EAD20013",nome:"Design Corporativo",ch:75,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"03",cod:"EAD20014",nome:"Teoria e Análise da Imagem",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"03",cod:"EAD20018",nome:"Produção Gráfica",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"03",cod:"EAD20010",nome:"Comunicação e Design",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"03",cod:"EAD20011",nome:"Ilustração",ch:60,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"04",cod:"EAD20019",nome:"Marketing e Design",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"04",cod:"EAD20016",nome:"Imagem Fixa e em Movimento",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"04",cod:"EAD20017",nome:"Embalagens e Rótulos",ch:75,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"04",cod:"EAD20022",nome:"Design de Ambientes",ch:75,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"05",cod:"EAD20023",nome:"Animação",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"05",cod:"EAD20026",nome:"Libras",ch:30,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"05",cod:"EAD20020",nome:"Design Editorial",ch:75,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"05",cod:"EAD20021",nome:"Ergonomia Informacional e Usabilidade",ch:75,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"06",cod:"EAD20024",nome:"Ética e Legislação",ch:45,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}},
+  {per:"06",cod:"EAD20025",nome:"Projeto em Design Gráfico",ch:150,inst:{MAG:"IFF",NAT:"IFF",PTY:"IFF",ROS:"IFF",SFR:"IFF"}, status:{MAG:"D",NAT:"D",PTY:"D",ROS:"D",SFR:"D"}}
 ];
 
 let offerState = {};
@@ -212,19 +206,19 @@ function initState() {
       offerState[key] = (statusValue === 'A');
     });
   });
-  const saved = localStorage.getItem('adm_lic_offer_state_ufrrj_v1');
+  const saved = localStorage.getItem('dgr_offer_state_iff_v1');
   if (saved) {
     try { Object.assign(offerState, JSON.parse(saved)); } catch(e) {}
   }
 }
 
 function saveToLocal() {
-  localStorage.setItem('adm_lic_offer_state_ufrrj_v1', JSON.stringify(offerState));
+  localStorage.setItem('dgr_offer_state_iff_v1', JSON.stringify(offerState));
 }
 
 function getReportText() {
   const lines = [];
-  lines.push('RELATÓRIO DE OFERTA DE DISCIPLINAS - LICENCIATURA EM ADMINISTRAÇÃO UFRRJ 2/2026');
+  lines.push('RELATÓRIO DE OFERTA DE DISCIPLINAS - TECNOLOGIA EM DESIGN GRÁFICO IFF 2/2026');
   lines.push('=' .repeat(60));
   lines.push(`Data: ${new Date().toLocaleString('pt-BR')}`);
   lines.push('');
@@ -251,14 +245,14 @@ function getReportText() {
   
   lines.push('');
   lines.push('---');
-  lines.push('Enviado pelo sistema de Gestão de Oferta de Disciplinas - Licenciatura em Administração UFRRJ');
+  lines.push('Enviado pelo sistema de Gestão de Oferta de Disciplinas - Design Gráfico IFF');
   
   return lines.join('\n');
 }
 
 function sendEmail() {
   const report = getReportText();
-  const subject = encodeURIComponent('Relatório de Oferta - Licenciatura em Administração UFRRJ 2/2026');
+  const subject = encodeURIComponent('Relatório de Oferta - Tecnologia em Design Gráfico IFF 2/2026');
   const body = encodeURIComponent(report);
   const email = 'matrizes.cederj@gmail.com';
   window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
@@ -268,7 +262,7 @@ function sendEmail() {
 function sendEmailFromModal() {
   const textarea = document.getElementById('export-text');
   const report = textarea.value;
-  const subject = encodeURIComponent('Alterações de Oferta - Licenciatura em Administração UFRRJ 2/2026');
+  const subject = encodeURIComponent('Alterações de Oferta - Tecnologia em Design Gráfico IFF 2/2026');
   const body = encodeURIComponent(report);
   const email = 'matrizes.cederj@gmail.com';
   window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
@@ -340,7 +334,7 @@ function renderTable() {
   
   tbody.innerHTML = '';
   
-  const numericPeriods = ['01', '02', '03', '04', '05'];
+  const numericPeriods = ['01', '02', '03', '04', '05', '06'];
   const periodosNumericos = disciplinasData.filter(d => numericPeriods.includes(d.per));
   
   function filterDisciplinas(list) {
@@ -362,11 +356,11 @@ function renderTable() {
       if (lastNumericPeriod !== null) {
         const spacerRow = tbody.insertRow();
         spacerRow.className = 'section-spacer';
-        spacerRow.innerHTML = `<td colspan="12">`;
+        spacerRow.innerHTML = `<td colspan="10">`;
       }
       const sectionRow = tbody.insertRow();
       sectionRow.className = 'section-header';
-      sectionRow.innerHTML = `<td colspan="12"><strong>📌 PERÍODO ${d.per}</strong>`;
+      sectionRow.innerHTML = `<td colspan="10"><strong>📌 PERÍODO ${d.per}</strong>`;
       lastNumericPeriod = d.per;
     }
     renderDisciplinaRow(tbody, d);
