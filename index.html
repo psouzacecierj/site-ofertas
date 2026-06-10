@@ -16,7 +16,12 @@
         .badge { display: inline-block; background: #e0e7ff; padding: 4px 10px; border-radius: 20px; font-size: 11px; margin-top: 10px; }
         .contador { text-align: center; margin-top: 30px; color: #6b7280; font-size: 13px; }
         .filtro { margin-bottom: 20px; text-align: center; }
-        .filtro input { padding: 8px 15px; width: 300px; border-radius: 20px; border: 1px solid #ccc; font-size: 14px; }
+        .filtro input { padding: 8px 15px; width: 300px; border-radius: 20px; border: 1px solid #ccc; font-size: 14px; outline: none; }
+        .filtro input:focus { border-color: #1a3a5c; }
+        @media (max-width: 640px) {
+            body { padding: 15px; }
+            .grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -31,9 +36,8 @@
     <div class="contador" id="contador"></div>
 
     <script>
-        // Array COMPLETO com todos os 28 cursos (27 arquivos + 1 que faltava)
+        // Array COMPLETO com TODOS os 28 cursos
         const cursos = [
-            // Ordenados alfabeticamente por nome do curso
             { nome: "Administração", instituicao: "UFRRJ", arquivo: "cursos/adm-ufrrj.html", polos: 18 },
             { nome: "Administração Pública", instituicao: "UFF", arquivo: "cursos/apu-uff.html", polos: 9 },
             { nome: "Biblioteconomia", instituicao: "UFF", arquivo: "cursos/bib-uff.html", polos: 5 },
@@ -44,12 +48,12 @@
             { nome: "Ciências Contábeis", instituicao: "UFF", arquivo: "cursos/cco-uff.html", polos: 7 },
             { nome: "Ciências Contábeis", instituicao: "UFRJ", arquivo: "cursos/cco-ufrj.html", polos: 7 },
             { nome: "Computação", instituicao: "UFF", arquivo: "cursos/com-uff.html", polos: 19 },
-            { nome: "Design Gráfico", instituicao: "IFF", arquivo: "cursos/dgr-iff.html", polos: 4 },  // ← ADICIONADO
+            { nome: "Design Gráfico", instituicao: "IFF", arquivo: "cursos/dgr-iff.html", polos: 4 },
             { nome: "Engenharia de Produção", instituicao: "UFF", arquivo: "cursos/epr-uff.html", polos: 5 },
             { nome: "Engenharia Meteorológica", instituicao: "UENF", arquivo: "cursos/eme-uenf.html", polos: 1 },
             { nome: "Física", instituicao: "UFRJ", arquivo: "cursos/fis-ufrj.html", polos: 10 },
             { nome: "Geografia", instituicao: "UERJ", arquivo: "cursos/geo-uerj.html", polos: 11 },
-            { nome: "Gestão de Turismo", instituicao: "CEFET-RJ", arquivo: "cursos/tgt-cefet.html", polos: 7 },  // Nome corrigido
+            { nome: "Gestão de Turismo", instituicao: "CEFET-RJ", arquivo: "cursos/tgt-cefet.html", polos: 7 },
             { nome: "História", instituicao: "UNIRIO", arquivo: "cursos/his-unirio.html", polos: 5 },
             { nome: "Letras", instituicao: "UFF", arquivo: "cursos/let-uff.html", polos: 6 },
             { nome: "Licenciatura em Administração", instituicao: "UFRRJ", arquivo: "cursos/adl-ufrrj.html", polos: 8 },
@@ -81,7 +85,7 @@
                 `;
                 grid.appendChild(card);
             });
-            contador.textContent = `📊 Total: ${cursosFiltrados.length} ofertas de disciplinas`;
+            contador.textContent = `📊 ${cursosFiltrados.length} oferta${cursosFiltrados.length !== 1 ? 's' : ''} de disciplinas`;
         }
 
         function filtrarCursos() {
