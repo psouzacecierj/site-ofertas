@@ -85,7 +85,8 @@
                 `;
                 grid.appendChild(card);
             });
-            contador.textContent = `📊 ${cursosFiltrados.length} oferta${cursosFiltrados.length !== 1 ? 's' : ''} de disciplinas`;
+            // CORRIGIDO: "ofertas de cursos" em vez de "disciplinas"
+            contador.textContent = `📊 Total: ${cursosFiltrados.length} oferta${cursosFiltrados.length !== 1 ? 's' : ''} de cursos`;
         }
 
         function filtrarCursos() {
