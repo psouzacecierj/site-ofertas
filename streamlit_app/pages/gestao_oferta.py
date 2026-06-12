@@ -2,32 +2,30 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import streamlit.components.v1 as components
 
 # --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="Gestão de Oferta", layout="wide")
 
-# --- CSS PERSONALIZADO (mantendo o visual) ---
+# --- CSS PERSONALIZADO ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     .stAppDeployButton {display: none;}
-    .stButton > button {
-        background: #2d6a4f !important;
-        color: white !important;
-        border-radius: 6px !important;
-        padding: 0.25rem 0.75rem !important;
-        font-size: 0.75rem !important;
-    }
-    .stButton > button:hover {
-        background: #1b4d3e !important;
-    }
-    div[data-testid="stExpander"] details summary p {
-        font-weight: 600;
-        color: #1a3a5c;
-    }
-    .st-bb {
-        background-color: #f4f6f9;
+    footer {visibility: hidden;}
+    .stActionButton {display: none;}
+    .st-emotion-cache-1v0mbdj {display: none;}
+    
+    /* Esconder elementos padrão do Streamlit */
+    .stApp > header {display: none;}
+    .stAppHeader {display: none;}
+    
+    /* Ajuste do container principal */
+    .main .block-container {
+        padding-top: 1rem;
+        padding-bottom: 0rem;
+        max-width: 100%;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -40,152 +38,394 @@ if "sheet_id" not in st.session_state:
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
-
-# --- FUNÇÃO PARA CARREGAR DADOS (SIMPLIFICADA - IGUAL AO CCR) ---
+# --- FUNÇÃO PARA CARREGAR DADOS ---
 @st.cache_data(ttl=60)
 def carregar_dados(sheet_id):
     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
     try:
-        # SEM header especificado, SEM gid
         df = pd.read_csv(url)
-        
-        # Verifica se a primeira linha é título (se tiver menos colunas que a linha 2)
-        if len(df.columns) < 10:  # Título tem poucas colunas
-            # Pula a primeira linha e usa a segunda como cabeçalho
+        if len(df.columns) < 8:
             df = pd.read_csv(url, header=1)
-        
         return df
     except Exception as e:
         st.error(f"Erro ao carregar planilha: {str(e)}")
         return None
+
 # --- FUNÇÃO PARA DETECTAR POLOS ---
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
     for col in colunas:
-        # Procura por códigos de polo (3 letras maiúsculas)
         if col and len(col) == 3 and col.isupper() and col not in ['PER', 'DIS', 'NOM', 'CAR']:
             polos.append(col)
     return polos
+
+# --- FUNÇÃO PARA OBTER STATUS DE UM POLO ---
+def get_status(row, polo, df):
+    for col in df.columns:
+        if col == polo:
+            polo_idx = df.columns.get_loc(col)
+            if polo_idx + 1 < len(df.columns):
+                status_col = df.columns[polo_idx + 1]
+                if status_col in row.index:
+                    val = row[status_col]
+                    if pd.notna(val):
+                        return val
+    return 'D'
+
+# --- FUNÇÃO PARA OBTER INSTITUIÇÃO DE UM POLO ---
+def get_inst(row, polo):
+    if polo in row.index and pd.notna(row[polo]):
+        return str(row[polo]).strip()
+    return '—'
 
 # --- CARREGAR DADOS ---
 df = carregar_dados(SHEET_ID)
 if df is None or df.empty:
     st.stop()
 
-# --- IDENTIFICAR POLOS ---
 POLOS = detectar_polos(df)
 
 # --- TÍTULO ---
-st.title(f"📚 Gestão de Oferta de Disciplinas")
-st.caption(f"{CURSO_NOME} | 2º semestre / 2026")
+st.markdown(f"""
+<div style="background: #2d6a4f; padding: 1.2rem 2rem; border-radius: 10px; margin-bottom: 1.5rem;">
+    <h1 style="color: white; margin: 0; font-size: 1.3rem;">📚 Gestão de Oferta de Disciplinas</h1>
+    <p style="color: rgba(255,255,255,0.8); margin: 0.25rem 0 0 0; font-size: 0.8rem;">{CURSO_NOME} | 2º semestre / 2026</p>
+</div>
+""", unsafe_allow_html=True)
 
-# --- ESTATÍSTICAS ---
-col1, col2, col3, col4 = st.columns(4)
-
-# Processar dados para estatísticas
+# --- ESTATÍSTICAS (cards simples) ---
 total_disciplinas = len(df)
 total_polos = len(POLOS)
 
-col1.metric("📚 Disciplinas", total_disciplinas)
-col2.metric("🏫 Polos", total_polos)
-
-# Calcular ofertas ativas
 ofertas_ativas = 0
 for _, row in df.iterrows():
     for polo in POLOS:
-        status_col = f"{polo}.1" if f"{polo}.1" in df.columns else None
-        if status_col and row[status_col] == 'A':
+        status = get_status(row, polo, df)
+        if status == 'A':
             ofertas_ativas += 1
 
-col3.metric("✅ Ofertas ativas", ofertas_ativas)
-col4.metric("📊 Aproveitamento", f"{ofertas_ativas/(total_disciplinas*total_polos)*100:.0f}%" if total_disciplinas*total_polos > 0 else "0%")
+total_possivel = total_disciplinas * total_polos
 
-st.divider()
+col1, col2, col3, col4 = st.columns(4)
 
-# --- EXIBIR DISCIPLINAS ---
-st.subheader("📋 Disciplinas e Ofertas por Polo")
+col1.markdown(f"""
+<div style="background: white; padding: 0.8rem; border-radius: 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="font-size: 0.75rem; color: #6b7280;">Com oferta (✓)</div>
+    <div style="font-size: 1.8rem; font-weight: bold; color: #2e7d32;">{ofertas_ativas}</div>
+</div>
+""", unsafe_allow_html=True)
 
-# Filtros
-col_f1, col_f2, col_f3 = st.columns(3)
+col2.markdown(f"""
+<div style="background: white; padding: 0.8rem; border-radius: 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="font-size: 0.75rem; color: #6b7280;">Sem oferta (vazio)</div>
+    <div style="font-size: 1.8rem; font-weight: bold; color: #9ca3af;">{total_possivel - ofertas_ativas}</div>
+</div>
+""", unsafe_allow_html=True)
+
+col3.markdown(f"""
+<div style="background: white; padding: 0.8rem; border-radius: 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="font-size: 0.75rem; color: #6b7280;">Disciplinas</div>
+    <div style="font-size: 1.8rem; font-weight: bold; color: #1a5276;">{total_disciplinas}</div>
+</div>
+""", unsafe_allow_html=True)
+
+col4.markdown(f"""
+<div style="background: white; padding: 0.8rem; border-radius: 10px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="font-size: 0.75rem; color: #6b7280;">Polos</div>
+    <div style="font-size: 1.8rem; font-weight: bold; color: #1a5276;">{total_polos}</div>
+</div>
+""", unsafe_allow_html=True)
+
+st.markdown("---")
+
+# --- FILTROS ---
+col_f1, col_f2, col_f3 = st.columns([2, 1, 1])
 with col_f1:
-    busca = st.text_input("🔍 Buscar disciplina", placeholder="Nome ou código...")
+    busca = st.text_input("🔍 Buscar disciplina ou código...", placeholder="Digite o nome ou código", key="busca_input")
 with col_f2:
-    periodos = sorted(df['Periodo'].dropna().unique())
-    periodo_sel = st.selectbox("📌 Período", ["Todos"] + list(periodos))
+    periodos = sorted([p for p in df['Periodo'].dropna().unique() if str(p) != 'nan'], key=lambda x: str(x))
+    periodo_sel = st.selectbox("Período", ["Todos"] + list(periodos), key="periodo_select")
 with col_f3:
-    status_sel = st.selectbox("🏷️ Status", ["Todos", "Com oferta", "Sem oferta"])
+    status_sel = st.selectbox("Status", ["Todos", "Com oferta", "Sem oferta"], key="status_select")
 
-# Filtrar dados
+col_b1, col_b2 = st.columns(2)
+with col_b1:
+    if st.button("🗑️ Limpar filtros", use_container_width=True, key="limpar_filtros"):
+        st.session_state.busca_input = ""
+        st.session_state.periodo_select = "Todos"
+        st.session_state.status_select = "Todos"
+        st.rerun()
+with col_b2:
+    if st.button("🔄 Resetar ofertas (original)", use_container_width=True, key="reset_ofertas"):
+        st.cache_data.clear()
+        st.rerun()
+
+# --- FILTRAR DADOS ---
 df_filtrado = df.copy()
+
 if busca:
     df_filtrado = df_filtrado[
-        df_filtrado['Disciplina'].str.contains(busca, case=False, na=False) |
-        df_filtrado['Nome'].str.contains(busca, case=False, na=False)
+        df_filtrado['Disciplina'].astype(str).str.contains(busca, case=False, na=False) |
+        df_filtrado['Nome'].astype(str).str.contains(busca, case=False, na=False)
     ]
-if periodo_sel != "Todos":
-    df_filtrado = df_filtrado[df_filtrado['Periodo'] == periodo_sel]
 
-# Exibir cada disciplina
-for idx, row in df_filtrado.iterrows():
-    disciplina_cod = row['Disciplina']
-    disciplina_nome = row['Nome']
-    periodo = row['Periodo']
-    ch = row['Carga Horária']
+if periodo_sel != "Todos":
+    df_filtrado = df_filtrado[df_filtrado['Periodo'].astype(str) == str(periodo_sel)]
+
+if status_sel != "Todos":
+    mascara = []
+    for _, row in df_filtrado.iterrows():
+        tem_oferta = any(get_status(row, polo, df) == 'A' for polo in POLOS)
+        mascara.append(tem_oferta)
     
-    # Verificar se atende ao filtro de status
-    if status_sel != "Todos":
-        tem_oferta = False
+    if status_sel == "Com oferta":
+        df_filtrado = df_filtrado[mascara]
+    else:
+        df_filtrado = df_filtrado[[not m for m in mascara]]
+
+# --- LEGENDA ---
+st.markdown("""
+<div style="display: flex; gap: 20px; margin-bottom: 1rem; flex-wrap: wrap;">
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="background: #dcfce7; color: #166534; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">✓ UFRRJ</span>
+        <span style="font-size: 12px; color: #6b7280;">Oferta ativa (verde)</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="background: #f3f4f6; color: #9ca3af; padding: 2px 10px; border-radius: 4px; font-size: 11px;">—</span>
+        <span style="font-size: 12px; color: #6b7280;">Sem oferta (vazio/branco)</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="background: #eef2ff; padding: 2px 10px; border-radius: 4px; font-size: 11px;">🔘</span>
+        <span style="font-size: 12px; color: #6b7280;">Clique na célula para alternar</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# --- TABELA HTML COMPLETA ---
+html_table = f"""
+<style>
+    .tabela-ofertas {{
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12px;
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }}
+    .tabela-ofertas th {{
+        background: #2d6a4f;
+        color: white;
+        padding: 10px 6px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 10px;
+        white-space: nowrap;
+    }}
+    .tabela-ofertas td {{
+        padding: 8px 6px;
+        border-bottom: 1px solid #f3f4f6;
+        vertical-align: middle;
+    }}
+    .tabela-ofertas tr:hover {{
+        background: #f9fafb;
+    }}
+    .periodo-badge {{
+        background: #e0e7ff;
+        color: #3730a3;
+        padding: 3px 9px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }}
+    .disciplina-code {{
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        color: #6b7280;
+        white-space: nowrap;
+    }}
+    .disciplina-nome {{
+        font-weight: 500;
+        color: #111827;
+        text-align: left;
+    }}
+    .carga {{
+        font-size: 11px;
+        color: #9ca3af;
+        white-space: nowrap;
+    }}
+    .polo-cell {{
+        text-align: center;
+        cursor: pointer;
+    }}
+    .polo-ativo {{
+        background: #dcfce7;
+        color: #166534;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+        display: inline-block;
+    }}
+    .polo-inativo {{
+        background: #f3f4f6;
+        color: #9ca3af;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 10px;
+        white-space: nowrap;
+        display: inline-block;
+    }}
+    .btn-acao {{
+        background: #fee2e2;
+        color: #991b1b;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        width: 100%;
+    }}
+    .btn-acao-ativar {{
+        background: #dcfce7;
+        color: #166534;
+    }}
+    .section-header td {{
+        background: #f1f5f9;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+    }}
+    .section-spacer td {{
+        height: 12px;
+        background: #f4f6f9;
+        border: none;
+    }}
+    .texto-esquerda {{
+        text-align: left;
+    }}
+    .texto-centro {{
+        text-align: center;
+    }}
+</style>
+
+<script>
+function toggleOffer(disciplinaCod, polo, element) {{
+    // Enviar requisição para o backend Python via Streamlit
+    const url = window.location.href;
+    const data = {{ disciplinaCod: disciplinaCod, polo: polo }};
+    
+    // Mudar visual imediatamente (feedback)
+    const span = element.querySelector('span');
+    const isActive = span.classList.contains('polo-ativo');
+    
+    if (isActive) {{
+        span.className = 'polo-inativo';
+        span.innerHTML = '—';
+    }} else {{
+        span.className = 'polo-ativo';
+        const inst = span.getAttribute('data-inst') || 'UFRRJ';
+        span.innerHTML = '✓ ' + inst;
+    }}
+    
+    // Aqui você pode adicionar uma chamada fetch para salvar no backend
+    console.log('Toggle:', disciplinaCod, polo);
+}}
+</script>
+
+<table class="tabela-ofertas">
+    <thead>
+        <tr>
+            <th>Período</th>
+            <th>Código</th>
+            <th style="text-align:left">Disciplina</th>
+            <th>CH</th>
+"""
+
+for polo in POLOS:
+    html_table += f"<th>{polo}</th>"
+
+html_table += """
+            <th style="width:100px">Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+"""
+
+# Agrupar por período
+periodos_unicos = sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x))
+
+for periodo in periodos_unicos:
+    df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
+    
+    # Cabeçalho do período
+    html_table += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
+    
+    for _, row in df_periodo.iterrows():
+        disciplina_cod = str(row['Disciplina'])
+        disciplina_nome = str(row['Nome'])
+        ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
+        
+        html_table += '<tr>'
+        html_table += f'<td class="texto-centro"><span class="periodo-badge">{periodo}</span></td>'
+        html_table += f'<td class="texto-centro"><span class="disciplina-code">{disciplina_cod}</span></td>'
+        html_table += f'<td class="disciplina-nome">{disciplina_nome}</td>'
+        html_table += f'<td class="texto-centro"><span class="carga">{ch}h</span></td>'
+        
+        # Polos
+        algum_ativo = False
         for polo in POLOS:
-            status_col = f"{polo}.1" if f"{polo}.1" in df.columns else None
-            if status_col and row[status_col] == 'A':
-                tem_oferta = True
-                break
-        if status_sel == "Com oferta" and not tem_oferta:
-            continue
-        if status_sel == "Sem oferta" and tem_oferta:
-            continue
-    
-    with st.expander(f"📖 [{periodo}] {disciplina_cod} - {disciplina_nome} ({ch}h)"):
-        # Criar colunas para cada polo
-        cols = st.columns(len(POLOS) + 1)
-        
-        for i, polo in enumerate(POLOS):
-            status_col = f"{polo}.1" if f"{polo}.1" in df.columns else None
-            is_active = status_col and row[status_col] == 'A'
+            status = get_status(row, polo, df)
+            inst = get_inst(row, polo)
+            is_active = (status == 'A')
             
-            with cols[i]:
-                if is_active:
-                    if st.button(f"✅ {polo}", key=f"{disciplina_cod}_{polo}"):
-                        # TODO: Implementar salvamento na planilha
-                        st.toast(f"💾 {disciplina_cod} - Polo {polo}: desativado", icon="✅")
-                else:
-                    if st.button(f"❌ {polo}", key=f"{disciplina_cod}_{polo}"):
-                        # TODO: Implementar salvamento na planilha
-                        st.toast(f"💾 {disciplina_cod} - Polo {polo}: ativado", icon="✅")
-        
-        # Botão para ativar/desativar todos
-        with cols[-1]:
-            any_active = False
-            for polo in POLOS:
-                status_col = f"{polo}.1" if f"{polo}.1" in df.columns else None
-                if status_col and row[status_col] == 'A':
-                    any_active = True
-                    break
-            
-            if any_active:
-                if st.button(f"❌ Desativar todos", key=f"all_{disciplina_cod}"):
-                    st.toast(f"💾 {disciplina_cod}: todos os polos desativados", icon="✅")
+            if is_active:
+                algum_ativo = True
+                html_table += f'''
+                <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
+                    <span class="polo-ativo" data-inst="{inst}">✓ {inst}</span>
+                </td>
+                '''
             else:
-                if st.button(f"✅ Ativar todos", key=f"all_{disciplina_cod}"):
-                    st.toast(f"💾 {disciplina_cod}: todos os polos ativados", icon="✅")
+                html_table += f'''
+                <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
+                    <span class="polo-inativo">—</span>
+                </td>
+                '''
+        
+        # Botão de ação
+        if algum_ativo:
+            html_table += f'<td><button class="btn-acao" onclick="alert(\'Desativar todos: {disciplina_cod}\')">❌ Desativar todos</button></td>'
+        else:
+            html_table += f'<td><button class="btn-acao btn-acao-ativar" onclick="alert(\'Ativar todos: {disciplina_cod}\')">✅ Ativar todos</button></td>'
+        
+        html_table += '</tr>'
+    
+    # Espaçador
+    html_table += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
+
+html_table += """
+    </tbody>
+</table>
+"""
+
+# Exibir tabela
+st.markdown(html_table, unsafe_allow_html=True)
 
 # --- RODAPÉ ---
 st.divider()
 st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
-# --- BOTÃO PARA VOLTAR ---
-if st.button("← Voltar para lista de cursos"):
+# --- BOTÃO VOLTAR ---
+if st.button("← Voltar para lista de cursos", use_container_width=False):
     del st.session_state["sheet_id"]
     del st.session_state["curso_nome"]
-    st.switch_page("app.py")  # ← REMOVA O 'v' NO FINAL!
+    st.switch_page("app.py")
