@@ -40,16 +40,35 @@ if "sheet_id" not in st.session_state:
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
-# --- FUNÇÃO PARA CARREGAR DADOS ---
+
+# --- FUNÇÃO PARA CARREGAR DADOS (VERSÃO MAIS ROBUSTA) ---
 @st.cache_data(ttl=60)
 def carregar_dados(sheet_id):
-    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid=0"
-    try:
-        df = pd.read_csv(url, header=1)
-        return df
-    except Exception as e:
-        st.error(f"Erro ao carregar planilha: {e}")
-        return None
+    # Lista de URLs para tentar
+    urls = [
+        f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv",  # Sem gid (pega a primeira aba)
+        f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv&gid=0",  # Com gid=0
+    ]
+    
+    for url in urls:
+        try:
+            # Tenta ler o CSV, usando a primeira linha como cabeçalho (header=0)
+            # Se falhar, tenta pular a primeira linha (header=1)
+            for header_row in [0, 1]:
+                try:
+                    df = pd.read_csv(url, header=header_row)
+                    if df is not None and not df.empty:
+                        # Verifica se encontrou as colunas esperadas
+                        if 'Periodo' in df.columns and 'Disciplina' in df.columns:
+                            st.success(f"✅ Dados carregados com header={header_row}")
+                            return df
+                except:
+                    continue
+        except Exception as e:
+            continue
+    
+    st.error(f"❌ Erro ao carregar planilha ID {sheet_id}. Verifique se o link é público e a estrutura está correta.")
+    return None
 
 # --- FUNÇÃO PARA DETECTAR POLOS ---
 def detectar_polos(df):
