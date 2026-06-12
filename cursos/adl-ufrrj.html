@@ -164,118 +164,19 @@
 <div id="toast" class="toast"></div>
 
 <script>
-// POLOS DA LICENCIATURA EM ADMINISTRAÇÃO - UFRRJ
-const POLOS = ['CGR', 'DCA', 'MAC', 'NIG', 'PET', 'ROC', 'SGO', 'VRE'];
+// ============================================
+// CONFIGURAÇÃO - URL DO BACKEND (Google Sheets)
+// ============================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbxNhJz1y-hoq1DvDl-csLMMSruNAMIQTaBJGNBCH4KwO8znyqTNHseBUF47A4M3y7UjiA/exec';
 
-// DADOS COMPLETOS DA PLANILHA LICENCIATURA EM ADMINISTRAÇÃO UFRRJ
-const disciplinasData = [
-  {per:"01",cod:"EAD21001",nome:"Currículo e Gestão do Trabalho Escolar",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21002",nome:"Fundamentos da Educação Filosofia, Sociologia e Administração",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21003",nome:"Psicologia da Educação: Gênero, Direitos Hum. e Inclusão na Gestão",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21004",nome:"Didática e Avaliação e Administração",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21005",nome:"Práticas Pedagógicas de Adm. no Ens. Médio e Estágio I",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21020",nome:"Estágio 1",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD21025",nome:"NEPE - Produção de Material Didático",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"01",cod:"EAD01077",nome:"Introdução à Informática",ch:60,inst:{CGR:"UFF",DCA:"UFF",MAC:"UFF",NIG:"UFF",PET:"UFF",ROC:"UFF",SGO:"UFF",VRE:"UFF"}, status:{CGR:"A",DCA:"A",MAC:"A",NIG:"A",PET:"A",ROC:"A",SGO:"A",VRE:"A"}},
-  {per:"02",cod:"EAD08048",nome:"Língua Brasileira de Sinais/Libras",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21026",nome:"NEPE - Educação Ambiental",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21021",nome:"Estágio 2",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21006",nome:"Gestão Estratégica e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21007",nome:"Questões Econômicas no Ambiente Escolar",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21008",nome:"Gestão Educativa 1",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21009",nome:"Política da Organização Educacional e Administração",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"02",cod:"EAD21010",nome:"Equidade e Educação: EJA e Relações Étnico-raciais em Enisno de Adm.",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21011",nome:"Empreendedorismo no Ambiente Escolar",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21012",nome:"Gestão Educativa 2",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21013",nome:"Gestão de Pessoas e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21014",nome:"Contabilidade e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21015",nome:"Marketing e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21016",nome:"Finanças e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21022",nome:"Estágio 3",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"03",cod:"EAD21027",nome:"NEPE - Direitos Humanos",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"04",cod:"EAD21028",nome:"NEPE - Educação Étnico Racial",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"04",cod:"EAD21023",nome:"Estágio 4",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"04",cod:"EAD21017",nome:"Plano de Negócios e Educação",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"04",cod:"EAD21018",nome:"Trabalho de Conclusão de Curso 1",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"05",cod:"EAD21019",nome:"Trabalho de Conclusão de Curso 2",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"05",cod:"EAD21024",nome:"Estágio 5",ch:60,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}},
-  {per:"05",cod:"EAD21029",nome:"NEPE - Cibercultura e Educação",ch:30,inst:{CGR:"UFRRJ",DCA:"UFRRJ",MAC:"UFRRJ",NIG:"UFRRJ",PET:"UFRRJ",ROC:"UFRRJ",SGO:"UFRRJ",VRE:"UFRRJ"}, status:{CGR:"D",DCA:"D",MAC:"D",NIG:"D",PET:"D",ROC:"D",SGO:"D",VRE:"D"}}
-];
-
+// Estado global
 let offerState = {};
+let disciplinasData = [];
+let POLOS = [];
 
-function initState() {
-  disciplinasData.forEach(d => {
-    POLOS.forEach(polo => {
-      const key = `${d.cod}_${polo}`;
-      const statusValue = d.status[polo];
-      offerState[key] = (statusValue === 'A');
-    });
-  });
-  const saved = localStorage.getItem('adm_lic_offer_state_ufrrj_v1');
-  if (saved) {
-    try { Object.assign(offerState, JSON.parse(saved)); } catch(e) {}
-  }
-}
-
-function saveToLocal() {
-  localStorage.setItem('adm_lic_offer_state_ufrrj_v1', JSON.stringify(offerState));
-}
-
-function getReportText() {
-  const lines = [];
-  lines.push('RELATÓRIO DE OFERTA DE DISCIPLINAS - LICENCIATURA EM ADMINISTRAÇÃO UFRRJ 2/2026');
-  lines.push('=' .repeat(60));
-  lines.push(`Data: ${new Date().toLocaleString('pt-BR')}`);
-  lines.push('');
-  
-  let totalChanges = 0;
-  disciplinasData.forEach(d => {
-    const inactivePolos = POLOS.filter(p => !offerState[`${d.cod}_${p}`]);
-    if (inactivePolos.length > 0) {
-      totalChanges++;
-      lines.push(`📌 [${d.per}] ${d.cod} — ${d.nome}`);
-      inactivePolos.forEach(p => {
-        lines.push(`   ✗ Polo ${p}: oferta REMOVIDA (vazio)`);
-      });
-      lines.push('');
-    }
-  });
-  
-  if (totalChanges === 0) {
-    lines.push('✅ Nenhuma alteração — todas as ofertas seguem o padrão original da planilha.');
-  } else {
-    lines.push(`📊 Total de disciplinas com alteração: ${totalChanges}`);
-    lines.push(`📊 Total de remoções de oferta: ${disciplinasData.reduce((acc, d) => acc + POLOS.filter(p => !offerState[`${d.cod}_${p}`]).length, 0)}`);
-  }
-  
-  lines.push('');
-  lines.push('---');
-  lines.push('Enviado pelo sistema de Gestão de Oferta de Disciplinas - Licenciatura em Administração UFRRJ');
-  
-  return lines.join('\n');
-}
-
-function sendEmail() {
-  const report = getReportText();
-  const subject = encodeURIComponent('Relatório de Oferta - Licenciatura em Administração UFRRJ 2/2026');
-  const body = encodeURIComponent(report);
-  const email = 'matrizes.cederj@gmail.com';
-  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-  showToast('Abrindo cliente de email...');
-}
-
-function sendEmailFromModal() {
-  const textarea = document.getElementById('export-text');
-  const report = textarea.value;
-  const subject = encodeURIComponent('Alterações de Oferta - Licenciatura em Administração UFRRJ 2/2026');
-  const body = encodeURIComponent(report);
-  const email = 'matrizes.cederj@gmail.com';
-  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
-  showToast('Abrindo cliente de email...');
-  closeExport();
-}
-
+// ============================================
+// UTILITÁRIOS
+// ============================================
 function showToast(msg) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -283,55 +184,194 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
+// ============================================
+// CARREGAR DADOS DA PLANILHA
+// ============================================
+async function loadFromSheet() {
+  try {
+    showToast('🔄 Carregando dados da planilha...');
+    const response = await fetch(API_URL);
+    const data = await response.json();
+    
+    if (!data.success) throw new Error(data.error);
+    
+    // Atualizar polos
+    POLOS = data.polos;
+    
+    // Converter para o formato do sistema
+    disciplinasData = data.disciplinas.map(d => ({
+      per: d.periodo,
+      cod: d.codigo,
+      nome: d.nome,
+      ch: d.cargaHoraria,
+      inst: d.instituicoes,
+      status: d.ofertas
+    }));
+    
+    // Atualizar offerState
+    data.disciplinas.forEach(disciplina => {
+      POLOS.forEach(polo => {
+        const key = `${disciplina.codigo}_${polo}`;
+        offerState[key] = disciplina.ofertas[polo] === true;
+      });
+    });
+    
+    showToast(`✅ Carregado: ${disciplinasData.length} disciplinas, ${POLOS.length} polos`);
+    renderTable();
+    updateChangesBadge();
+    
+  } catch (error) {
+    console.error('Erro:', error);
+    showToast('❌ Erro ao carregar dados. Verifique sua conexão.');
+  }
+}
+
+// ============================================
+// SALVAR ALTERAÇÃO NA PLANILHA
+// ============================================
+async function saveToSheet(disciplinaCod, polo, novoStatus) {
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        disciplinaCod: disciplinaCod,
+        polo: polo,
+        status: novoStatus
+      })
+    });
+    
+    showToast(`💾 ${disciplinaCod} - Polo ${polo}: ${novoStatus ? 'ativado' : 'desativado'}`);
+    return true;
+    
+  } catch (error) {
+    console.error('Erro ao salvar:', error);
+    showToast('❌ Erro ao salvar. Tente novamente.');
+    return false;
+  }
+}
+
+// ============================================
+// ALTERNAR OFERTA
+// ============================================
+async function toggleOffer(d, polo) {
+  const key = `${d.cod}_${polo}`;
+  const novoStatus = !offerState[key];
+  
+  // Atualizar local (otimista)
+  offerState[key] = novoStatus;
+  
+  // Salvar na planilha
+  const salvou = await saveToSheet(d.cod, polo, novoStatus);
+  
+  if (!salvou) {
+    offerState[key] = !novoStatus;
+  }
+  
+  renderTable();
+  updateChangesBadge();
+}
+
+// ============================================
+// ALTERNAR TODOS OS POLOS DE UMA DISCIPLINA
+// ============================================
+function toggleAllForDiscipline(d) {
+  const anyActive = POLOS.some(p => offerState[`${d.cod}_${p}`]);
+  POLOS.forEach(polo => {
+    const key = `${d.cod}_${polo}`;
+    offerState[key] = !anyActive;
+    saveToSheet(d.cod, polo, !anyActive);
+  });
+  renderTable();
+  updateChangesBadge();
+}
+
+// ============================================
+// RESETAR (RECARREGAR DA PLANILHA)
+// ============================================
+async function resetAllToOriginal() {
+  if (confirm('⚠️ Isso vai recarregar os dados da planilha, descartando alterações não salvas. Deseja continuar?')) {
+    await loadFromSheet();
+    showToast('🔄 Dados recarregados da planilha');
+  }
+}
+
+// ============================================
+// RELATÓRIO
+// ============================================
+function getReportText() {
+  const lines = [];
+  lines.push('RELATÓRIO DE OFERTA DE DISCIPLINAS - LICENCIATURA EM ADMINISTRAÇÃO UFRRJ 2/2026');
+  lines.push('='.repeat(60));
+  lines.push(`Data: ${new Date().toLocaleString('pt-BR')}`);
+  lines.push(`Fonte: Google Sheets (dados em tempo real)`);
+  lines.push('');
+  
+  let totalInativas = 0;
+  
+  disciplinasData.forEach(d => {
+    const inactivePolos = POLOS.filter(p => !offerState[`${d.cod}_${p}`]);
+    
+    if (inactivePolos.length > 0) {
+      totalInativas += inactivePolos.length;
+      lines.push(`📌 [${d.per}] ${d.cod} — ${d.nome}`);
+      inactivePolos.forEach(p => {
+        lines.push(`   ✗ Polo ${p}: oferta REMOVIDA`);
+      });
+      lines.push('');
+    }
+  });
+  
+  if (totalInativas === 0) {
+    lines.push('✅ Nenhuma alteração — todas as ofertas seguem o padrão original da planilha.');
+  } else {
+    lines.push(`📊 Total de remoções: ${totalInativas}`);
+  }
+  
+  lines.push('');
+  lines.push('---');
+  lines.push('Enviado pelo sistema de Gestão de Oferta de Disciplinas');
+  
+  return lines.join('\n');
+}
+
+// ============================================
+// EMAIL
+// ============================================
+function sendEmail() {
+  const report = getReportText();
+  const subject = encodeURIComponent('Relatório de Oferta - Licenciatura em Administração UFRRJ 2/2026');
+  const body = encodeURIComponent(report);
+  window.location.href = `mailto:matrizes.cederj@gmail.com?subject=${subject}&body=${body}`;
+  showToast('Abrindo cliente de email...');
+}
+
+function sendEmailFromModal() {
+  const report = document.getElementById('export-text').value;
+  const subject = encodeURIComponent('Alterações de Oferta - Licenciatura em Administração UFRRJ 2/2026');
+  const body = encodeURIComponent(report);
+  window.location.href = `mailto:matrizes.cederj@gmail.com?subject=${subject}&body=${body}`;
+  showToast('Abrindo cliente de email...');
+  closeExport();
+}
+
 function saveAndSendEmail() {
-  saveToLocal();
   const changedCount = disciplinasData.reduce((acc, d) => acc + POLOS.filter(p => !offerState[`${d.cod}_${p}`]).length, 0);
   if (changedCount === 0) {
     if (confirm('Nenhuma alteração foi feita. Deseja enviar um relatório confirmando que tudo está conforme o original?')) {
       sendEmail();
     }
   } else {
-    if (confirm(`Foram registradas ${changedCount} remoções de oferta. Deseja salvar e enviar o relatório por email para matrizes.cederj@gmail.com?`)) {
+    if (confirm(`Foram registradas ${changedCount} remoções de oferta. Deseja enviar o relatório por email para matrizes.cederj@gmail.com?`)) {
       sendEmail();
     }
   }
 }
 
-function toggleOffer(d, polo) {
-  const key = `${d.cod}_${polo}`;
-  offerState[key] = !offerState[key];
-  saveToLocal();
-  renderTable();
-  updateChangesBadge();
-}
-
-function toggleAllForDiscipline(d) {
-  const anyActive = POLOS.some(p => offerState[`${d.cod}_${p}`]);
-  POLOS.forEach(polo => {
-    const key = `${d.cod}_${polo}`;
-    offerState[key] = !anyActive;
-  });
-  saveToLocal();
-  renderTable();
-  updateChangesBadge();
-}
-
-function resetAllToOriginal() {
-  if (confirm('⚠️ Atenção: isso irá restaurar todas as ofertas para o estado original da planilha. Deseja continuar?')) {
-    disciplinasData.forEach(d => {
-      POLOS.forEach(polo => {
-        const key = `${d.cod}_${polo}`;
-        const statusValue = d.status[polo];
-        offerState[key] = (statusValue === 'A');
-      });
-    });
-    saveToLocal();
-    renderTable();
-    updateChangesBadge();
-    showToast('Ofertas restauradas para o padrão original');
-  }
-}
-
+// ============================================
+// RENDERIZAÇÃO DA TABELA
+// ============================================
 function renderTable() {
   const tbody = document.getElementById('tbody');
   const searchTerm = document.getElementById('search').value.toLowerCase();
@@ -339,9 +379,6 @@ function renderTable() {
   const statusVal = document.getElementById('filter-status').value;
   
   tbody.innerHTML = '';
-  
-  const numericPeriods = ['01', '02', '03', '04', '05'];
-  const periodosNumericos = disciplinasData.filter(d => numericPeriods.includes(d.per));
   
   function filterDisciplinas(list) {
     return list.filter(d => {
@@ -353,13 +390,12 @@ function renderTable() {
     });
   }
   
-  const filteredNumeric = filterDisciplinas(periodosNumericos);
+  const filtered = filterDisciplinas(disciplinasData);
+  let lastPeriod = null;
   
-  let lastNumericPeriod = null;
-  
-  filteredNumeric.forEach(d => {
-    if (d.per !== lastNumericPeriod) {
-      if (lastNumericPeriod !== null) {
+  filtered.forEach(d => {
+    if (d.per !== lastPeriod) {
+      if (lastPeriod !== null) {
         const spacerRow = tbody.insertRow();
         spacerRow.className = 'section-spacer';
         spacerRow.innerHTML = `<td colspan="12">`;
@@ -367,7 +403,7 @@ function renderTable() {
       const sectionRow = tbody.insertRow();
       sectionRow.className = 'section-header';
       sectionRow.innerHTML = `<td colspan="12"><strong>📌 PERÍODO ${d.per}</strong>`;
-      lastNumericPeriod = d.per;
+      lastPeriod = d.per;
     }
     renderDisciplinaRow(tbody, d);
   });
@@ -386,7 +422,7 @@ function renderDisciplinaRow(tbody, d) {
     const cell = row.insertCell();
     cell.className = 'polo-cell';
     const isActive = offerState[`${d.cod}_${polo}`];
-    const instName = d.inst[polo] || '—';
+    const instName = d.inst && d.inst[polo] ? d.inst[polo] : '—';
     cell.innerHTML = isActive ? `<span class="polo-val polo-active">✓ ${instName}</span>` : `<span class="polo-val polo-inactive">—</span>`;
     cell.onclick = (function(discipl, p) { return function() { toggleOffer(discipl, p); }; })(d, polo);
   });
@@ -420,9 +456,19 @@ function updateChangesBadge() {
   badge.classList.toggle('visible', changes > 0);
 }
 
+// ============================================
+// FILTROS E MODAL
+// ============================================
+function applyFilters() { renderTable(); }
+function resetFilters() {
+  document.getElementById('search').value = '';
+  document.getElementById('filter-periodo').value = '';
+  document.getElementById('filter-status').value = '';
+  renderTable();
+}
+
 function openExport() {
-  const report = getReportText();
-  document.getElementById('export-text').value = report;
+  document.getElementById('export-text').value = getReportText();
   document.getElementById('export-modal').classList.add('open');
 }
 
@@ -437,20 +483,25 @@ function copyExport() {
   showToast('Copiado para área de transferência!');
 }
 
-function applyFilters() { renderTable(); }
-function resetFilters() {
-  document.getElementById('search').value = '';
-  document.getElementById('filter-periodo').value = '';
-  document.getElementById('filter-status').value = '';
-  renderTable();
-}
-
+// ============================================
+// EXPOR FUNÇÕES GLOBAIS
+// ============================================
+window.toggleOffer = toggleOffer;
 window.toggleAllForDiscipline = toggleAllForDiscipline;
+window.resetAllToOriginal = resetAllToOriginal;
+window.applyFilters = applyFilters;
+window.resetFilters = resetFilters;
+window.openExport = openExport;
+window.closeExport = closeExport;
+window.copyExport = copyExport;
+window.saveAndSendEmail = saveAndSendEmail;
+window.sendEmailFromModal = sendEmailFromModal;
 window.disciplinasData = disciplinasData;
 
-initState();
-renderTable();
-updateChangesBadge();
+// ============================================
+// INICIALIZAÇÃO
+// ============================================
+loadFromSheet();
 
 document.getElementById('export-modal').addEventListener('click', function(e) {
   if (e.target === this) closeExport();
