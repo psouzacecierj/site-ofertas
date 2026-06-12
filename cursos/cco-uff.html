@@ -37,13 +37,13 @@
   .filter-label { font-size: 12px; color: #6b7280; font-weight: 500; }
 
   .table-wrapper { padding: 0 28px 40px; overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-width: 1300px; }
-  thead th { background: #1a6b5e; color: white; padding: 12px 8px; text-align: left; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
+  table { width: 100%; border-collapse: collapse; margin-top: 16px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-width: 1600px; }
+  thead th { background: #1a6b5e; color: white; padding: 12px 6px; text-align: left; font-size: 10px; font-weight: 600; letter-spacing: 0.04em; white-space: nowrap; }
   thead th.center { text-align: center; }
   tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.1s; }
   tbody tr:last-child { border-bottom: none; }
   tbody tr:hover { background: #f9fafb; }
-  td { padding: 10px 8px; vertical-align: middle; font-size: 12px; }
+  td { padding: 10px 6px; vertical-align: middle; font-size: 12px; }
 
   .periodo-badge { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 11px; font-weight: 600; background: #e0e7ff; color: #3730a3; }
   .periodo-opt { background: #d1fae5; color: #065f46; }
@@ -52,13 +52,13 @@
   .disciplina-name { font-weight: 500; color: #111827; }
   .carga { font-size: 11px; color: #9ca3af; }
 
-  .polo-cell { text-align: center; padding: 8px 4px; cursor: pointer; }
-  .polo-val { display: inline-block; font-size: 10px; font-weight: 600; padding: 4px 6px; border-radius: 5px; }
+  .polo-cell { text-align: center; padding: 8px 2px; cursor: pointer; }
+  .polo-val { display: inline-block; font-size: 9px; font-weight: 600; padding: 3px 5px; border-radius: 5px; }
   .polo-active { background: #dcfce7; color: #166534; }
   .polo-inactive { background: #f3f4f6; color: #9ca3af; }
 
   .action-cell { text-align: center; padding: 8px 10px; }
-  .toggle-btn { padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; font-size: 11px; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
+  .toggle-btn { padding: 4px 10px; border-radius: 20px; border: none; cursor: pointer; font-size: 10px; font-weight: 600; transition: all 0.15s; white-space: nowrap; }
   .toggle-on { background: #dcfce7; color: #166534; }
   .toggle-on:hover { background: #bbf7d0; }
   .toggle-off { background: #fee2e2; color: #991b1b; }
@@ -140,7 +140,7 @@
 </div>
 
 <div class="legend">
-  <span class="legend-item"><span class="legend-pill polo-active">✓ UFF/UFRJ</span> Oferta ativa (verde)</span>
+  <span class="legend-item"><span class="legend-pill polo-active">✓ UFF</span> Oferta ativa (verde)</span>
   <span class="legend-item"><span class="legend-pill polo-inactive">—</span> Sem oferta (vazio/branco)</span>
   <span class="legend-item"><span class="legend-pill" style="background:#eef2ff;">🔘</span> Clique na célula para alternar</span>
 </div>
@@ -148,7 +148,7 @@
 <div class="table-wrapper">
   <table id="main-table">
     <thead>
-      <tr><th style="width:55px">Período</th><th style="width:90px">Código</th><th>Disciplina</th><th class="center" style="width:50px">CH</th><th class="center">BJA</th><th class="center">BJE</th><th class="center">MAC</th><th class="center">NFR</th><th class="center">PIN</th><th class="center">PTY</th><th class="center">RBO</th><th class="center">SFR</th><th class="center" style="width:100px">Ação</th></tr>
+      <tr><th style="width:55px">Período</th><th style="width:90px">Código</th><th>Disciplina</th><th class="center" style="width:45px">CH</th><th class="center">BJA</th><th class="center">BJE</th><th class="center">MAC</th><th class="center">NFR</th><th class="center">PIN</th><th class="center">PTY</th><th class="center">RBO</th><th class="center">SFR</th><th class="center" style="width:100px">Ação</th></tr>
     </thead>
     <tbody id="tbody"></tbody>
   </table>
@@ -178,78 +178,78 @@ const disciplinasData = [
   {per:"01",cod:"EAD17001",nome:"Teoria da Contabilidade I",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
   {per:"01",cod:"EAD17002",nome:"Contabilidade I",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
   {per:"01",cod:"EAD17003",nome:"Matemática aplicada à Contabilidade I",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"02",cod:"EAD17004",nome:"Contabilidade II",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"02",cod:"EAD17005",nome:"Matemática aplicada à Contabilidade II",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"02",cod:"EAD17006",nome:"Métodos e Técnicas de Pesquisa em Contabilidade",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"02",cod:"EAD17007",nome:"Matemática Financeira",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"03",cod:"EAD17008",nome:"Contabilidade Intermediária",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"03",cod:"EAD17009",nome:"Contabilidade de Custos",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"03",cod:"EAD17011",nome:"Economia I",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"03",cod:"EAD17012",nome:"Introdução à Administração e Comportamento Organizacional",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"04",cod:"EAD17013",nome:"Contabilidade Gerencial",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"04",cod:"EAD17014",nome:"Instituições de Direito aplicada à Contabilidade",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"04",cod:"EAD17015",nome:"Economia II",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"04",cod:"EAD17016",nome:"Contabilidade Avançada I",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"05",cod:"EAD17017",nome:"Contabilidade Avançada II",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"05",cod:"EAD17018",nome:"Legislação Tributária",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"05",cod:"EAD17019",nome:"Métodos Quantitativos I",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"05",cod:"EAD17020",nome:"Estágio Supervisionado",ch:300,inst:{BJA:"UFF/UFRJ",BJE:"UFF/UFRJ",MAC:"UFF/UFRJ",NFR:"UFF/UFRJ",PIN:"UFF/UFRJ",PTY:"UFF/UFRJ",RBO:"UFF/UFRJ",SFR:"UFF/UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"05",cod:"EAD17021",nome:"Legislação Empresarial",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"06",cod:"EAD17022",nome:"Orçamento e Planejamento Empresarial",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"06",cod:"EAD17023",nome:"Métodos Quantitativos II",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"06",cod:"EAD17024",nome:"Legislação Social e Trabalhista",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"06",cod:"EAD17025",nome:"Contabilidade Tributária",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"07",cod:"EAD17027",nome:"Controladoria",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"07",cod:"EAD17028",nome:"Análise Econômico-financeira",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"07",cod:"EAD17035",nome:"Projeto de Pesquisa em Contabilidade",ch:60,inst:{BJA:"UFF/UFRJ",BJE:"UFF/UFRJ",MAC:"UFF/UFRJ",NFR:"UFF/UFRJ",PIN:"UFF/UFRJ",PTY:"UFF/UFRJ",RBO:"UFF/UFRJ",SFR:"UFF/UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"07",cod:"EAD17032",nome:"Orçamento e Planejamento Governamental",ch:60,inst:{BJA:"UFRJ",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"08",cod:"EAD17033",nome:"Administração Financeira I",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"08",cod:"EAD17034",nome:"Auditoria",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"08",cod:"EAD17037",nome:"Contabilidade Governamental",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"08",cod:"EAD17038",nome:"Monografia",ch:180,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"09",cod:"EAD17041",nome:"Ética Profissional",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"09",cod:"EAD17042",nome:"Perícia Contábil",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17043",nome:"Avaliação de Empresas",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17044",nome:"Gestão de Riscos",ch:45,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17045",nome:"Simulação Empresarial",ch:45,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17046",nome:"Gestão, Tecnologia e Inovação I",ch:45,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17047",nome:"Análise de Investimentos",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17048",nome:"Mercado Mobiliário",ch:45,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17049",nome:"Auditoria e Contabilidade Governamental",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17050",nome:"Análise Balanços Governamental",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17051",nome:"Contabilidade Socioambiental",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17052",nome:"Aspectos Contábeis das Empresas Seguradoras",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17053",nome:"Aspectos Contábeis das Instituições Financeira",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17054",nome:"Fundamentos de Atuária",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17055",nome:"Filosofia das Organizações",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17056",nome:"Marketing",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17057",nome:"Gestão de Projetos",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17058",nome:"Combinação de Negócios",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17059",nome:"Contabilidade Governamental Avançada",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17060",nome:"Gestão de Planejamento Tributário",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17061",nome:"Finanças Pessoais",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17062",nome:"Gestão, Desenvolvimento e Inovação I",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17063",nome:"Gestão, Desenvolvimento e Inovação II",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17039",nome:"Administração Financeira II",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD00031",nome:"Libras",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17029",nome:"Teoria da Contabilidade II",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17030",nome:"Mercado Financeiro",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD17031",nome:"Contabilidade Trabalhista",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11019",nome:"Teoria das Finanças Públicas",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11026",nome:"Gestão de Pessoas no Setor Público",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11036",nome:"Auditoria e Controladoria",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11037",nome:"Negociação e Arbitragem",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11061",nome:"Empreendedorismo Governamental",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11062",nome:"Licitação, Contratos e Convênios",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11063",nome:"Gestão da Qualidade no Setor Público",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11082",nome:"Planejamento Governamental",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11085",nome:"Gestão de Projetos Públicos",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11088",nome:"Políticas Públicas",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11092",nome:"Inovação na Administração Pública",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11093",nome:"Regulação de Serviços Públicos",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11098",nome:"Direito e Legislação Tributária",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11099",nome:"Marketing e Sociedade",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}},
-  {per:"Opt",cod:"EAD11100",nome:"Redação Oficial",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"A",RBO:"A",SFR:"A"}}
+  {per:"02",cod:"EAD17004",nome:"Contabilidade II",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"A",SFR:"A"}},
+  {per:"02",cod:"EAD17005",nome:"Matemática aplicada à Contabilidade II",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"A",SFR:"A"}},
+  {per:"02",cod:"EAD17006",nome:"Métodos e Técnicas de Pesquisa em Contabilidade",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"A",SFR:"A"}},
+  {per:"02",cod:"EAD17007",nome:"Matemática Financeira",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"A",SFR:"A"}},
+  {per:"03",cod:"EAD17008",nome:"Contabilidade Intermediária",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"A",SFR:"A"}},
+  {per:"03",cod:"EAD17009",nome:"Contabilidade de Custos",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"A",SFR:"A"}},
+  {per:"03",cod:"EAD17011",nome:"Economia I",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"A",SFR:"A"}},
+  {per:"03",cod:"EAD17012",nome:"Introdução à Administração e Comportamento Organizacional",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"A",SFR:"A"}},
+  {per:"04",cod:"EAD17013",nome:"Contabilidade Gerencial",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"04",cod:"EAD17014",nome:"Instituições de Direito aplicada à Contabilidade",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"04",cod:"EAD17015",nome:"Economia II",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"04",cod:"EAD17016",nome:"Contabilidade Avançada I",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"05",cod:"EAD17017",nome:"Contabilidade Avançada II",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"05",cod:"EAD17018",nome:"Legislação Tributária",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"05",cod:"EAD17019",nome:"Métodos Quantitativos I",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"05",cod:"EAD17020",nome:"Estágio Supervisionado",ch:300,inst:{BJA:"UFF/UFRJ",BJE:"UFF/UFRJ",MAC:"UFF/UFRJ",NFR:"UFF/UFRJ",PIN:"UFF/UFRJ",PTY:"UFF/UFRJ",RBO:"UFF/UFRJ",SFR:"UFF/UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"05",cod:"EAD17021",nome:"Legislação Empresarial",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"06",cod:"EAD17022",nome:"Orçamento e Planejamento Empresarial",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"06",cod:"EAD17023",nome:"Métodos Quantitativos II",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"06",cod:"EAD17024",nome:"Legislação Social e Trabalhista",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"06",cod:"EAD17025",nome:"Contabilidade Tributária",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"07",cod:"EAD17027",nome:"Controladoria",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"07",cod:"EAD17028",nome:"Análise Econômico-financeira",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"07",cod:"EAD17035",nome:"Projeto de Pesquisa em Contabilidade",ch:60,inst:{BJA:"UFF/UFRJ",BJE:"UFF/UFRJ",MAC:"UFF/UFRJ",NFR:"UFF/UFRJ",PIN:"UFF/UFRJ",PTY:"UFF/UFRJ",RBO:"UFF/UFRJ",SFR:"UFF/UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"07",cod:"EAD17032",nome:"Orçamento e Planejamento Governamental",ch:60,inst:{BJA:"UFRJ",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"08",cod:"EAD17033",nome:"Administração Financeira I",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"08",cod:"EAD17034",nome:"Auditoria",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"08",cod:"EAD17037",nome:"Contabilidade Governamental",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"08",cod:"EAD17038",nome:"Monografia",ch:180,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"09",cod:"EAD17041",nome:"Ética Profissional",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"09",cod:"EAD17042",nome:"Perícia Contábil",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17043",nome:"Avaliação de Empresas",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17044",nome:"Gestão de Riscos",ch:45,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17045",nome:"Simulação Empresarial",ch:45,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17046",nome:"Gestão, Tecnologia e Inovação I",ch:45,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17047",nome:"Análise de Investimentos",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17048",nome:"Mercado Mobiliário",ch:45,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17049",nome:"Auditoria e Contabilidade Governamental",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17050",nome:"Análise Balanços Governamental",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17051",nome:"Contabilidade Socioambiental",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17052",nome:"Aspectos Contábeis das Empresas Seguradoras",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17053",nome:"Aspectos Contábeis das Instituições Financeira",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17054",nome:"Fundamentos de Atuária",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17055",nome:"Filosofia das Organizações",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17056",nome:"Marketing",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17057",nome:"Gestão de Projetos",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17058",nome:"Combinação de Negócios",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17059",nome:"Contabilidade Governamental Avançada",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17060",nome:"Gestão de Planejamento Tributário",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17061",nome:"Finanças Pessoais",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17062",nome:"Gestão, Desenvolvimento e Inovação I",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17063",nome:"Gestão, Desenvolvimento e Inovação II",ch:45,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17039",nome:"Administração Financeira II",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD00031",nome:"Libras",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17029",nome:"Teoria da Contabilidade II",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD17030",nome:"Mercado Financeiro",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD17031",nome:"Contabilidade Trabalhista",ch:60,inst:{BJA:"UFRJ",BJE:"UFRJ",MAC:"UFRJ",NFR:"UFRJ",PIN:"UFRJ",PTY:"UFRJ",RBO:"UFRJ",SFR:"UFRJ"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11019",nome:"Teoria das Finanças Públicas",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"D",BJE:"D",MAC:"D",NFR:"D",PIN:"D",PTY:"D",RBO:"D",SFR:"D"}},
+  {per:"Opt",cod:"EAD11026",nome:"Gestão de Pessoas no Setor Público",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11036",nome:"Auditoria e Controladoria",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11037",nome:"Negociação e Arbitragem",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11061",nome:"Empreendedorismo Governamental",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11062",nome:"Licitação, Contratos e Convênios",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11063",nome:"Gestão da Qualidade no Setor Público",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11082",nome:"Planejamento Governamental",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11085",nome:"Gestão de Projetos Públicos",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11088",nome:"Políticas Públicas",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11092",nome:"Inovação na Administração Pública",ch:60,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11093",nome:"Regulação de Serviços Públicos",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11098",nome:"Direito e Legislação Tributária",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11099",nome:"Marketing e Sociedade",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}},
+  {per:"Opt",cod:"EAD11100",nome:"Redação Oficial",ch:30,inst:{BJA:"UFF",BJE:"UFF",MAC:"UFF",NFR:"UFF",PIN:"UFF",PTY:"UFF",RBO:"UFF",SFR:"UFF"}, status:{BJA:"A",BJE:"A",MAC:"A",NFR:"A",PIN:"A",PTY:"D",RBO:"D",SFR:"A"}}
 ];
 
 let offerState = {};
@@ -262,14 +262,14 @@ function initState() {
       offerState[key] = (statusValue === 'A');
     });
   });
-  const saved = localStorage.getItem('cco_offer_state_uff_v1');
+  const saved = localStorage.getItem('cco_offer_state_uff_v2');
   if (saved) {
     try { Object.assign(offerState, JSON.parse(saved)); } catch(e) {}
   }
 }
 
 function saveToLocal() {
-  localStorage.setItem('cco_offer_state_uff_v1', JSON.stringify(offerState));
+  localStorage.setItem('cco_offer_state_uff_v2', JSON.stringify(offerState));
 }
 
 function getReportText() {
