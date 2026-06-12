@@ -181,4 +181,4 @@ st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%
 if st.button("← Voltar para lista de cursos"):
     del st.session_state["sheet_id"]
     del st.session_state["curso_nome"]
-    st.switch_page("app.py")v
+    st.switch_page("app.py")  # ← REMOVA O 'v' NO FINAL!
