@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import streamlit.components.v1 as components
 
 # --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="Gestão de Oferta", layout="wide")
@@ -15,19 +14,152 @@ st.markdown("""
     .stAppDeployButton {display: none;}
     footer {visibility: hidden;}
     .stActionButton {display: none;}
-    .st-emotion-cache-1v0mbdj {display: none;}
     
-    /* Esconder elementos padrão do Streamlit */
-    .stApp > header {display: none;}
-    .stAppHeader {display: none;}
-    
-    /* Ajuste do container principal */
     .main .block-container {
         padding-top: 1rem;
         padding-bottom: 0rem;
         max-width: 100%;
     }
+    
+    /* Estilos da tabela */
+    .tabela-ofertas {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12px;
+        background: white;
+        border-radius: 10px;
+        overflow-x: auto;
+        display: block;
+    }
+    .tabela-ofertas th {
+        background: #2d6a4f;
+        color: white;
+        padding: 10px 6px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 10px;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+    }
+    .tabela-ofertas td {
+        padding: 8px 6px;
+        border-bottom: 1px solid #f3f4f6;
+        vertical-align: middle;
+    }
+    .tabela-ofertas tr:hover {
+        background: #f9fafb;
+    }
+    .periodo-badge {
+        background: #e0e7ff;
+        color: #3730a3;
+        padding: 3px 9px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+    .disciplina-code {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        color: #6b7280;
+        white-space: nowrap;
+    }
+    .disciplina-nome {
+        font-weight: 500;
+        color: #111827;
+        text-align: left;
+    }
+    .carga {
+        font-size: 11px;
+        color: #9ca3af;
+        white-space: nowrap;
+    }
+    .polo-cell {
+        text-align: center;
+        cursor: pointer;
+    }
+    .polo-ativo {
+        background: #dcfce7;
+        color: #166534;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .polo-inativo {
+        background: #f3f4f6;
+        color: #9ca3af;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 10px;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .btn-acao {
+        background: #fee2e2;
+        color: #991b1b;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        width: 100%;
+    }
+    .btn-acao-ativar {
+        background: #dcfce7;
+        color: #166534;
+    }
+    .section-header td {
+        background: #f1f5f9;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+    }
+    .section-spacer td {
+        height: 12px;
+        background: #f4f6f9;
+        border: none;
+    }
+    .texto-esquerda {
+        text-align: left;
+    }
+    .texto-centro {
+        text-align: center;
+    }
 </style>
+
+<script>
+function toggleOffer(disciplinaCod, polo, element) {
+    const span = element.querySelector('span');
+    const isActive = span.classList.contains('polo-ativo');
+    const inst = span.getAttribute('data-inst') || 'UFRRJ';
+    
+    if (isActive) {
+        span.className = 'polo-inativo';
+        span.innerHTML = '—';
+        span.removeAttribute('data-inst');
+        console.log('Desativado:', disciplinaCod, polo);
+    } else {
+        span.className = 'polo-ativo';
+        span.innerHTML = '✓ ' + inst;
+        span.setAttribute('data-inst', inst);
+        console.log('Ativado:', disciplinaCod, polo);
+    }
+}
+
+function toggleAll(disciplinaCod, acao) {
+    console.log(acao + ' todos:', disciplinaCod);
+    alert(acao + ' todos: ' + disciplinaCod);
+}
+</script>
 """, unsafe_allow_html=True)
 
 # --- RECUPERAR DADOS DO CURSO ---
@@ -56,7 +188,7 @@ def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
     for col in colunas:
-        if col and len(col) == 3 and col.isupper() and col not in ['PER', 'DIS', 'NOM', 'CAR']:
+        if col and len(col) == 3 and col.isupper() and col not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD']:
             polos.append(col)
     return polos
 
@@ -70,7 +202,8 @@ def get_status(row, polo, df):
                 if status_col in row.index:
                     val = row[status_col]
                     if pd.notna(val):
-                        return val
+                        return str(val).strip()
+            break
     return 'D'
 
 # --- FUNÇÃO PARA OBTER INSTITUIÇÃO DE UM POLO ---
@@ -94,7 +227,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- ESTATÍSTICAS (cards simples) ---
+# --- ESTATÍSTICAS ---
 total_disciplinas = len(df)
 total_polos = len(POLOS)
 
@@ -202,163 +335,16 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- TABELA HTML COMPLETA ---
-html_table = f"""
-<style>
-    .tabela-ofertas {{
-        width: 100%;
-        border-collapse: collapse;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 12px;
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-        box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-    }}
-    .tabela-ofertas th {{
-        background: #2d6a4f;
-        color: white;
-        padding: 10px 6px;
-        text-align: center;
-        font-weight: 600;
-        font-size: 10px;
-        white-space: nowrap;
-    }}
-    .tabela-ofertas td {{
-        padding: 8px 6px;
-        border-bottom: 1px solid #f3f4f6;
-        vertical-align: middle;
-    }}
-    .tabela-ofertas tr:hover {{
-        background: #f9fafb;
-    }}
-    .periodo-badge {{
-        background: #e0e7ff;
-        color: #3730a3;
-        padding: 3px 9px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 600;
-        display: inline-block;
-        white-space: nowrap;
-    }}
-    .disciplina-code {{
-        font-family: 'Courier New', monospace;
-        font-size: 11px;
-        color: #6b7280;
-        white-space: nowrap;
-    }}
-    .disciplina-nome {{
-        font-weight: 500;
-        color: #111827;
-        text-align: left;
-    }}
-    .carga {{
-        font-size: 11px;
-        color: #9ca3af;
-        white-space: nowrap;
-    }}
-    .polo-cell {{
-        text-align: center;
-        cursor: pointer;
-    }}
-    .polo-ativo {{
-        background: #dcfce7;
-        color: #166534;
-        padding: 4px 8px;
-        border-radius: 16px;
-        font-size: 10px;
-        font-weight: 600;
-        white-space: nowrap;
-        display: inline-block;
-    }}
-    .polo-inativo {{
-        background: #f3f4f6;
-        color: #9ca3af;
-        padding: 4px 8px;
-        border-radius: 16px;
-        font-size: 10px;
-        white-space: nowrap;
-        display: inline-block;
-    }}
-    .btn-acao {{
-        background: #fee2e2;
-        color: #991b1b;
-        border: none;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        white-space: nowrap;
-        width: 100%;
-    }}
-    .btn-acao-ativar {{
-        background: #dcfce7;
-        color: #166534;
-    }}
-    .section-header td {{
-        background: #f1f5f9;
-        padding: 8px 12px;
-        font-size: 11px;
-        font-weight: 700;
-        color: #475569;
-    }}
-    .section-spacer td {{
-        height: 12px;
-        background: #f4f6f9;
-        border: none;
-    }}
-    .texto-esquerda {{
-        text-align: left;
-    }}
-    .texto-centro {{
-        text-align: center;
-    }}
-</style>
-
-<script>
-function toggleOffer(disciplinaCod, polo, element) {{
-    // Enviar requisição para o backend Python via Streamlit
-    const url = window.location.href;
-    const data = {{ disciplinaCod: disciplinaCod, polo: polo }};
-    
-    // Mudar visual imediatamente (feedback)
-    const span = element.querySelector('span');
-    const isActive = span.classList.contains('polo-ativo');
-    
-    if (isActive) {{
-        span.className = 'polo-inativo';
-        span.innerHTML = '—';
-    }} else {{
-        span.className = 'polo-ativo';
-        const inst = span.getAttribute('data-inst') || 'UFRRJ';
-        span.innerHTML = '✓ ' + inst;
-    }}
-    
-    // Aqui você pode adicionar uma chamada fetch para salvar no backend
-    console.log('Toggle:', disciplinaCod, polo);
-}}
-</script>
-
-<table class="tabela-ofertas">
-    <thead>
-        <tr>
-            <th>Período</th>
-            <th>Código</th>
-            <th style="text-align:left">Disciplina</th>
-            <th>CH</th>
-"""
+# --- CONSTRUIR TABELA HTML ---
+html_table = '<div style="overflow-x: auto;"><table class="tabela-ofertas">'
+html_table += '<thead><tr>'
+html_table += '<th>Período</th><th>Código</th><th style="text-align:left">Disciplina</th><th>CH</th>'
 
 for polo in POLOS:
-    html_table += f"<th>{polo}</th>"
+    html_table += f'<th>{polo}</th>'
 
-html_table += """
-            <th style="width:100px">Ação</th>
-        </tr>
-    </thead>
-    <tbody>
-"""
+html_table += '<th style="width:100px">Ação</th>'
+html_table += '</thead><tbody>'
 
 # Agrupar por período
 periodos_unicos = sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x))
@@ -370,8 +356,8 @@ for periodo in periodos_unicos:
     html_table += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
     
     for _, row in df_periodo.iterrows():
-        disciplina_cod = str(row['Disciplina'])
-        disciplina_nome = str(row['Nome'])
+        disciplina_cod = str(row['Disciplina']).replace("'", "\\'")
+        disciplina_nome = str(row['Nome']).replace("'", "\\'")
         ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
         
         html_table += '<tr>'
@@ -403,19 +389,16 @@ for periodo in periodos_unicos:
         
         # Botão de ação
         if algum_ativo:
-            html_table += f'<td><button class="btn-acao" onclick="alert(\'Desativar todos: {disciplina_cod}\')">❌ Desativar todos</button></td>'
+            html_table += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\')">❌ Desativar todos</button></td>'
         else:
-            html_table += f'<td><button class="btn-acao btn-acao-ativar" onclick="alert(\'Ativar todos: {disciplina_cod}\')">✅ Ativar todos</button></td>'
+            html_table += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\')">✅ Ativar todos</button></td>'
         
         html_table += '</tr>'
     
     # Espaçador
     html_table += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
 
-html_table += """
-    </tbody>
-</table>
-"""
+html_table += '</tbody></table></div>'
 
 # Exibir tabela
 st.markdown(html_table, unsafe_allow_html=True)
