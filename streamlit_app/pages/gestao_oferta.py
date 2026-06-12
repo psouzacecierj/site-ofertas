@@ -82,80 +82,48 @@ if df is None or df.empty:
 
 POLOS = detectar_polos(df)
 
-# --- TÍTULO ---
+# --- TÍTULO (sem estatísticas) ---
 st.markdown(f"""
-<div style="background: #2d6a4f; padding: 1rem 2rem; border-radius: 10px; margin-bottom: 1rem;">
-    <h1 style="color: white; margin: 0; font-size: 1.2rem;">📚 Gestão de Oferta de Disciplinas</h1>
-    <p style="color: rgba(255,255,255,0.8); margin: 0.2rem 0 0 0; font-size: 0.75rem;">{CURSO_NOME} | 2º semestre / 2026</p>
+<div style="background: #2d6a4f; padding: 0.8rem 2rem; border-radius: 10px; margin-bottom: 1rem;">
+    <h1 style="color: white; margin: 0; font-size: 1.1rem;">📚 Gestão de Oferta de Disciplinas</h1>
+    <p style="color: rgba(255,255,255,0.8); margin: 0.2rem 0 0 0; font-size: 0.7rem;">{CURSO_NOME} | 2º semestre / 2026</p>
 </div>
 """, unsafe_allow_html=True)
 
-# --- ESTATÍSTICAS ---
-total_disciplinas = len(df)
-total_polos = len(POLOS)
-
-ofertas_ativas = 0
-for _, row in df.iterrows():
-    for polo in POLOS:
-        status = get_status(row, polo, df)
-        if status == 'A':
-            ofertas_ativas += 1
-
-total_possivel = total_disciplinas * total_polos
-
-col1, col2, col3, col4 = st.columns(4)
-
-col1.markdown(f"""
-<div style="background: white; padding: 0.5rem; border-radius: 10px; text-align: center; border: 1px solid #e5e7eb;">
-    <div style="font-size: 0.7rem; color: #6b7280;">Com oferta (✓)</div>
-    <div style="font-size: 1.5rem; font-weight: bold; color: #2e7d32;">{ofertas_ativas}</div>
-</div>
-""", unsafe_allow_html=True)
-
-col2.markdown(f"""
-<div style="background: white; padding: 0.5rem; border-radius: 10px; text-align: center; border: 1px solid #e5e7eb;">
-    <div style="font-size: 0.7rem; color: #6b7280;">Sem oferta (vazio)</div>
-    <div style="font-size: 1.5rem; font-weight: bold; color: #9ca3af;">{total_possivel - ofertas_ativas}</div>
-</div>
-""", unsafe_allow_html=True)
-
-col3.markdown(f"""
-<div style="background: white; padding: 0.5rem; border-radius: 10px; text-align: center; border: 1px solid #e5e7eb;">
-    <div style="font-size: 0.7rem; color: #6b7280;">Disciplinas</div>
-    <div style="font-size: 1.5rem; font-weight: bold; color: #1a5276;">{total_disciplinas}</div>
-</div>
-""", unsafe_allow_html=True)
-
-col4.markdown(f"""
-<div style="background: white; padding: 0.5rem; border-radius: 10px; text-align: center; border: 1px solid #e5e7eb;">
-    <div style="font-size: 0.7rem; color: #6b7280;">Polos</div>
-    <div style="font-size: 1.5rem; font-weight: bold; color: #1a5276;">{total_polos}</div>
-</div>
-""", unsafe_allow_html=True)
-
-st.markdown("---")
-
-# --- FILTROS ---
-col_f1, col_f2, col_f3 = st.columns([2, 1, 1])
+# --- FILTROS (LINHA ÚNICA) ---
+col_f1, col_f2, col_f3, col_f4, col_f5 = st.columns([2, 1, 1, 1, 1])
 with col_f1:
-    busca = st.text_input("🔍 Buscar disciplina ou código...", placeholder="Digite o nome ou código", key="busca_input")
+    busca = st.text_input("🔍 Buscar disciplina", placeholder="Nome ou código...", key="busca_input")
 with col_f2:
     periodos = sorted([p for p in df['Periodo'].dropna().unique() if str(p) != 'nan'], key=lambda x: str(x))
     periodo_sel = st.selectbox("Período", ["Todos"] + list(periodos), key="periodo_select")
 with col_f3:
     status_sel = st.selectbox("Status", ["Todos", "Com oferta", "Sem oferta"], key="status_select")
-
-col_b1, col_b2 = st.columns(2)
-with col_b1:
-    if st.button("🗑️ Limpar filtros", use_container_width=True):
+with col_f4:
+    if st.button("🗑️ Limpar", use_container_width=True, key="limpar_filtros"):
         st.session_state.busca_input = ""
         st.session_state.periodo_select = "Todos"
         st.session_state.status_select = "Todos"
         st.rerun()
-with col_b2:
-    if st.button("🔄 Resetar ofertas (original)", use_container_width=True):
+with col_f5:
+    if st.button("🔄 Resetar", use_container_width=True, key="reset_ofertas"):
         st.cache_data.clear()
         st.rerun()
+
+# --- LEGENDA ---
+st.markdown("""
+<div style="display: flex; gap: 20px; margin-bottom: 1rem; flex-wrap: wrap; font-size: 11px;">
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="background: #dcfce7; color: #166534; padding: 2px 10px; border-radius: 4px;">✓ Oferta ativa</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="background: #f3f4f6; color: #9ca3af; padding: 2px 10px; border-radius: 4px;">— Sem oferta</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span>🔘 Clique na célula para alternar</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # --- FILTRAR DADOS ---
 df_filtrado = df.copy()
@@ -180,25 +148,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not m for m in mascara]]
 
-# --- LEGENDA ---
-st.markdown("""
-<div style="display: flex; gap: 20px; margin-bottom: 1rem; flex-wrap: wrap;">
-    <div style="display: flex; align-items: center; gap: 6px;">
-        <span style="background: #dcfce7; color: #166534; padding: 2px 10px; border-radius: 4px; font-size: 11px; font-weight: 500;">✓ UFRRJ</span>
-        <span style="font-size: 11px; color: #6b7280;">Oferta ativa (verde)</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px;">
-        <span style="background: #f3f4f6; color: #9ca3af; padding: 2px 10px; border-radius: 4px; font-size: 11px;">—</span>
-        <span style="font-size: 11px; color: #6b7280;">Sem oferta (vazio/branco)</span>
-    </div>
-    <div style="display: flex; align-items: center; gap: 6px;">
-        <span style="background: #eef2ff; padding: 2px 10px; border-radius: 4px; font-size: 11px;">🔘</span>
-        <span style="font-size: 11px; color: #6b7280;">Clique na célula para alternar</span>
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# --- CONSTRUIR HTML COMPLETO PARA RENDERIZAR ---
+# --- CONSTRUIR TABELA HTML ---
 html_content = """
 <style>
     * { box-sizing: border-box; }
@@ -330,17 +280,14 @@ function toggleOffer(disciplinaCod, polo, element) {
         span.className = 'polo-inativo';
         span.innerHTML = '—';
         span.removeAttribute('data-inst');
-        console.log('Desativado:', disciplinaCod, polo);
     } else {
         span.className = 'polo-ativo';
         span.innerHTML = '✓ ' + inst;
         span.setAttribute('data-inst', inst);
-        console.log('Ativado:', disciplinaCod, polo);
     }
 }
 
 function toggleAll(disciplinaCod, acao) {
-    console.log(acao + ' todos:', disciplinaCod);
     alert(acao + ' todos: ' + disciplinaCod);
 }
 </script>
@@ -372,7 +319,7 @@ for periodo in periodos_unicos:
     df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
     
     # Cabeçalho do período
-    html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
+    html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td><tr>'
     
     for _, row in df_periodo.iterrows():
         disciplina_cod = str(row['Disciplina']).replace("'", "\\'")
@@ -423,7 +370,7 @@ html_content += """
 </div>
 """
 
-# Renderizar o HTML usando components.html
+# Renderizar o HTML
 components.html(html_content, height=600, scrolling=True)
 
 # --- RODAPÉ ---
