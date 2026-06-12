@@ -165,19 +165,14 @@
 
 <script>
 // ============================================
-// CONFIGURAÇÃO - URL DO BACKEND (Google Sheets)
-// URL atualizada para a Versão 11 que está funcionando
+// URL DO APPS SCRIPT - VERSÃO 12
 // ============================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbyJUC7kGyLTuA_wgr_Ezp787If17Iw16r40X6pJofInJni5NB4ZBu7LfsjtyeoHX_FIhQ/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyou6Yyr4m_a14F2W4YJTKnEdIwlgdyxfFiLjpsaQQCEVmZMnn1pEMCtITSLyVaAgqAYA/exec';
 
-// Estado global
 let offerState = {};
 let disciplinasData = [];
 let POLOS = [];
 
-// ============================================
-// UTILITÁRIOS
-// ============================================
 function showToast(msg) {
   const toast = document.getElementById('toast');
   toast.textContent = msg;
@@ -185,194 +180,141 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-// ============================================
-// CARREGAR DADOS DA PLANILHA
-// ============================================
 async function loadFromSheet() {
   try {
-    showToast('🔄 Carregando dados da planilha...');
+    showToast('🔄 Carregando dados...');
     const response = await fetch(API_URL);
     const data = await response.json();
     
     if (!data.success) throw new Error(data.error);
     
-    // Atualizar polos
     POLOS = data.polos;
-    
-    // Converter para o formato do sistema
     disciplinasData = data.disciplinas.map(d => ({
       per: d.periodo,
       cod: d.codigo,
       nome: d.nome,
       ch: d.cargaHoraria,
-      inst: d.instituicoes,
-      status: d.ofertas
+      inst: d.instituicoes
     }));
     
-    // Atualizar offerState
     data.disciplinas.forEach(disciplina => {
       POLOS.forEach(polo => {
-        const key = `${disciplina.codigo}_${polo}`;
-        offerState[key] = disciplina.ofertas[polo] === true;
+        offerState[`${disciplina.codigo}_${polo}`] = disciplina.ofertas[polo] === true;
       });
     });
     
-    showToast(`✅ Carregado: ${disciplinasData.length} disciplinas, ${POLOS.length} polos`);
+    showToast(`✅ ${disciplinasData.length} disciplinas carregadas`);
     renderTable();
     updateChangesBadge();
-    
-  } catch (error) {
-    console.error('Erro:', error);
-    showToast('❌ Erro ao carregar dados. Verifique sua conexão.');
+  } catch(error) {
+    console.error(error);
+    showToast('❌ Erro ao carregar dados');
   }
 }
 
-// ============================================
-// SALVAR ALTERAÇÃO NA PLANILHA
-// ============================================
 async function saveToSheet(disciplinaCod, polo, novoStatus) {
   try {
-    await fetch(API_URL, {
+    const response = await fetch(API_URL, {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        disciplinaCod: disciplinaCod,
-        polo: polo,
-        status: novoStatus
-      })
+      body: JSON.stringify({ disciplinaCod, polo, status: novoStatus })
     });
-    
-    showToast(`💾 ${disciplinaCod} - Polo ${polo}: ${novoStatus ? 'ativado' : 'desativado'}`);
-    return true;
-    
-  } catch (error) {
-    console.error('Erro ao salvar:', error);
-    showToast('❌ Erro ao salvar. Tente novamente.');
+    const result = await response.json();
+    return result.success === true;
+  } catch(error) {
+    console.error(error);
     return false;
   }
 }
 
-// ============================================
-// ALTERNAR OFERTA
-// ============================================
 async function toggleOffer(d, polo) {
   const key = `${d.cod}_${polo}`;
   const novoStatus = !offerState[key];
   
-  // Atualizar local (otimista)
-  offerState[key] = novoStatus;
-  
-  // Salvar na planilha
   const salvou = await saveToSheet(d.cod, polo, novoStatus);
-  
-  if (!salvou) {
-    offerState[key] = !novoStatus;
+  if (salvou) {
+    offerState[key] = novoStatus;
+    renderTable();
+    updateChangesBadge();
+    showToast(`💾 ${d.cod} - Polo ${polo}: ${novoStatus ? 'ativado' : 'desativado'}`);
+  } else {
+    showToast('❌ Erro ao salvar');
   }
-  
-  renderTable();
-  updateChangesBadge();
 }
 
-// ============================================
-// ALTERNAR TODOS OS POLOS DE UMA DISCIPLINA
-// ============================================
-function toggleAllForDiscipline(d) {
+async function toggleAllForDiscipline(d) {
   const anyActive = POLOS.some(p => offerState[`${d.cod}_${p}`]);
-  POLOS.forEach(polo => {
-    const key = `${d.cod}_${polo}`;
-    offerState[key] = !anyActive;
-    saveToSheet(d.cod, polo, !anyActive);
-  });
-  renderTable();
-  updateChangesBadge();
-}
-
-// ============================================
-// RESETAR (RECARREGAR DA PLANILHA)
-// ============================================
-async function resetAllToOriginal() {
-  if (confirm('⚠️ Isso vai recarregar os dados da planilha, descartando alterações não salvas. Deseja continuar?')) {
-    await loadFromSheet();
-    showToast('🔄 Dados recarregados da planilha');
+  const novoStatus = !anyActive;
+  
+  let ok = true;
+  for (const polo of POLOS) {
+    const salvou = await saveToSheet(d.cod, polo, novoStatus);
+    if (salvou) {
+      offerState[`${d.cod}_${polo}`] = novoStatus;
+    } else {
+      ok = false;
+    }
+  }
+  
+  if (ok) {
+    renderTable();
+    updateChangesBadge();
+    showToast(`💾 ${d.cod}: ${novoStatus ? 'ativada' : 'desativada'} em todos os polos`);
+  } else {
+    showToast('❌ Erro ao salvar algumas alterações');
   }
 }
 
-// ============================================
-// RELATÓRIO
-// ============================================
+async function resetAllToOriginal() {
+  if (confirm('⚠️ Isso vai recarregar os dados da planilha. Deseja continuar?')) {
+    await loadFromSheet();
+  }
+}
+
 function getReportText() {
   const lines = [];
-  lines.push('RELATÓRIO DE OFERTA DE DISCIPLINAS - LICENCIATURA EM ADMINISTRAÇÃO UFRRJ 2/2026');
+  lines.push('RELATÓRIO DE OFERTA - LICENCIATURA EM ADMINISTRAÇÃO UFRRJ 2/2026');
   lines.push('='.repeat(60));
   lines.push(`Data: ${new Date().toLocaleString('pt-BR')}`);
-  lines.push(`Fonte: Google Sheets (dados em tempo real)`);
   lines.push('');
   
   let totalInativas = 0;
-  
   disciplinasData.forEach(d => {
     const inactivePolos = POLOS.filter(p => !offerState[`${d.cod}_${p}`]);
-    
     if (inactivePolos.length > 0) {
       totalInativas += inactivePolos.length;
       lines.push(`📌 [${d.per}] ${d.cod} — ${d.nome}`);
-      inactivePolos.forEach(p => {
-        lines.push(`   ✗ Polo ${p}: oferta REMOVIDA`);
-      });
+      inactivePolos.forEach(p => lines.push(`   ✗ Polo ${p}: oferta REMOVIDA`));
       lines.push('');
     }
   });
   
   if (totalInativas === 0) {
-    lines.push('✅ Nenhuma alteração — todas as ofertas seguem o padrão original da planilha.');
+    lines.push('✅ Nenhuma alteração — todas as ofertas seguem o padrão original.');
   } else {
     lines.push(`📊 Total de remoções: ${totalInativas}`);
   }
   
-  lines.push('');
-  lines.push('---');
-  lines.push('Enviado pelo sistema de Gestão de Oferta de Disciplinas');
-  
   return lines.join('\n');
 }
 
-// ============================================
-// EMAIL
-// ============================================
 function sendEmail() {
   const report = getReportText();
-  const subject = encodeURIComponent('Relatório de Oferta - Licenciatura em Administração UFRRJ 2/2026');
+  const subject = encodeURIComponent('Relatório de Oferta - UFRRJ 2/2026');
   const body = encodeURIComponent(report);
   window.location.href = `mailto:matrizes.cederj@gmail.com?subject=${subject}&body=${body}`;
   showToast('Abrindo cliente de email...');
 }
 
 function sendEmailFromModal() {
-  const report = document.getElementById('export-text').value;
-  const subject = encodeURIComponent('Alterações de Oferta - Licenciatura em Administração UFRRJ 2/2026');
-  const body = encodeURIComponent(report);
-  window.location.href = `mailto:matrizes.cederj@gmail.com?subject=${subject}&body=${body}`;
-  showToast('Abrindo cliente de email...');
+  sendEmail();
   closeExport();
 }
 
 function saveAndSendEmail() {
-  const changedCount = disciplinasData.reduce((acc, d) => acc + POLOS.filter(p => !offerState[`${d.cod}_${p}`]).length, 0);
-  if (changedCount === 0) {
-    if (confirm('Nenhuma alteração foi feita. Deseja enviar um relatório confirmando que tudo está conforme o original?')) {
-      sendEmail();
-    }
-  } else {
-    if (confirm(`Foram registradas ${changedCount} remoções de oferta. Deseja enviar o relatório por email para matrizes.cederj@gmail.com?`)) {
-      sendEmail();
-    }
-  }
+  sendEmail();
 }
 
-// ============================================
-// RENDERIZAÇÃO DA TABELA
-// ============================================
 function renderTable() {
   const tbody = document.getElementById('tbody');
   const searchTerm = document.getElementById('search').value.toLowerCase();
@@ -381,19 +323,15 @@ function renderTable() {
   
   tbody.innerHTML = '';
   
-  function filterDisciplinas(list) {
-    return list.filter(d => {
-      if (searchTerm && !d.nome.toLowerCase().includes(searchTerm) && !d.cod.toLowerCase().includes(searchTerm)) return false;
-      if (periodVal && periodVal !== '' && d.per !== periodVal) return false;
-      if (statusVal === 'active') return POLOS.some(p => offerState[`${d.cod}_${p}`]);
-      if (statusVal === 'inactive') return POLOS.some(p => !offerState[`${d.cod}_${p}`]);
-      return true;
-    });
-  }
+  const filtered = disciplinasData.filter(d => {
+    if (searchTerm && !d.nome.toLowerCase().includes(searchTerm) && !d.cod.toLowerCase().includes(searchTerm)) return false;
+    if (periodVal && d.per !== periodVal) return false;
+    if (statusVal === 'active') return POLOS.some(p => offerState[`${d.cod}_${p}`]);
+    if (statusVal === 'inactive') return POLOS.some(p => !offerState[`${d.cod}_${p}`]);
+    return true;
+  });
   
-  const filtered = filterDisciplinas(disciplinasData);
   let lastPeriod = null;
-  
   filtered.forEach(d => {
     if (d.per !== lastPeriod) {
       if (lastPeriod !== null) {
@@ -457,9 +395,6 @@ function updateChangesBadge() {
   badge.classList.toggle('visible', changes > 0);
 }
 
-// ============================================
-// FILTROS E MODAL
-// ============================================
 function applyFilters() { renderTable(); }
 function resetFilters() {
   document.getElementById('search').value = '';
@@ -484,24 +419,9 @@ function copyExport() {
   showToast('Copiado para área de transferência!');
 }
 
-// ============================================
-// EXPOR FUNÇÕES GLOBAIS
-// ============================================
-window.toggleOffer = toggleOffer;
 window.toggleAllForDiscipline = toggleAllForDiscipline;
-window.resetAllToOriginal = resetAllToOriginal;
-window.applyFilters = applyFilters;
-window.resetFilters = resetFilters;
-window.openExport = openExport;
-window.closeExport = closeExport;
-window.copyExport = copyExport;
-window.saveAndSendEmail = saveAndSendEmail;
-window.sendEmailFromModal = sendEmailFromModal;
 window.disciplinasData = disciplinasData;
 
-// ============================================
-// INICIALIZAÇÃO
-// ============================================
 loadFromSheet();
 
 document.getElementById('export-modal').addEventListener('click', function(e) {
