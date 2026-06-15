@@ -24,13 +24,15 @@ st.markdown("""
         background: #2d6a4f;
         color: white;
         border-radius: 6px;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
     }
     .stButton > button:hover {
         background: #1b4d3e;
     }
-    div[data-testid="stExpander"] details summary p {
-        font-weight: 600;
-        color: #1a3a5c;
+    .stButton > button[kind="secondary"] {
+        background: #f3f4f6;
+        color: #9ca3af;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -154,8 +156,6 @@ def salvar_tudo():
         client = gspread.authorize(creds)
         
         sheet = client.open_by_key(SHEET_ID).sheet1
-        
-        # Obter todas as células de uma vez
         data = sheet.get_all_values()
         
         # Encontrar cabeçalhos
@@ -166,17 +166,16 @@ def salvar_tudo():
                 break
         
         headers = data[header_row]
-        cod_col = 1  # coluna B (índice 1)
+        cod_col = 1
         
-        # Criar um dicionário para encontrar as linhas das disciplinas
+        # Mapear código da disciplina para linha
         linha_por_codigo = {}
         for i in range(header_row + 1, len(data)):
             row = data[i]
             if len(row) > cod_col and row[cod_col]:
-                codigo = row[cod_col]
-                linha_por_codigo[codigo] = i + 1  # 1-based para atualização
+                linha_por_codigo[row[cod_col]] = i + 1
         
-        # Para cada polo, encontrar a coluna de status
+        # Para cada polo, atualizar
         for polo in POLOS:
             # Encontrar coluna do polo
             polo_col = None
@@ -186,24 +185,14 @@ def salvar_tudo():
                     break
             
             if polo_col is not None:
-                status_col = polo_col + 1  # status está à direita
-                
-                # Preparar atualizações para este polo
-                cell_updates = []
+                status_col = polo_col + 1
                 for _, row in df.iterrows():
                     cod = row['Disciplina']
                     linha = linha_por_codigo.get(cod)
                     if linha:
                         status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                         novo_valor = 'A' if status_atual else 'D'
-                        cell_updates.append({
-                            'range': f"{gspread.utils.rowcol_to_a1(linha, status_col + 1)}",
-                            'values': [[novo_valor]]
-                        })
-                
-                # Atualizar em lote para este polo
-                if cell_updates:
-                    sheet.batch_update(cell_updates)
+                        sheet.update_cell(linha, status_col + 1, novo_valor)
         
         st.cache_data.clear()
         return True
@@ -251,7 +240,7 @@ st.markdown("""
         <span style="background: #f3f4f6; color: #9ca3af; padding: 2px 10px; border-radius: 4px;">— Sem oferta</span>
     </div>
     <div style="display: flex; align-items: center; gap: 6px;">
-        <span>🔘 Clique na célula para alternar (depois clique em SALVAR)</span>
+        <span>🔘 Clique no botão para alternar</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -269,103 +258,37 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA ---
-st.markdown("""
-<style>
-    .tabela-ofertas {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 12px;
-        background: white;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    .tabela-ofertas th {
-        background: #2d6a4f;
-        color: white;
-        padding: 8px;
-        text-align: center;
-        font-weight: 600;
-        font-size: 10px;
-    }
-    .tabela-ofertas td {
-        padding: 6px;
-        border-bottom: 1px solid #e5e7eb;
-        text-align: center;
-    }
-    .tabela-ofertas tr:hover {
-        background: #f9fafb;
-    }
-    .polo-ativo {
-        background: #dcfce7;
-        color: #166534;
-        padding: 4px 8px;
-        border-radius: 16px;
-        display: inline-block;
-        cursor: pointer;
-        font-size: 10px;
-        font-weight: 600;
-    }
-    .polo-inativo {
-        background: #f3f4f6;
-        color: #9ca3af;
-        padding: 4px 8px;
-        border-radius: 16px;
-        display: inline-block;
-        cursor: pointer;
-        font-size: 10px;
-    }
-    .periodo-badge {
-        background: #e0e7ff;
-        color: #3730a3;
-        padding: 2px 8px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 600;
-        display: inline-block;
-    }
-    .disciplina-code {
-        font-family: monospace;
-        font-size: 11px;
-        color: #6b7280;
-    }
-    .disciplina-nome {
-        font-weight: 500;
-        text-align: left;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Construir tabela HTML
-html = '<table class="tabela-ofertas"><thead><tr><th>Período</th><th>Código</th><th>Disciplina</th><th>CH</th>'
-for polo in POLOS:
-    html += f'<th>{polo}</th>'
-html += '</thead><tbody>'
-
-for _, row in df_filtrado.iterrows():
-    cod = row['Disciplina']
-    html += '<tr>'
-    html += f'<td><span class="periodo-badge">{row["Periodo"]}</span></td>'
-    html += f'<td><span class="disciplina-code">{cod}</span></td>'
-    html += f'<td class="disciplina-nome">{row["Nome"]}</td>'
-    html += f'<td>{int(row["Carga Horária"])}h</td>'
+# --- EXIBIR TABELA COM BOTÕES ---
+for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
+    st.markdown(f"#### 📌 PERÍODO {periodo}")
     
-    for polo in POLOS:
-        is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
-        inst = get_inst(row, polo)
+    df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
+    
+    for _, row in df_periodo.iterrows():
+        cod = row['Disciplina']
+        nome = row['Nome']
+        ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
         
-        if is_active:
-            html += f'<td><span class="polo-ativo" onclick="alert(\'Clique para alternar\')">✓ {inst}</span></td>'
-        else:
-            html += f'<td><span class="polo-inativo" onclick="alert(\'Clique para alternar\')">—</span></td>'
-    html += '</tr>'
-
-html += '</tbody></table>'
-
-st.markdown(html, unsafe_allow_html=True)
+        with st.expander(f"[{periodo}] {cod} - {nome} ({ch}h)"):
+            cols = st.columns(len(POLOS))
+            
+            for i, polo in enumerate(POLOS):
+                with cols[i]:
+                    is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
+                    inst = get_inst(row, polo)
+                    
+                    if is_active:
+                        if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}", use_container_width=True):
+                            toggle(cod, polo)
+                            st.rerun()
+                    else:
+                        if st.button(f"❌ {polo}", key=f"{cod}_{polo}", use_container_width=True):
+                            toggle(cod, polo)
+                            st.rerun()
+    
+    st.markdown("---")
 
 # --- RODAPÉ ---
-st.divider()
 st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
 # --- BOTÃO VOLTAR ---
