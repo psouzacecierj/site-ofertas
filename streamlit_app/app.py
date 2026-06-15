@@ -1,221 +1,427 @@
-# app.py
+# pages/gestao_oferta.py
 import streamlit as st
+import pandas as pd
+from datetime import datetime
+import streamlit.components.v1 as components
 
-# --- CONFIGURAÇÃO DA PÁGINA ---
-st.set_page_config(
-    page_title="Gestão de Ofertas - CEDERJ",
-    page_icon="🎓",
-    layout="wide",
-    initial_sidebar_state="collapsed",
-)
+# --- CONFIGURAÇÃO ---
+st.set_page_config(page_title="Gestão de Oferta", layout="wide")
 
 # --- CSS PERSONALIZADO ---
 st.markdown("""
 <style>
-    /* Esconder elementos padrão do Streamlit */
     #MainMenu {visibility: hidden;}
     header {visibility: hidden;}
     .stAppDeployButton {display: none;}
-    
-    /* Reset do container principal */
+    footer {visibility: hidden;}
     .main .block-container {
-        padding-top: 1rem;
-        padding-bottom: 2rem;
-    }
-    
-    /* Espaçamento entre as colunas */
-    .stColumn {
-        padding: 0 0.6rem !important;
-    }
-    
-    /* Cards */
-    .card-container {
-        background-color: white;
-        border-radius: 12px;
-        padding: 1.2rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        transition: transform 0.2s, box-shadow 0.2s;
-        height: 100%;
-        border: 1px solid #e5e7eb;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        min-height: 160px;
-    }
-    .card-container:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-    }
-    .card-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: #1a3a5c;
-        margin-bottom: 0.25rem;
-        line-height: 1.3;
-    }
-    .card-subtitle {
-        font-size: 0.8rem;
-        color: #4a627a;
-        margin-bottom: 0.75rem;
-    }
-    .card-badge {
-        display: inline-block;
-        background-color: #e0e7ff;
-        color: #1e3a8a;
-        padding: 0.2rem 0.6rem;
-        border-radius: 20px;
-        font-size: 0.65rem;
-        font-weight: 500;
-        align-self: flex-start;
-        margin-bottom: 0.75rem;
-    }
-    
-    /* Botão Acessar dentro do card */
-    .btn-acessar {
-        background-color: #2d6a4f;
-        color: white;
-        border: none;
-        border-radius: 6px;
-        padding: 0.4rem 0.8rem;
-        font-size: 0.7rem;
-        font-weight: 500;
-        cursor: pointer;
-        width: 100%;
-        transition: background-color 0.2s;
-        text-align: center;
-    }
-    .btn-acessar:hover {
-        background-color: #1b4d3e;
-    }
-    
-    /* Total de cursos */
-    .total-text {
-        text-align: center;
-        margin-top: 2rem;
-        color: #6b7280;
-        font-size: 0.75rem;
-    }
-    
-    /* Responsivo */
-    @media (max-width: 768px) {
-        .card-title {
-            font-size: 0.9rem;
-        }
-        .card-container {
-            min-height: 150px;
-            padding: 1rem;
-        }
+        padding-top: 0.5rem;
+        padding-bottom: 0rem;
+        max-width: 100%;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- TÍTULO ---
-st.title("🎓 Gestão de Oferta de Disciplinas")
-st.caption("Cursos de graduação a distância - Universidades consorciadas CEDERJ")
+# --- RECUPERAR DADOS DO CURSO ---
+if "sheet_id" not in st.session_state:
+    st.warning("⚠️ Nenhum curso selecionado. Volte para a página inicial.")
+    st.stop()
 
-# --- LISTA DE CURSOS (MATEMÁTICA É O PRIMEIRO) ---
-cursos = [
-    # MATEMÁTICA UFF - PRIMEIRO!
-    {"id": "1oyUNJmT07bUcOFYZw9XEfPmkMkbIvSs_mrRnh88zdIE", "nome": "Matemática", "instituicao": "UFF", "polos": 17},
-    
-    # Administração UFF
-    {"id": "1mTD-q9WTqVIWOEnZOB1JjiZXeS4j6xujf-4vD9I98ks", "nome": "Administração", "instituicao": "UFF", "polos": 18},
-    
-    # Ciências Biológicas
-    {"id": "1GIetae_LEYlzbHC8JoyTQNh_s50W3eGhul4U7Yn4lCA", "nome": "Ciências Biológicas", "instituicao": "UENF", "polos": 8},
-    {"id": "1XxDyPDLW7eSwxIESnqsVAQQcyOc_OTjf9dWOme5MjEQ", "nome": "Ciências Biológicas", "instituicao": "UERJ", "polos": 6},
-    {"id": "149OrpiWIi8VMNeCf0bKWltNMdynw3SXrhCZ9Om5bITU", "nome": "Ciências Biológicas", "instituicao": "UFRJ", "polos": 7},
-    
-    # Física
-    {"id": "1vSGmy7o_SDrWvUsawz1UKXUVXDXulRskl1LcX0Gvm30", "nome": "Física", "instituicao": "UFRJ", "polos": 10},
-    
-    # Administração UFRRJ
-    {"id": "1qmcgaTolwAMVB0kwe5Zu-6MJ7kkLWLD6ad6xQJOWawM", "nome": "Administração", "instituicao": "UFRRJ", "polos": 18},
-    
-    # Química
-    {"id": "1-3uZrlXgDKh5RLzmfpnL-VdmH5u6v8RTUdrS1GdO_NQ", "nome": "Química", "instituicao": "UENF", "polos": 5},
-    {"id": "1QwhTxDjUSdh7JkMabcgaLfzM8yiL8wKW2TJ_vPjJI14", "nome": "Química", "instituicao": "UFRJ", "polos": 5},
-    
-    # Licenciatura em Pedagogia
-    {"id": "1CgfGjUy0o3Z57dpWPnKUp0qwWoi-Ozuw2ZqCSTW0vI4", "nome": "Licenciatura em Pedagogia", "instituicao": "UENF", "polos": 8},
-    {"id": "1TqMjvbxlO9lXx51dC132s5Mwb68RfZWehBAGK_5Ha6s", "nome": "Licenciatura em Pedagogia", "instituicao": "UERJ", "polos": 14},
-    {"id": "1QUOVGiOuAxZttn7D5F55CLuK06h7YQcEME6np0lR_Zk", "nome": "Licenciatura em Pedagogia", "instituicao": "UNIRIO", "polos": 12},
-    
-    # História
-    {"id": "1Xd0GKLj4j1XdVymeQrKrWKmuX3FZ1khjK65MMjSaDUw", "nome": "História", "instituicao": "UNIRIO", "polos": 5},
-    
-    # Turismo
-    {"id": "1l2Zm4y8npqyWSHyleogaBSdudjJKH6c26oGz-a4vet8", "nome": "Turismo", "instituicao": "UFRRJ", "polos": 5},
-    {"id": "1sZDL9ob18KSlEi21pl7ZO8x8cp5HSiEirna55NMa7iI", "nome": "Turismo", "instituicao": "UNIRIO", "polos": 5},
-    
-    # Administração Pública
-    {"id": "113eEUYHARt2K6AWUXLHjAxYzAhk1zM1vQYwJoC0NLgc", "nome": "Administração Pública", "instituicao": "UFF", "polos": 9},
-    
-    # Letras
-    {"id": "1yMr7iwMTXv7Dmk1ohii58tJW46P40BxHJDlpYxO1keQ", "nome": "Letras", "instituicao": "UFF", "polos": 6},
-    
-    # Gestão de Turismo
-    {"id": "1Qh3dGrOKszmxRsO1nm1L97YGlgLXTIW3dbbWKPRyBEk", "nome": "Gestão de Turismo", "instituicao": "CEFET-RJ", "polos": 7},
-    
-    # Geografia
-    {"id": "1GRIR0yuszPuOEwP1k4kVtHlOlGL2bo4Ef_87d8hyJKU", "nome": "Geografia", "instituicao": "UERJ", "polos": 11},
-    
-    # Segurança Pública
-    {"id": "1000X6WksETcccZJIunrwmIMrbT0wzoIwRqi8ZKKl4Ms", "nome": "Segurança Pública", "instituicao": "UFF", "polos": 12},
-    
-    # Engenharia de Produção
-    {"id": "1ring7lzrz7FNJwZuPi-yko5QOvd0d9g2AfT4939QkrQ", "nome": "Engenharia de Produção", "instituicao": "UFF", "polos": 5},
-    
-    # Ciências Contábeis
-    {"id": "1J28novyPrlNvDBGUvi4OKEyA_JXVa_5dj-Zy1spHK84", "nome": "Ciências Contábeis", "instituicao": "UFF", "polos": 7},
-    {"id": "1Yj1XBF03-p5bT3Ir0YXxohDbPK6Zy_TC4ZHAGfdxrD4", "nome": "Ciências Contábeis", "instituicao": "UFRJ", "polos": 7},
-    
-    # Engenharia Meteorológica
-    {"id": "1R-CQLxB7Ng7-ejp1fP1VD7puDn631mNiiH7x-z9Nrmo", "nome": "Engenharia Meteorológica", "instituicao": "UENF", "polos": 1},
-    
-    # Biblioteconomia
-    {"id": "1vVmyCcQXhqZtWf_PSfUThFCf0TpOcGhBnVbBkEVRfd4", "nome": "Biblioteconomia", "instituicao": "UFF", "polos": 5},
-    {"id": "1rsOpCyYcriv-eoYwWRuKKhc1rqVeFvUDbuYr3EfLOzQ", "nome": "Biblioteconomia", "instituicao": "UNIRIO", "polos": 7},
-    
-    # Design Gráfico
-    {"id": "19Dn9fhDn5jl6tmA8cwsV5ejwLt6DRoO4m7YcvHg1QbE", "nome": "Design Gráfico", "instituicao": "IFF", "polos": 4},
-    
-    # Licenciatura em Administração
-    {"id": "1vtguRvG6x6Yz58pY6zMws5Ncs1q-8KcWBKNR628ZEbI", "nome": "Licenciatura em Administração", "instituicao": "UFRRJ", "polos": 8},
-]
+SHEET_ID = st.session_state["sheet_id"]
+CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
-# --- FILTRO DE BUSCA ---
-busca = st.text_input("🔍 Buscar curso ou instituição...", placeholder="Ex: Matemática ou UFF")
-
-cursos_filtrados = [
-    c for c in cursos 
-    if busca.lower() in c["nome"].lower() or busca.lower() in c["instituicao"].lower()
-]
-
-# --- EXIBIÇÃO DOS CARDS ---
-if not cursos_filtrados:
-    st.info("Nenhum curso encontrado com esse termo.")
-else:
-    # Exibir em 4 colunas
-    cols = st.columns(4)
+# --- FUNÇÃO PARA CARREGAR DADOS (MULTIPLAS TENTATIVAS) ---
+@st.cache_data(ttl=60)
+def carregar_dados(sheet_id):
+    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
     
-    for idx, curso in enumerate(cursos_filtrados):
-        with cols[idx % 4]:
-            # Card com visual
-            st.markdown(f"""
-            <div class="card-container">
-                <div>
-                    <div class="card-title">{curso['nome']}</div>
-                    <div class="card-subtitle">{curso['instituicao']}</div>
-                    <span class="card-badge">{curso['polos']} polos</span>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+    # Tentativas diferentes
+    tentativas = [
+        {"url": url, "header": None},      # Sem header especificado
+        {"url": url, "header": 0},         # Primeira linha como header
+        {"url": url, "header": 1},         # Segunda linha como header
+    ]
+    
+    for tentativa in tentativas:
+        try:
+            df = pd.read_csv(tentativa["url"], header=tentativa["header"])
             
-            # Botão Acessar (garantido!)
-            if st.button("📚 Acessar", key=curso["id"], use_container_width=True):
-                st.session_state["sheet_id"] = curso["id"]
-                st.session_state["curso_nome"] = f"{curso['nome']} - {curso['instituicao']}"
-                st.switch_page("pages/gestao_oferta.py")
+            # Verificar se encontrou colunas esperadas
+            colunas = df.columns.tolist()
+            
+            # Tenta encontrar coluna 'Periodo' ou 'Periodo' (sem acento)
+            col_periodo = None
+            for col in colunas:
+                if col in ['Periodo', 'Periodo', 'PERIODO']:
+                    col_periodo = col
+                    break
+            
+            if col_periodo:
+                # Renomear para 'Periodo' padronizado
+                df.rename(columns={col_periodo: 'Periodo'}, inplace=True)
+                return df
+            
+            # Se não achou Periodo, mas tem dados, tenta com header=1
+            if len(df.columns) > 5:
+                return df
+                
+        except Exception as e:
+            continue
     
-    st.markdown(f'<div class="total-text">📊 Total: {len(cursos_filtrados)} oferta(s) de cursos</div>', unsafe_allow_html=True)
+    st.error(f"Erro ao carregar planilha ID {sheet_id}. Verifique se o link é público e a estrutura está correta.")
+    return None
+
+# --- FUNÇÃO PARA DETECTAR POLOS ---
+def detectar_polos(df):
+    colunas = df.columns.tolist()
+    polos = []
+    for col in colunas:
+        if col and len(col) == 3 and col.isupper() and col not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD', 'ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE']:
+            polos.append(col)
+        # Também aceita polos conhecidos
+        if col in ['ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE']:
+            if col not in polos:
+                polos.append(col)
+    return polos
+
+# --- FUNÇÃO PARA OBTER STATUS DE UM POLO ---
+def get_status(row, polo, df):
+    # Procura pela coluna de status (geralmente uma coluna chamada 'Status' ou 'status')
+    for col in df.columns:
+        if col == polo:
+            polo_idx = df.columns.get_loc(col)
+            if polo_idx + 1 < len(df.columns):
+                status_col = df.columns[polo_idx + 1]
+                if status_col in row.index:
+                    val = row[status_col]
+                    if pd.notna(val):
+                        return str(val).strip()
+            break
+    return 'D'
+
+# --- FUNÇÃO PARA OBTER INSTITUIÇÃO DE UM POLO ---
+def get_inst(row, polo):
+    if polo in row.index and pd.notna(row[polo]):
+        return str(row[polo]).strip()
+    return '—'
+
+# --- CARREGAR DADOS ---
+df = carregar_dados(SHEET_ID)
+if df is None or df.empty:
+    st.stop()
+
+# --- GARANTIR QUE A COLUNA 'Periodo' EXISTE ---
+if 'Periodo' not in df.columns:
+    # Tentar encontrar coluna semelhante
+    for col in df.columns:
+        if col.lower() in ['periodo', 'período', 'period']:
+            df.rename(columns={col: 'Periodo'}, inplace=True)
+            break
+
+if 'Periodo' not in df.columns:
+    st.error("Não foi possível encontrar a coluna 'Periodo' na planilha.")
+    st.stop()
+
+# --- IDENTIFICAR POLOS ---
+POLOS = detectar_polos(df)
+
+# --- TÍTULO ---
+st.markdown(f"""
+<div style="background: #2d6a4f; padding: 0.8rem 2rem; border-radius: 10px; margin-bottom: 1rem;">
+    <h1 style="color: white; margin: 0; font-size: 1.1rem;">📚 Gestão de Oferta de Disciplinas</h1>
+    <p style="color: rgba(255,255,255,0.8); margin: 0.2rem 0 0 0; font-size: 0.7rem;">{CURSO_NOME} | 2º semestre / 2026</p>
+</div>
+""", unsafe_allow_html=True)
+
+# --- FILTROS ---
+col_f1, col_f2, col_f3, col_f4, col_f5 = st.columns([2, 1, 1, 1, 1])
+with col_f1:
+    busca = st.text_input("🔍 Buscar disciplina", placeholder="Nome ou código...", key="busca_input")
+with col_f2:
+    periodos = sorted([p for p in df['Periodo'].dropna().unique() if str(p) != 'nan'], key=lambda x: str(x))
+    periodo_sel = st.selectbox("Período", ["Todos"] + list(periodos), key="periodo_select")
+with col_f3:
+    status_sel = st.selectbox("Status", ["Todos", "Com oferta", "Sem oferta"], key="status_select")
+with col_f4:
+    if st.button("🗑️ Limpar", use_container_width=True, key="limpar_filtros"):
+        st.session_state.busca_input = ""
+        st.session_state.periodo_select = "Todos"
+        st.session_state.status_select = "Todos"
+        st.rerun()
+with col_f5:
+    if st.button("🔄 Resetar", use_container_width=True, key="reset_ofertas"):
+        st.cache_data.clear()
+        st.rerun()
+
+# --- LEGENDA ---
+st.markdown("""
+<div style="display: flex; gap: 20px; margin-bottom: 1rem; flex-wrap: wrap; font-size: 11px;">
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="background: #dcfce7; color: #166534; padding: 2px 10px; border-radius: 4px;">✓ Oferta ativa</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span style="background: #f3f4f6; color: #9ca3af; padding: 2px 10px; border-radius: 4px;">— Sem oferta</span>
+    </div>
+    <div style="display: flex; align-items: center; gap: 6px;">
+        <span>🔘 Clique na célula para alternar</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# --- FILTRAR DADOS ---
+df_filtrado = df.copy()
+
+if busca:
+    busca_lower = busca.lower()
+    df_filtrado = df_filtrado[
+        df_filtrado['Disciplina'].astype(str).str.lower().str.contains(busca_lower, na=False) |
+        df_filtrado['Nome'].astype(str).str.lower().str.contains(busca_lower, na=False)
+    ]
+
+if periodo_sel != "Todos":
+    df_filtrado = df_filtrado[df_filtrado['Periodo'].astype(str) == str(periodo_sel)]
+
+if status_sel != "Todos":
+    mascara = []
+    for _, row in df_filtrado.iterrows():
+        tem_oferta = any(get_status(row, polo, df) == 'A' for polo in POLOS)
+        mascara.append(tem_oferta)
+    
+    if status_sel == "Com oferta":
+        df_filtrado = df_filtrado[mascara]
+    else:
+        df_filtrado = df_filtrado[[not m for m in mascara]]
+
+# --- CONSTRUIR TABELA HTML ---
+html_content = """
+<style>
+    .tabela-wrapper {
+        overflow-x: auto;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        background: white;
+    }
+    .tabela-ofertas {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12px;
+        min-width: 800px;
+    }
+    .tabela-ofertas th {
+        background: #2d6a4f;
+        color: white;
+        padding: 10px 6px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 10px;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+    }
+    .tabela-ofertas td {
+        padding: 8px 6px;
+        border-bottom: 1px solid #f3f4f6;
+        vertical-align: middle;
+    }
+    .tabela-ofertas tr:hover {
+        background: #f9fafb;
+    }
+    .periodo-badge {
+        background: #e0e7ff;
+        color: #3730a3;
+        padding: 3px 9px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+    .disciplina-code {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        color: #6b7280;
+        white-space: nowrap;
+    }
+    .disciplina-nome {
+        font-weight: 500;
+        color: #111827;
+        text-align: left;
+        max-width: 300px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .carga {
+        font-size: 11px;
+        color: #9ca3af;
+        white-space: nowrap;
+    }
+    .polo-cell {
+        text-align: center;
+        cursor: pointer;
+    }
+    .polo-ativo {
+        background: #dcfce7;
+        color: #166534;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .polo-inativo {
+        background: #f3f4f6;
+        color: #9ca3af;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 10px;
+        white-space: nowrap;
+        display: inline-block;
+    }
+    .btn-acao {
+        background: #fee2e2;
+        color: #991b1b;
+        border: none;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        white-space: nowrap;
+        width: 100%;
+    }
+    .btn-acao-ativar {
+        background: #dcfce7;
+        color: #166534;
+    }
+    .section-header td {
+        background: #f1f5f9;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #475569;
+    }
+    .section-spacer td {
+        height: 12px;
+        background: #f4f6f9;
+        border: none;
+    }
+    .texto-centro {
+        text-align: center;
+    }
+</style>
+
+<script>
+function toggleOffer(disciplinaCod, polo, element) {
+    const span = element.querySelector('span');
+    const isActive = span.classList.contains('polo-ativo');
+    const inst = span.getAttribute('data-inst') || 'UFF';
+    
+    if (isActive) {
+        span.className = 'polo-inativo';
+        span.innerHTML = '—';
+        span.removeAttribute('data-inst');
+    } else {
+        span.className = 'polo-ativo';
+        span.innerHTML = '✓ ' + inst;
+        span.setAttribute('data-inst', inst);
+    }
+}
+
+function toggleAll(disciplinaCod, acao) {
+    alert(acao + ' todos: ' + disciplinaCod);
+}
+</script>
+
+<div class="tabela-wrapper">
+<table class="tabela-ofertas">
+    <thead>
+        <tr>
+            <th>Período</th>
+            <th>Código</th>
+            <th style="text-align:left">Disciplina</th>
+            <th>CH</th>
+"""
+
+for polo in POLOS:
+    html_content += f"<th>{polo}</th>"
+
+html_content += """
+            <th>Ação</th>
+        </tr>
+    </thead>
+    <tbody>
+"""
+
+# Agrupar por período
+periodos_unicos = sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x))
+
+for periodo in periodos_unicos:
+    df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
+    
+    # Cabeçalho do período
+    html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
+    
+    for _, row in df_periodo.iterrows():
+        disciplina_cod = str(row['Disciplina']).replace("'", "\\'")
+        disciplina_nome = str(row['Nome']).replace("'", "\\'")
+        ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
+        
+        html_content += '<tr>'
+        html_content += f'<td class="texto-centro"><span class="periodo-badge">{periodo}</span></td>'
+        html_content += f'<td class="texto-centro"><span class="disciplina-code">{disciplina_cod}</span></td>'
+        html_content += f'<td class="disciplina-nome">{disciplina_nome}</td>'
+        html_content += f'<td class="texto-centro"><span class="carga">{ch}h</span></td>'
+        
+        # Polos
+        algum_ativo = False
+        for polo in POLOS:
+            status = get_status(row, polo, df)
+            inst = get_inst(row, polo)
+            is_active = (status == 'A')
+            
+            if is_active:
+                algum_ativo = True
+                html_content += f'''
+                <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
+                    <span class="polo-ativo" data-inst="{inst}">✓ {inst}</span>
+                </td>
+                '''
+            else:
+                html_content += f'''
+                <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
+                    <span class="polo-inativo">—</span>
+                </td>
+                '''
+        
+        # Botão de ação
+        if algum_ativo:
+            html_content += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\')">❌ Desativar todos</button></td>'
+        else:
+            html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\')">✅ Ativar todos</button></td>'
+        
+        html_content += '</tr>'
+    
+    # Espaçador
+    html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"><tr></tr>'
+
+html_content += """
+    </tbody>
+</table>
+</div>
+"""
+
+# Renderizar o HTML
+components.html(html_content, height=600, scrolling=True)
+
+# --- RODAPÉ ---
+st.divider()
+st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+
+# --- BOTÃO VOLTAR ---
+if st.button("← Voltar para lista de cursos"):
+    del st.session_state["sheet_id"]
+    del st.session_state["curso_nome"]
+    st.switch_page("app.py")
