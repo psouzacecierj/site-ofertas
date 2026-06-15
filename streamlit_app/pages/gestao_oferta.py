@@ -30,91 +30,39 @@ if "sheet_id" not in st.session_state:
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
-# --- PROCESSAR SALVAMENTO VIA URL (MAIS CONFIÁVEL) ---
-# --- PROCESSAR SALVAMENTO VIA URL (COM LOGS) ---
-query_params = st.query_params
+# --- FUNÇÃO PARA CARREGAR DADOS ---
+@st.cache_data(ttl=60)
+def carregar_dados(sheet_id):
+    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
+    
+    tentativas = [
+        {"header": None, "skiprows": None},
+        {"header": 0, "skiprows": None},
+        {"header": 1, "skiprows": None},
+        {"header": 0, "skiprows": 1},
+    ]
+    
+    for tentativa in tentativas:
+        try:
+            df = pd.read_csv(url, header=tentativa["header"], skiprows=tentativa["skiprows"])
+            colunas = df.columns.tolist()
+            
+            for col in colunas:
+                col_lower = str(col).lower().strip()
+                if col_lower in ['periodo', 'período', 'period', 'per']:
+                    df.rename(columns={col: 'Periodo'}, inplace=True)
+                    return df
+            
+            for col in colunas:
+                col_lower = str(col).lower().strip()
+                if col_lower in ['disciplina', 'código', 'codigo']:
+                    return df
+        except:
+            continue
+    
+    st.error("❌ Erro ao carregar planilha.")
+    return None
 
-if "save" in query_params:
-    sheet_id = query_params.get("sheet_id")
-    disciplina_cod = query_params.get("disciplina_cod")
-    polo = query_params.get("polo")
-    novo_status = query_params.get("status") == "true"
-    
-    st.write(f"=== DEBUG ===")
-    st.write(f"sheet_id: {sheet_id}")
-    st.write(f"disciplina_cod: {disciplina_cod}")
-    st.write(f"polo: {polo}")
-    st.write(f"novo_status: {novo_status}")
-    
-    import gspread
-    from google.oauth2.service_account import Credentials
-    
-    try:
-        creds_dict = st.secrets["gcp_service_account"]
-        scope = ['https://www.googleapis.com/auth/spreadsheets']
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        client = gspread.authorize(creds)
-        
-        sheet = client.open_by_key(sheet_id).sheet1
-        data = sheet.get_all_values()
-        
-        st.write(f"Total de linhas na planilha: {len(data)}")
-        st.write(f"Primeira linha: {data[0] if data else 'vazia'}")
-        
-        header_row = 1
-        for i, row in enumerate(data):
-            if row and ('Disciplina' in row or 'Código' in row or 'EAD' in str(row)):
-                header_row = i
-                break
-        
-        st.write(f"Linha de cabeçalho encontrada: {header_row}")
-        headers = data[header_row]
-        st.write(f"Cabeçalhos: {headers[:10]}...")
-        
-        polo_col = None
-        for i, col in enumerate(headers):
-            if col == polo:
-                polo_col = i
-                break
-        
-        st.write(f"Coluna do polo {polo}: {polo_col}")
-        
-        if polo_col is None:
-            st.error(f"❌ Polo {polo} não encontrado nos cabeçalhos")
-        else:
-            status_col = polo_col + 1
-            cod_col = 1
-            
-            disciplina_row = None
-            for i in range(header_row + 1, len(data)):
-                if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
-                    disciplina_row = i
-                    break
-            
-            st.write(f"Linha da disciplina {disciplina_cod}: {disciplina_row}")
-            
-            if disciplina_row is not None:
-                novo_valor = 'A' if novo_status else 'D'
-                st.write(f"Novo valor: {novo_valor}")
-                st.write(f"Posição: linha {disciplina_row + 1}, coluna {status_col + 1}")
-                
-                sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
-                st.cache_data.clear()
-                st.success(f"✅ {disciplina_cod} - Polo {polo}: {'ativado' if novo_status else 'desativado'}")
-            else:
-                st.error(f"❌ Disciplina {disciplina_cod} não encontrada")
-                st.write("Disciplinas disponíveis:")
-                for i in range(header_row + 1, min(header_row + 10, len(data))):
-                    if len(data[i]) > cod_col:
-                        st.write(f"  - {data[i][cod_col]}")
-        
-    except Exception as e:
-        st.error(f"❌ Erro: {str(e)}")
-        import traceback
-        st.code(traceback.format_exc())
-    
-    st.query_params.clear()
-    st.stop()  # Para não continuar carregando a tabela
 # --- FUNÇÃO PARA DETECTAR POLOS ---
 def detectar_polos(df):
     colunas = df.columns.tolist()
@@ -189,9 +137,9 @@ with col_f3:
     status_sel = st.selectbox("Status", ["Todos", "Com oferta", "Sem oferta"], key="status_select")
 with col_f4:
     if st.button("🗑️ Limpar", use_container_width=True, key="limpar_filtros"):
-        st.session_state.busca_input = ""
-        st.session_state.periodo_select = "Todos"
-        st.session_state.status_select = "Todos"
+        for key in ['busca_input', 'periodo_select', 'status_select']:
+            if key in st.session_state:
+                st.session_state[key] = "" if key == 'busca_input' else "Todos"
         st.rerun()
 with col_f5:
     if st.button("🔄 Resetar", use_container_width=True, key="reset_ofertas"):
@@ -235,7 +183,7 @@ if status_sel != "Todos" and POLOS:
     else:
         df_filtrado = df_filtrado[[not m for m in mascara]]
 
-# --- CONSTRUIR TABELA HTML ---
+# --- CONSTRUIR TABELA HTML (VERSÃO SIMPLES - SÓ VISUAL) ---
 html_content = """
 <style>
     .tabela-wrapper {
@@ -259,8 +207,6 @@ html_content = """
         font-weight: 600;
         font-size: 10px;
         white-space: nowrap;
-        position: sticky;
-        top: 0;
     }
     .tabela-ofertas td {
         padding: 8px 6px;
@@ -278,27 +224,19 @@ html_content = """
         font-size: 11px;
         font-weight: 600;
         display: inline-block;
-        white-space: nowrap;
     }
     .disciplina-code {
-        font-family: 'Courier New', monospace;
+        font-family: monospace;
         font-size: 11px;
         color: #6b7280;
-        white-space: nowrap;
     }
     .disciplina-nome {
         font-weight: 500;
-        color: #111827;
         text-align: left;
-        max-width: 300px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
     .carga {
         font-size: 11px;
         color: #9ca3af;
-        white-space: nowrap;
     }
     .polo-cell {
         text-align: center;
@@ -311,7 +249,6 @@ html_content = """
         border-radius: 16px;
         font-size: 10px;
         font-weight: 600;
-        white-space: nowrap;
         display: inline-block;
     }
     .polo-inativo {
@@ -320,19 +257,17 @@ html_content = """
         padding: 4px 8px;
         border-radius: 16px;
         font-size: 10px;
-        white-space: nowrap;
         display: inline-block;
     }
     .btn-acao {
         background: #fee2e2;
         color: #991b1b;
         border: none;
-        padding: 4px 8px;
+        padding: 4px 10px;
         border-radius: 20px;
         font-size: 10px;
         font-weight: 600;
         cursor: pointer;
-        white-space: nowrap;
         width: 100%;
     }
     .btn-acao-ativar {
@@ -342,28 +277,21 @@ html_content = """
     .section-header td {
         background: #f1f5f9;
         padding: 8px 12px;
-        font-size: 11px;
         font-weight: 700;
         color: #475569;
     }
     .section-spacer td {
         height: 12px;
         background: #f4f6f9;
-        border: none;
-    }
-    .texto-centro {
-        text-align: center;
     }
 </style>
 
 <script>
-function toggleOffer(disciplinaCod, polo, element, sheetId) {
+function toggleOffer(disciplinaCod, polo, element) {
     const span = element.querySelector('span');
     const isActive = span.classList.contains('polo-ativo');
-    const novoStatus = !isActive;
     const inst = span.getAttribute('data-inst') || 'UFF';
     
-    // Mudar visual imediatamente (feedback)
     if (isActive) {
         span.className = 'polo-inativo';
         span.innerHTML = '—';
@@ -373,16 +301,11 @@ function toggleOffer(disciplinaCod, polo, element, sheetId) {
         span.innerHTML = '✓ ' + inst;
         span.setAttribute('data-inst', inst);
     }
-    
-    // Redirecionar com parâmetros para salvar (sem fetch)
-    const url = window.location.href.split('?')[0];
-    window.location.href = url + '?save=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&polo=' + polo + '&status=' + novoStatus;
+    console.log('Toggle:', disciplinaCod, polo);
 }
 
-function toggleAll(disciplinaCod, acao, sheetId) {
-    const novoStatus = (acao === 'Ativar');
-    const url = window.location.href.split('?')[0];
-    window.location.href = url + '?save_all=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&status=' + novoStatus;
+function toggleAll(disciplinaCod, acao) {
+    console.log(acao + ' todos:', disciplinaCod);
 }
 </script>
 
@@ -440,25 +363,25 @@ if 'Periodo' in df_filtrado.columns:
                 if is_active:
                     algum_ativo = True
                     html_content += f'''
-                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this, '{SHEET_ID}')" data-disciplina="{disciplina_cod}" data-polo="{polo}">
+                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
                         <span class="polo-ativo" data-inst="{inst}">✓ {inst}</span>
                     </td>
                     '''
                 else:
                     html_content += f'''
-                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this, '{SHEET_ID}')" data-disciplina="{disciplina_cod}" data-polo="{polo}">
+                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
                         <span class="polo-inativo">—</span>
                     </td>
                     '''
             
             if algum_ativo:
-                html_content += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\', \'{SHEET_ID}\')">❌ Desativar todos</button></td>'
+                html_content += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\')">❌ Desativar todos</button></td>'
             else:
-                html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\', \'{SHEET_ID}\')">✅ Ativar todos</button></td>'
+                html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\')">✅ Ativar todos</button></td>'
             
             html_content += '</tr>'
         
-        html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
+        html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></table></tr>'
 
 html_content += """
     </tbody>
