@@ -6,9 +6,6 @@ import streamlit.components.v1 as components
 
 # --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="Gestão de Oferta", layout="wide")
-# --- DEBUG: Mostrar o ID da planilha sendo usado ---
-st.write(f"🔍 SHEET_ID em uso: `{SHEET_ID}`")
-st.write(f"🔍 Nome do curso: {CURSO_NOME}")
 
 # --- CSS PERSONALIZADO ---
 st.markdown("""
@@ -32,6 +29,10 @@ if "sheet_id" not in st.session_state:
 
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
+
+# --- DEBUG: Mostrar o ID da planilha sendo usado (DEPOIS de definir SHEET_ID) ---
+st.write(f"🔍 SHEET_ID em uso: `{SHEET_ID}`")
+st.write(f"🔍 Nome do curso: {CURSO_NOME}")
 
 # --- FUNÇÃO PARA CARREGAR DADOS ---
 @st.cache_data(ttl=60)
