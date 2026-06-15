@@ -45,7 +45,8 @@ st.markdown("""
         flex-direction: column;
         justify-content: space-between;
         height: 100%;
-        min-height: 120px;
+        min-height: 130px;
+        text-decoration: none;
     }
     .card-container:hover {
         transform: translateY(-4px);
@@ -81,19 +82,11 @@ st.markdown("""
             grid-template-columns: repeat(2, 1fr);
             gap: 1rem;
         }
-        .card-title {
-            font-size: 0.9rem;
-        }
     }
     @media (max-width: 480px) {
         .grid-container {
             grid-template-columns: 1fr;
         }
-    }
-    
-    /* Estilo do campo de busca */
-    .stTextInput > div > div > input {
-        border-radius: 20px !important;
     }
     
     /* Total de cursos */
@@ -104,15 +97,6 @@ st.markdown("""
         font-size: 0.8rem;
     }
 </style>
-
-<script>
-function abrirCurso(sheetId, cursoNome) {
-    const url = new URL(window.location.href);
-    url.searchParams.set('sheet_id', sheetId);
-    url.searchParams.set('curso_nome', cursoNome);
-    window.location.href = url.toString();
-}
-</script>
 """, unsafe_allow_html=True)
 
 # --- TÍTULO ---
@@ -121,7 +105,6 @@ st.caption("Cursos de graduação a distância - Universidades consorciadas CEDE
 
 # --- LISTA DE CURSOS COMPLETA ---
 cursos = [
-    # MATEMÁTICA UFF - PRIMEIRO!
     {"id": "1oyUNJmT07bUcOFYZw9XEfPmkMkbIvSs_mrRnh88zdIE", "nome": "Matemática", "instituicao": "UFF", "polos": 17},
     {"id": "1mTD-q9WTqVIWOEnZOB1JjiZXeS4j6xujf-4vD9I98ks", "nome": "Administração", "instituicao": "UFF", "polos": 18},
     {"id": "1GIetae_LEYlzbHC8JoyTQNh_s50W3eGhul4U7Yn4lCA", "nome": "Ciências Biológicas", "instituicao": "UENF", "polos": 8},
@@ -160,36 +143,32 @@ cursos_filtrados = [
     if busca.lower() in c["nome"].lower() or busca.lower() in c["instituicao"].lower()
 ]
 
-# --- EXIBIÇÃO DOS CARDS COM GRID CSS ---
+# --- EXIBIÇÃO DOS CARDS (usando st.columns diretamente) ---
 if not cursos_filtrados:
     st.info("Nenhum curso encontrado com esse termo.")
 else:
-    # Construir HTML do grid
-    grid_html = '<div class="grid-container">'
+    # Exibir em 4 colunas usando Streamlit nativo
+    cols = st.columns(4)
     
-    for curso in cursos_filtrados:
-        # Escape de aspas para evitar quebrar o JavaScript
-        curso_nome_escape = f"{curso['nome']} - {curso['instituicao']}".replace("'", "\\'")
-        
-        card_html = f'''
-        <div class="card-container" onclick="abrirCurso('{curso['id']}', '{curso_nome_escape}')">
-            <div>
-                <div class="card-title">{curso['nome']}</div>
-                <div class="card-subtitle">{curso['instituicao']}</div>
-            </div>
-            <span class="card-badge">{curso['polos']} polos</span>
-        </div>
-        '''
-        grid_html += card_html
+    for idx, curso in enumerate(cursos_filtrados):
+        with cols[idx % 4]:
+            # Criar um container para o card
+            with st.container():
+                # Card HTML para visual
+                st.markdown(f"""
+                <div style="background-color: white; border-radius: 12px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border: 1px solid #e5e7eb; height: 100%; min-height: 130px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 1rem; font-weight: 600; color: #1a3a5c; margin-bottom: 0.25rem;">{curso['nome']}</div>
+                        <div style="font-size: 0.8rem; color: #4a627a; margin-bottom: 0.75rem;">{curso['instituicao']}</div>
+                    </div>
+                    <div style="display: inline-block; background-color: #e0e7ff; color: #1e3a8a; padding: 0.2rem 0.6rem; border-radius: 20px; font-size: 0.65rem; font-weight: 500; align-self: flex-start;">{curso['polos']} polos</div>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                # Botão invisível que cobre o card (nativo do Streamlit, funciona sempre)
+                if st.button("", key=curso["id"], use_container_width=True):
+                    st.session_state["sheet_id"] = curso["id"]
+                    st.session_state["curso_nome"] = f"{curso['nome']} - {curso['instituicao']}"
+                    st.switch_page("pages/gestao_oferta.py")
     
-    grid_html += '</div>'
-    
-    st.markdown(grid_html, unsafe_allow_html=True)
-    st.markdown(f'<div class="total-text">📊 Total: {len(cursos_filtrados)} oferta(s) de cursos</div>', unsafe_allow_html=True)
-
-# --- PROCESSAR CLIQUE DO CARD (via query_params) ---
-query_params = st.query_params
-if "sheet_id" in query_params:
-    st.session_state["sheet_id"] = query_params["sheet_id"]
-    st.session_state["curso_nome"] = query_params.get("curso_nome", "Curso")
-    st.switch_page("pages/gestao_oferta.py")
+    st.markdown(f"<div style='text-align: center; margin-top: 2rem; color: #6b7280; font-size: 0.8rem;'>📊 Total: {len(cursos_filtrados)} oferta(s) de cursos</div>", unsafe_allow_html=True)
