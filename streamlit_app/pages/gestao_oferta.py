@@ -31,6 +31,7 @@ SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
 # --- PROCESSAR SALVAMENTO VIA URL (MAIS CONFIÁVEL) ---
+# --- PROCESSAR SALVAMENTO VIA URL (COM LOGS) ---
 query_params = st.query_params
 
 if "save" in query_params:
@@ -39,7 +40,12 @@ if "save" in query_params:
     polo = query_params.get("polo")
     novo_status = query_params.get("status") == "true"
     
-    # Importar aqui para evitar erro se não tiver
+    st.write(f"=== DEBUG ===")
+    st.write(f"sheet_id: {sheet_id}")
+    st.write(f"disciplina_cod: {disciplina_cod}")
+    st.write(f"polo: {polo}")
+    st.write(f"novo_status: {novo_status}")
+    
     import gspread
     from google.oauth2.service_account import Credentials
     
@@ -52,13 +58,18 @@ if "save" in query_params:
         sheet = client.open_by_key(sheet_id).sheet1
         data = sheet.get_all_values()
         
+        st.write(f"Total de linhas na planilha: {len(data)}")
+        st.write(f"Primeira linha: {data[0] if data else 'vazia'}")
+        
         header_row = 1
         for i, row in enumerate(data):
-            if row and ('Disciplina' in row or 'Código' in row):
+            if row and ('Disciplina' in row or 'Código' in row or 'EAD' in str(row)):
                 header_row = i
                 break
         
+        st.write(f"Linha de cabeçalho encontrada: {header_row}")
         headers = data[header_row]
+        st.write(f"Cabeçalhos: {headers[:10]}...")
         
         polo_col = None
         for i, col in enumerate(headers):
@@ -66,7 +77,11 @@ if "save" in query_params:
                 polo_col = i
                 break
         
-        if polo_col is not None:
+        st.write(f"Coluna do polo {polo}: {polo_col}")
+        
+        if polo_col is None:
+            st.error(f"❌ Polo {polo} não encontrado nos cabeçalhos")
+        else:
             status_col = polo_col + 1
             cod_col = 1
             
@@ -76,121 +91,30 @@ if "save" in query_params:
                     disciplina_row = i
                     break
             
+            st.write(f"Linha da disciplina {disciplina_cod}: {disciplina_row}")
+            
             if disciplina_row is not None:
                 novo_valor = 'A' if novo_status else 'D'
+                st.write(f"Novo valor: {novo_valor}")
+                st.write(f"Posição: linha {disciplina_row + 1}, coluna {status_col + 1}")
+                
                 sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
                 st.cache_data.clear()
                 st.success(f"✅ {disciplina_cod} - Polo {polo}: {'ativado' if novo_status else 'desativado'}")
-                st.query_params.clear()
-                st.rerun()
             else:
                 st.error(f"❌ Disciplina {disciplina_cod} não encontrada")
-        else:
-            st.error(f"❌ Polo {polo} não encontrado")
+                st.write("Disciplinas disponíveis:")
+                for i in range(header_row + 1, min(header_row + 10, len(data))):
+                    if len(data[i]) > cod_col:
+                        st.write(f"  - {data[i][cod_col]}")
+        
     except Exception as e:
         st.error(f"❌ Erro: {str(e)}")
-        st.query_params.clear()
-
-if "save_all" in query_params:
-    sheet_id = query_params.get("sheet_id")
-    disciplina_cod = query_params.get("disciplina_cod")
-    novo_status = query_params.get("status") == "true"
-    
-    import gspread
-    from google.oauth2.service_account import Credentials
-    
-    try:
-        creds_dict = st.secrets["gcp_service_account"]
-        scope = ['https://www.googleapis.com/auth/spreadsheets']
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        client = gspread.authorize(creds)
-        
-        sheet = client.open_by_key(sheet_id).sheet1
-        data = sheet.get_all_values()
-        
-        header_row = 1
-        for i, row in enumerate(data):
-            if row and ('Disciplina' in row or 'Código' in row):
-                header_row = i
-                break
-        
-        headers = data[header_row]
-        
-        # Encontrar todos os polos
-        polos = []
-        for col in headers:
-            col_str = str(col).strip()
-            if len(col_str) == 3 and col_str.isupper():
-                polos.append(col_str)
-        
-        cod_col = 1
-        disciplina_row = None
-        for i in range(header_row + 1, len(data)):
-            if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
-                disciplina_row = i
-                break
-        
-        if disciplina_row is not None:
-            novo_valor = 'A' if novo_status else 'D'
-            for polo in polos:
-                polo_col = None
-                for i, col in enumerate(headers):
-                    if col == polo:
-                        polo_col = i
-                        break
-                if polo_col is not None:
-                    status_col = polo_col + 1
-                    sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
-            
-            st.cache_data.clear()
-            st.success(f"✅ {disciplina_cod}: {'ativado' if novo_status else 'desativado'} em todos os polos")
-        else:
-            st.error(f"❌ Disciplina {disciplina_cod} não encontrada")
-    except Exception as e:
-        st.error(f"❌ Erro: {str(e)}")
+        import traceback
+        st.code(traceback.format_exc())
     
     st.query_params.clear()
-    st.rerun()
-
-# --- FUNÇÃO PARA CARREGAR DADOS ---
-@st.cache_data(ttl=60)
-def carregar_dados(sheet_id):
-    url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
-    
-    tentativas = [
-        {"header": None, "skiprows": None},
-        {"header": 0, "skiprows": None},
-        {"header": 1, "skiprows": None},
-        {"header": 0, "skiprows": 1},
-        {"header": None, "skiprows": 2},
-    ]
-    
-    for tentativa in tentativas:
-        try:
-            df = pd.read_csv(url, header=tentativa["header"], skiprows=tentativa["skiprows"])
-            colunas = df.columns.tolist()
-            
-            col_periodo = None
-            for col in colunas:
-                col_lower = str(col).lower().strip()
-                if col_lower in ['periodo', 'período', 'period', 'per']:
-                    col_periodo = col
-                    break
-            
-            if col_periodo:
-                df.rename(columns={col_periodo: 'Periodo'}, inplace=True)
-                return df
-            
-            for col in colunas:
-                col_lower = str(col).lower().strip()
-                if col_lower in ['disciplina', 'código', 'codigo']:
-                    return df
-        except:
-            continue
-    
-    st.error("❌ Erro ao carregar planilha.")
-    return None
-
+    st.stop()  # Para não continuar carregando a tabela
 # --- FUNÇÃO PARA DETECTAR POLOS ---
 def detectar_polos(df):
     colunas = df.columns.tolist()
