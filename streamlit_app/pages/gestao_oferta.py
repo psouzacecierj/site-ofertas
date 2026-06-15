@@ -240,7 +240,7 @@ if status_sel != "Todos" and POLOS:
     else:
         df_filtrado = df_filtrado[[not m for m in mascara]]
 
-# --- CONSTRUIR TABELA HTML COM REDIRECIONAMENTO ---
+# --- CONSTRUIR TABELA HTML COM REDIRECIONAMENTO (SEM ALERTA) ---
 html_content = """
 <style>
     .tabela-wrapper {
@@ -345,8 +345,6 @@ html_content = """
 
 <script>
 function toggleOffer(disciplinaCod, polo, element, sheetId) {
-    alert("TESTE: Clique em " + disciplinaCod + " - " + polo);  // ← ALERTA DE TESTE
-    
     const span = element.querySelector('span');
     const isActive = span.classList.contains('polo-ativo');
     const novoStatus = !isActive;
@@ -364,6 +362,12 @@ function toggleOffer(disciplinaCod, polo, element, sheetId) {
     
     const url = window.location.href.split('?')[0];
     window.location.href = url + '?save=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&polo=' + polo + '&status=' + novoStatus;
+}
+
+function toggleAll(disciplinaCod, acao, sheetId) {
+    const novoStatus = (acao === 'Ativar');
+    const url = window.location.href.split('?')[0];
+    window.location.href = url + '?save_all=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&status=' + novoStatus;
 }
 </script>
 
@@ -394,7 +398,7 @@ if 'Periodo' in df_filtrado.columns:
     for periodo in periodos_unicos:
         df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
         
-        html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong><td></td>'
+        html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
         
         for _, row in df_periodo.iterrows():
             cod_col = 'Disciplina' if 'Disciplina' in df.columns else df.columns[1]
@@ -437,7 +441,7 @@ if 'Periodo' in df_filtrado.columns:
             else:
                 html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\', \'{SHEET_ID}\')">✅ Ativar todos</button></td>'
             
-            html_content += '</tr>'
+            html_content += '</table>'
         
         html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
 
