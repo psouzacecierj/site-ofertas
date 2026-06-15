@@ -33,6 +33,13 @@ if "save" in query_params:
     polo = query_params.get("polo")
     novo_status = query_params.get("status") == "true"
     
+    # DEBUG: Mostrar na tela o que está sendo recebido
+    st.write("=== DEBUG SALVAMENTO ===")
+    st.write(f"sheet_id: {sheet_id}")
+    st.write(f"disciplina_cod: {disciplina_cod}")
+    st.write(f"polo: {polo}")
+    st.write(f"novo_status: {novo_status}")
+    
     try:
         creds_dict = st.secrets["gcp_service_account"]
         scope = ['https://www.googleapis.com/auth/spreadsheets']
@@ -50,6 +57,7 @@ if "save" in query_params:
                 break
         
         headers = data[header_row]
+        st.write(f"headers encontrados: {headers[:5]}...")
         
         # Encontrar coluna do polo
         polo_col = None
@@ -57,6 +65,8 @@ if "save" in query_params:
             if col == polo:
                 polo_col = i
                 break
+        
+        st.write(f"polo_col: {polo_col}")
         
         if polo_col is not None:
             status_col = polo_col + 1
@@ -69,15 +79,24 @@ if "save" in query_params:
                     disciplina_row = i
                     break
             
+            st.write(f"disciplina_row: {disciplina_row}")
+            
             if disciplina_row is not None:
                 novo_valor = 'A' if novo_status else 'D'
+                st.write(f"Atualizando célula: linha {disciplina_row + 1}, coluna {status_col + 1} para '{novo_valor}'")
                 sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
+                st.success("✅ SALVO COM SUCESSO!")
                 st.cache_data.clear()
+            else:
+                st.error(f"❌ Disciplina {disciplina_cod} não encontrada!")
+        else:
+            st.error(f"❌ Polo {polo} não encontrado!")
     except Exception as e:
-        pass
+        st.error(f"❌ ERRO: {str(e)}")
     
+    st.write("=== FIM DEBUG ===")
     st.query_params.clear()
-    st.rerun()
+    st.stop()  # Para não continuar carregando a página
 
 # --- RECUPERAR DADOS DO CURSO ---
 if "sheet_id" not in st.session_state:
