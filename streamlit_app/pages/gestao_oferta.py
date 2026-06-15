@@ -30,6 +30,128 @@ if "sheet_id" not in st.session_state:
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
+# --- PROCESSAR SALVAMENTO VIA URL (MAIS CONFIÁVEL) ---
+query_params = st.query_params
+
+if "save" in query_params:
+    sheet_id = query_params.get("sheet_id")
+    disciplina_cod = query_params.get("disciplina_cod")
+    polo = query_params.get("polo")
+    novo_status = query_params.get("status") == "true"
+    
+    # Importar aqui para evitar erro se não tiver
+    import gspread
+    from google.oauth2.service_account import Credentials
+    
+    try:
+        creds_dict = st.secrets["gcp_service_account"]
+        scope = ['https://www.googleapis.com/auth/spreadsheets']
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+        client = gspread.authorize(creds)
+        
+        sheet = client.open_by_key(sheet_id).sheet1
+        data = sheet.get_all_values()
+        
+        header_row = 1
+        for i, row in enumerate(data):
+            if row and ('Disciplina' in row or 'Código' in row):
+                header_row = i
+                break
+        
+        headers = data[header_row]
+        
+        polo_col = None
+        for i, col in enumerate(headers):
+            if col == polo:
+                polo_col = i
+                break
+        
+        if polo_col is not None:
+            status_col = polo_col + 1
+            cod_col = 1
+            
+            disciplina_row = None
+            for i in range(header_row + 1, len(data)):
+                if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
+                    disciplina_row = i
+                    break
+            
+            if disciplina_row is not None:
+                novo_valor = 'A' if novo_status else 'D'
+                sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
+                st.cache_data.clear()
+                st.success(f"✅ {disciplina_cod} - Polo {polo}: {'ativado' if novo_status else 'desativado'}")
+                st.query_params.clear()
+                st.rerun()
+            else:
+                st.error(f"❌ Disciplina {disciplina_cod} não encontrada")
+        else:
+            st.error(f"❌ Polo {polo} não encontrado")
+    except Exception as e:
+        st.error(f"❌ Erro: {str(e)}")
+        st.query_params.clear()
+
+if "save_all" in query_params:
+    sheet_id = query_params.get("sheet_id")
+    disciplina_cod = query_params.get("disciplina_cod")
+    novo_status = query_params.get("status") == "true"
+    
+    import gspread
+    from google.oauth2.service_account import Credentials
+    
+    try:
+        creds_dict = st.secrets["gcp_service_account"]
+        scope = ['https://www.googleapis.com/auth/spreadsheets']
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+        client = gspread.authorize(creds)
+        
+        sheet = client.open_by_key(sheet_id).sheet1
+        data = sheet.get_all_values()
+        
+        header_row = 1
+        for i, row in enumerate(data):
+            if row and ('Disciplina' in row or 'Código' in row):
+                header_row = i
+                break
+        
+        headers = data[header_row]
+        
+        # Encontrar todos os polos
+        polos = []
+        for col in headers:
+            col_str = str(col).strip()
+            if len(col_str) == 3 and col_str.isupper():
+                polos.append(col_str)
+        
+        cod_col = 1
+        disciplina_row = None
+        for i in range(header_row + 1, len(data)):
+            if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
+                disciplina_row = i
+                break
+        
+        if disciplina_row is not None:
+            novo_valor = 'A' if novo_status else 'D'
+            for polo in polos:
+                polo_col = None
+                for i, col in enumerate(headers):
+                    if col == polo:
+                        polo_col = i
+                        break
+                if polo_col is not None:
+                    status_col = polo_col + 1
+                    sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
+            
+            st.cache_data.clear()
+            st.success(f"✅ {disciplina_cod}: {'ativado' if novo_status else 'desativado'} em todos os polos")
+        else:
+            st.error(f"❌ Disciplina {disciplina_cod} não encontrada")
+    except Exception as e:
+        st.error(f"❌ Erro: {str(e)}")
+    
+    st.query_params.clear()
+    st.rerun()
+
 # --- FUNÇÃO PARA CARREGAR DADOS ---
 @st.cache_data(ttl=60)
 def carregar_dados(sheet_id):
@@ -103,56 +225,6 @@ def get_inst(row, polo):
         if inst and inst != 'nan':
             return inst
     return '—'
-
-# --- FUNÇÃO PARA SALVAR NA PLANILHA ---
-def salvar_na_planilha(sheet_id, disciplina_cod, polo, novo_status):
-    try:
-        import gspread
-        from google.oauth2.service_account import Credentials
-        
-        creds_dict = st.secrets["gcp_service_account"]
-        scope = ['https://www.googleapis.com/auth/spreadsheets']
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        client = gspread.authorize(creds)
-        
-        sheet = client.open_by_key(sheet_id).sheet1
-        data = sheet.get_all_values()
-        
-        header_row = 1
-        for i, row in enumerate(data):
-            if row and ('Disciplina' in row or 'Código' in row):
-                header_row = i
-                break
-        
-        headers = data[header_row]
-        
-        polo_col = None
-        for i, col in enumerate(headers):
-            if col == polo:
-                polo_col = i
-                break
-        
-        if polo_col is None:
-            return False, f"Polo {polo} não encontrado"
-        
-        status_col = polo_col + 1
-        cod_col = 1
-        
-        disciplina_row = None
-        for i in range(header_row + 1, len(data)):
-            if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
-                disciplina_row = i
-                break
-        
-        if disciplina_row is None:
-            return False, f"Disciplina {disciplina_cod} não encontrada"
-        
-        novo_valor = 'A' if novo_status else 'D'
-        sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
-        
-        return True, "Salvo com sucesso"
-    except Exception as e:
-        return False, str(e)
 
 # --- CARREGAR DADOS ---
 df = carregar_dados(SHEET_ID)
@@ -361,12 +433,13 @@ html_content = """
 </style>
 
 <script>
-async function toggleOffer(disciplinaCod, polo, element, sheetId) {
+function toggleOffer(disciplinaCod, polo, element, sheetId) {
     const span = element.querySelector('span');
     const isActive = span.classList.contains('polo-ativo');
     const novoStatus = !isActive;
     const inst = span.getAttribute('data-inst') || 'UFF';
     
+    // Mudar visual imediatamente (feedback)
     if (isActive) {
         span.className = 'polo-inativo';
         span.innerHTML = '—';
@@ -377,70 +450,15 @@ async function toggleOffer(disciplinaCod, polo, element, sheetId) {
         span.setAttribute('data-inst', inst);
     }
     
-    try {
-        const response = await fetch('/save_offer', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                sheet_id: sheetId,
-                disciplina_cod: disciplinaCod,
-                polo: polo,
-                status: novoStatus
-            })
-        });
-        const result = await response.json();
-        if (!result.success) {
-            console.error('Erro ao salvar:', result.error);
-            if (novoStatus) {
-                span.className = 'polo-inativo';
-                span.innerHTML = '—';
-            } else {
-                span.className = 'polo-ativo';
-                span.innerHTML = '✓ ' + inst;
-            }
-            alert('Erro ao salvar: ' + result.error);
-        }
-    } catch (error) {
-        console.error('Erro na requisição:', error);
-        alert('Erro de conexão ao salvar');
-    }
+    // Redirecionar com parâmetros para salvar (sem fetch)
+    const url = window.location.href.split('?')[0];
+    window.location.href = url + '?save=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&polo=' + polo + '&status=' + novoStatus;
 }
 
-async function toggleAll(disciplinaCod, acao, sheetId) {
+function toggleAll(disciplinaCod, acao, sheetId) {
     const novoStatus = (acao === 'Ativar');
-    const cells = document.querySelectorAll(`.polo-cell[data-disciplina="${disciplinaCod}"]`);
-    
-    for (const cell of cells) {
-        const span = cell.querySelector('span');
-        const polo = cell.getAttribute('data-polo');
-        const inst = span.getAttribute('data-inst') || 'UFF';
-        
-        if (novoStatus) {
-            span.className = 'polo-ativo';
-            span.innerHTML = '✓ ' + inst;
-            span.setAttribute('data-inst', inst);
-        } else {
-            span.className = 'polo-inativo';
-            span.innerHTML = '—';
-            span.removeAttribute('data-inst');
-        }
-        
-        try {
-            await fetch('/save_offer', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    sheet_id: sheetId,
-                    disciplina_cod: disciplinaCod,
-                    polo: polo,
-                    status: novoStatus
-                })
-            });
-        } catch (error) {
-            console.error('Erro ao salvar:', error);
-        }
-    }
-    alert(acao + ' todos: ' + disciplinaCod);
+    const url = window.location.href.split('?')[0];
+    window.location.href = url + '?save_all=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&status=' + novoStatus;
 }
 </script>
 
@@ -529,40 +547,6 @@ if html_content:
     components.html(html_content, height=600, scrolling=True)
 else:
     st.info("Nenhuma disciplina encontrada com os filtros selecionados.")
-
-# --- RODAPÉ ---
-st.divider()
-st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-# --- ENDPOINT PARA RECEBER REQUISIÇÕES DE SALVAMENTO ---
-import json
-from streamlit.runtime.scriptrunner import get_script_run_ctx
-
-def handle_save_request():
-    if st.request.method == "POST":
-        try:
-            body = json.loads(st.request.body)
-            st.write(f"Recebido: {body}")  # Debug
-            
-            success, msg = salvar_na_planilha(
-                body.get('sheet_id'),
-                body.get('disciplina_cod'),
-                body.get('polo'),
-                body.get('status')
-            )
-            
-            if success:
-                st.json({"success": True, "message": msg})
-                # Limpar cache para recarregar dados
-                st.cache_data.clear()
-            else:
-                st.json({"success": False, "error": msg})
-        except Exception as e:
-            st.json({"success": False, "error": str(e)})
-
-# Registrar o endpoint apenas uma vez
-if "save_endpoint_registered" not in st.session_state:
-    st.session_state.save_endpoint_registered = True
-    st.experimental_endpoint("/save_offer", handle_save_request)
 
 # --- RODAPÉ ---
 st.divider()
