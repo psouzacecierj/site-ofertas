@@ -3,6 +3,8 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import streamlit.components.v1 as components
+import gspread
+from google.oauth2.service_account import Credentials
 
 # --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="Gestão de Oferta", layout="wide")
@@ -30,9 +32,56 @@ if "sheet_id" not in st.session_state:
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
-# --- DEBUG: Mostrar o ID da planilha sendo usado (DEPOIS de definir SHEET_ID) ---
-st.write(f"🔍 SHEET_ID em uso: `{SHEET_ID}`")
-st.write(f"🔍 Nome do curso: {CURSO_NOME}")
+# --- FUNÇÃO PARA SALVAR NA PLANILHA ---
+def salvar_na_planilha(sheet_id, disciplina_cod, polo, novo_status):
+    try:
+        creds_dict = st.secrets["gcp_service_account"]
+        scope = ['https://www.googleapis.com/auth/spreadsheets']
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+        client = gspread.authorize(creds)
+        
+        sheet = client.open_by_key(sheet_id).sheet1
+        data = sheet.get_all_values()
+        
+        # Encontrar cabeçalhos
+        header_row = 1
+        for i, row in enumerate(data):
+            if row and ('Disciplina' in row or 'Código' in row):
+                header_row = i
+                break
+        
+        headers = data[header_row]
+        
+        # Encontrar coluna do polo
+        polo_col = None
+        for i, col in enumerate(headers):
+            if col == polo:
+                polo_col = i
+                break
+        
+        if polo_col is None:
+            return False, f"Polo {polo} não encontrado"
+        
+        status_col = polo_col + 1
+        cod_col = 1
+        
+        # Encontrar linha da disciplina
+        disciplina_row = None
+        for i in range(header_row + 1, len(data)):
+            if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
+                disciplina_row = i
+                break
+        
+        if disciplina_row is None:
+            return False, f"Disciplina {disciplina_cod} não encontrada"
+        
+        novo_valor = 'A' if novo_status else 'D'
+        sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
+        
+        return True, "Salvo com sucesso"
+        
+    except Exception as e:
+        return False, str(e)
 
 # --- FUNÇÃO PARA CARREGAR DADOS ---
 @st.cache_data(ttl=60)
@@ -187,7 +236,7 @@ if status_sel != "Todos" and POLOS:
     else:
         df_filtrado = df_filtrado[[not m for m in mascara]]
 
-# --- CONSTRUIR TABELA HTML (VERSÃO SIMPLES - SÓ VISUAL) ---
+# --- CONSTRUIR TABELA HTML COM SALVAMENTO ---
 html_content = """
 <style>
     .tabela-wrapper {
@@ -291,11 +340,13 @@ html_content = """
 </style>
 
 <script>
-function toggleOffer(disciplinaCod, polo, element) {
+function toggleOffer(disciplinaCod, polo, element, sheetId) {
     const span = element.querySelector('span');
     const isActive = span.classList.contains('polo-ativo');
+    const novoStatus = !isActive;
     const inst = span.getAttribute('data-inst') || 'UFF';
     
+    // Mudar visual imediatamente
     if (isActive) {
         span.className = 'polo-inativo';
         span.innerHTML = '—';
@@ -305,11 +356,51 @@ function toggleOffer(disciplinaCod, polo, element) {
         span.innerHTML = '✓ ' + inst;
         span.setAttribute('data-inst', inst);
     }
-    console.log('Toggle:', disciplinaCod, polo);
+    
+    // Enviar salvamento via POST
+    fetch(window.location.href, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            sheet_id: sheetId,
+            disciplina_cod: disciplinaCod,
+            polo: polo,
+            status: novoStatus
+        })
+    }).catch(error => console.error('Erro:', error));
 }
 
-function toggleAll(disciplinaCod, acao) {
-    console.log(acao + ' todos:', disciplinaCod);
+function toggleAll(disciplinaCod, acao, sheetId) {
+    const novoStatus = (acao === 'Ativar');
+    const cells = document.querySelectorAll(`.polo-cell[data-disciplina="${disciplinaCod}"]`);
+    
+    for (const cell of cells) {
+        const span = cell.querySelector('span');
+        const polo = cell.getAttribute('data-polo');
+        const inst = span.getAttribute('data-inst') || 'UFF';
+        
+        if (novoStatus) {
+            span.className = 'polo-ativo';
+            span.innerHTML = '✓ ' + inst;
+            span.setAttribute('data-inst', inst);
+        } else {
+            span.className = 'polo-inativo';
+            span.innerHTML = '—';
+            span.removeAttribute('data-inst');
+        }
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sheet_id: sheetId,
+                disciplina_cod: disciplinaCod,
+                polo: polo,
+                status: novoStatus
+            })
+        }).catch(error => console.error('Erro:', error));
+    }
+    alert(acao + ' todos: ' + disciplinaCod);
 }
 </script>
 
@@ -340,7 +431,7 @@ if 'Periodo' in df_filtrado.columns:
     for periodo in periodos_unicos:
         df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
         
-        html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
+        html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></td>'
         
         for _, row in df_periodo.iterrows():
             cod_col = 'Disciplina' if 'Disciplina' in df.columns else df.columns[1]
@@ -352,7 +443,7 @@ if 'Periodo' in df_filtrado.columns:
             ch_col = 'Carga Horária' if 'Carga Horária' in df.columns else df.columns[3]
             ch = int(row[ch_col]) if pd.notna(row[ch_col]) else 0
             
-            html_content += '<tr>'
+            html_content += '</table>'
             html_content += f'<td class="texto-centro"><span class="periodo-badge">{periodo}</span></td>'
             html_content += f'<td class="texto-centro"><span class="disciplina-code">{disciplina_cod}</span></td>'
             html_content += f'<td class="disciplina-nome">{disciplina_nome}</td>'
@@ -367,25 +458,25 @@ if 'Periodo' in df_filtrado.columns:
                 if is_active:
                     algum_ativo = True
                     html_content += f'''
-                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
+                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this, '{SHEET_ID}')" data-disciplina="{disciplina_cod}" data-polo="{polo}">
                         <span class="polo-ativo" data-inst="{inst}">✓ {inst}</span>
                     </td>
                     '''
                 else:
                     html_content += f'''
-                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
+                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this, '{SHEET_ID}')" data-disciplina="{disciplina_cod}" data-polo="{polo}">
                         <span class="polo-inativo">—</span>
                     </td>
                     '''
             
             if algum_ativo:
-                html_content += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\')">❌ Desativar todos</button></td>'
+                html_content += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\', \'{SHEET_ID}\')">❌ Desativar todos</button></td>'
             else:
-                html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\')">✅ Ativar todos</button></td>'
+                html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\', \'{SHEET_ID}\')">✅ Ativar todos</button></td>'
             
             html_content += '</tr>'
         
-        html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></table></tr>'
+        html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
 
 html_content += """
     </tbody>
@@ -393,40 +484,31 @@ html_content += """
 </div>
 """
 
+# --- PROCESSAR REQUISIÇÕES POST (SALVAMENTO) ---
+import json
+
+if st.request.method == "POST":
+    try:
+        body = json.loads(st.request.body)
+        success, msg = salvar_na_planilha(
+            body.get('sheet_id'),
+            body.get('disciplina_cod'),
+            body.get('polo'),
+            body.get('status')
+        )
+        if success:
+            st.cache_data.clear()
+            st.json({"success": True})
+        else:
+            st.json({"success": False, "error": msg})
+    except:
+        pass
+
 # Renderizar o HTML
 if html_content:
     components.html(html_content, height=600, scrolling=True)
 else:
     st.info("Nenhuma disciplina encontrada com os filtros selecionados.")
-
-# --- BOTÃO DE TESTE SIMPLES ---
-st.markdown("---")
-st.subheader("🔧 Teste de Conexão")
-
-if st.button("🧪 Testar conexão com a planilha", use_container_width=True):
-    import gspread
-    from google.oauth2.service_account import Credentials
-    
-    try:
-        creds_dict = st.secrets["gcp_service_account"]
-        scope = ['https://www.googleapis.com/auth/spreadsheets']
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        client = gspread.authorize(creds)
-        
-        # Tentar abrir a planilha
-        sheet = client.open_by_key(SHEET_ID)
-        st.success(f"✅ Planilha encontrada! Título: {sheet.title}")
-        
-        # Tentar escrever
-        worksheet = sheet.sheet1
-        worksheet.update_cell(2, 2, f"Teste {datetime.now()}")
-        st.success("✅ Escrita realizada com sucesso!")
-        
-    except gspread.exceptions.SpreadsheetNotFound:
-        st.error(f"❌ Planilha não encontrada! Verifique se a Service Account tem acesso.")
-        st.info(f"Email da Service Account: {creds_dict.get('client_email', 'não encontrado')}")
-    except Exception as e:
-        st.error(f"❌ Erro: {str(e)}")
 
 # --- RODAPÉ ---
 st.divider()
