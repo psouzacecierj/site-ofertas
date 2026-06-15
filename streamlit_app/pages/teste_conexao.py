@@ -9,7 +9,7 @@ st.set_page_config(page_title="Teste de Conexão", layout="centered")
 st.title("🧪 Teste de Conexão com Google Sheets")
 
 # ID da planilha de teste (NOVA)
-SHEET_ID = "1i1dhZA0JhdjouUdbkKat_b4kkmap9x9A54rltw2Fwwk"
+SHEET_ID = "1i1dhZA0JhdjouUdbkKat_b4kkmap9x9A54rltw2Fwwk"  # ← USE ESTE ID!
 
 st.write(f"📌 Planilha ID: `{SHEET_ID}`")
 
