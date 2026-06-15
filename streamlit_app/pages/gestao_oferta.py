@@ -30,32 +30,24 @@ if "sheet_id" not in st.session_state:
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
-# --- FUNÇÃO PARA CARREGAR DADOS (MAIS ROBUSTA) ---
+# --- FUNÇÃO PARA CARREGAR DADOS ---
 @st.cache_data(ttl=60)
 def carregar_dados(sheet_id):
     url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/export?format=csv"
     
-    # Múltiplas tentativas com diferentes configurações
     tentativas = [
-        {"header": None, "skiprows": None},      # Sem header, sem pular
-        {"header": 0, "skiprows": None},         # Primeira linha como header
-        {"header": 1, "skiprows": None},         # Segunda linha como header
-        {"header": 0, "skiprows": 1},            # Pular linha 1, header na linha 2
-        {"header": None, "skiprows": 2},         # Pular 2 linhas
+        {"header": None, "skiprows": None},
+        {"header": 0, "skiprows": None},
+        {"header": 1, "skiprows": None},
+        {"header": 0, "skiprows": 1},
+        {"header": None, "skiprows": 2},
     ]
     
     for tentativa in tentativas:
         try:
-            df = pd.read_csv(
-                url, 
-                header=tentativa["header"],
-                skiprows=tentativa["skiprows"]
-            )
-            
-            # Verificar se encontrou colunas esperadas
+            df = pd.read_csv(url, header=tentativa["header"], skiprows=tentativa["skiprows"])
             colunas = df.columns.tolist()
             
-            # PROCURAR COLUNA DE PERÍODO (várias variações)
             col_periodo = None
             for col in colunas:
                 col_lower = str(col).lower().strip()
@@ -67,42 +59,34 @@ def carregar_dados(sheet_id):
                 df.rename(columns={col_periodo: 'Periodo'}, inplace=True)
                 return df
             
-            # PROCURAR COLUNA DE DISCIPLINA (para confirmar que é uma planilha válida)
             for col in colunas:
                 col_lower = str(col).lower().strip()
                 if col_lower in ['disciplina', 'código', 'codigo']:
                     return df
-                    
-        except Exception as e:
+        except:
             continue
     
-    st.error(f"❌ Erro ao carregar planilha. Verifique se o link é público e a estrutura está correta.")
+    st.error("❌ Erro ao carregar planilha.")
     return None
 
 # --- FUNÇÃO PARA DETECTAR POLOS ---
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
-    
-    # Lista de polos conhecidos
     polos_conhecidos = ['ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
                         'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
                         'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO']
     
     for col in colunas:
         col_str = str(col).strip()
-        # Verifica se é um código de polo (3 letras maiúsculas ou está na lista)
         if (len(col_str) == 3 and col_str.isupper()) or col_str in polos_conhecidos:
             if col_str not in polos and col_str not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD']:
                 polos.append(col_str)
-    
     return polos
 
 # --- FUNÇÃO PARA OBTER STATUS DE UM POLO ---
 def get_status(row, polo, df):
-    # Verifica se o polo existe na linha
     if polo in row.index:
-        # Tenta encontrar a coluna de status (geralmente à direita)
         polo_idx = df.columns.get_loc(polo)
         if polo_idx + 1 < len(df.columns):
             status_col = df.columns[polo_idx + 1]
@@ -120,36 +104,75 @@ def get_inst(row, polo):
             return inst
     return '—'
 
+# --- FUNÇÃO PARA SALVAR NA PLANILHA ---
+def salvar_na_planilha(sheet_id, disciplina_cod, polo, novo_status):
+    try:
+        import gspread
+        from google.oauth2.service_account import Credentials
+        
+        creds_dict = st.secrets["gcp_service_account"]
+        scope = ['https://www.googleapis.com/auth/spreadsheets']
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+        client = gspread.authorize(creds)
+        
+        sheet = client.open_by_key(sheet_id).sheet1
+        data = sheet.get_all_values()
+        
+        header_row = 1
+        for i, row in enumerate(data):
+            if row and ('Disciplina' in row or 'Código' in row):
+                header_row = i
+                break
+        
+        headers = data[header_row]
+        
+        polo_col = None
+        for i, col in enumerate(headers):
+            if col == polo:
+                polo_col = i
+                break
+        
+        if polo_col is None:
+            return False, f"Polo {polo} não encontrado"
+        
+        status_col = polo_col + 1
+        cod_col = 1
+        
+        disciplina_row = None
+        for i in range(header_row + 1, len(data)):
+            if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
+                disciplina_row = i
+                break
+        
+        if disciplina_row is None:
+            return False, f"Disciplina {disciplina_cod} não encontrada"
+        
+        novo_valor = 'A' if novo_status else 'D'
+        sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
+        
+        return True, "Salvo com sucesso"
+    except Exception as e:
+        return False, str(e)
+
 # --- CARREGAR DADOS ---
 df = carregar_dados(SHEET_ID)
 if df is None or df.empty:
     st.stop()
 
-# --- GARANTIR QUE A COLUNA 'Periodo' EXISTE ---
+# --- GARANTIR COLUNA Periodo ---
 if 'Periodo' not in df.columns:
-    # Tentar encontrar uma coluna que parece ser período
     for col in df.columns:
         col_lower = str(col).lower().strip()
         if col_lower in ['periodo', 'período', 'period', 'per']:
             df.rename(columns={col: 'Periodo'}, inplace=True)
             break
-        # Verificar se os valores parecem períodos (01, 02, etc.)
-        valores = df[col].dropna().astype(str).head(5)
-        if all(v in ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10'] for v in valores):
-            df.rename(columns={col: 'Periodo'}, inplace=True)
-            break
 
 if 'Periodo' not in df.columns:
-    st.error("❌ Não foi possível encontrar a coluna 'Periodo' na planilha.")
-    st.write("Colunas encontradas:", df.columns.tolist())
+    st.error("❌ Coluna 'Periodo' não encontrada")
     st.stop()
 
 # --- IDENTIFICAR POLOS ---
 POLOS = detectar_polos(df)
-
-if not POLOS:
-    st.warning("⚠️ Nenhum polo detectado. Verifique a estrutura da planilha.")
-    st.write("Colunas encontradas:", df.columns.tolist())
 
 # --- TÍTULO ---
 st.markdown(f"""
@@ -164,12 +187,8 @@ col_f1, col_f2, col_f3, col_f4, col_f5 = st.columns([2, 1, 1, 1, 1])
 with col_f1:
     busca = st.text_input("🔍 Buscar disciplina", placeholder="Nome ou código...", key="busca_input")
 with col_f2:
-    # Garantir que a coluna Periodo existe antes de usar
-    if 'Periodo' in df.columns:
-        periodos = sorted([p for p in df['Periodo'].dropna().unique() if str(p) != 'nan'], key=lambda x: str(x))
-        periodo_sel = st.selectbox("Período", ["Todos"] + list(periodos), key="periodo_select")
-    else:
-        periodo_sel = "Todos"
+    periodos = sorted([p for p in df['Periodo'].dropna().unique() if str(p) != 'nan'], key=lambda x: str(x))
+    periodo_sel = st.selectbox("Período", ["Todos"] + list(periodos), key="periodo_select")
 with col_f3:
     status_sel = st.selectbox("Status", ["Todos", "Com oferta", "Sem oferta"], key="status_select")
 with col_f4:
@@ -203,13 +222,10 @@ df_filtrado = df.copy()
 
 if busca:
     busca_lower = busca.lower()
-    # Verificar se as colunas existem
     if 'Disciplina' in df_filtrado.columns:
         df_filtrado = df_filtrado[df_filtrado['Disciplina'].astype(str).str.lower().str.contains(busca_lower, na=False)]
-    elif 'Código' in df_filtrado.columns:
-        df_filtrado = df_filtrado[df_filtrado['Código'].astype(str).str.lower().str.contains(busca_lower, na=False)]
 
-if periodo_sel != "Todos" and 'Periodo' in df_filtrado.columns:
+if periodo_sel != "Todos":
     df_filtrado = df_filtrado[df_filtrado['Periodo'].astype(str) == str(periodo_sel)]
 
 if status_sel != "Todos" and POLOS:
@@ -345,9 +361,10 @@ html_content = """
 </style>
 
 <script>
-function toggleOffer(disciplinaCod, polo, element) {
+async function toggleOffer(disciplinaCod, polo, element, sheetId) {
     const span = element.querySelector('span');
     const isActive = span.classList.contains('polo-ativo');
+    const novoStatus = !isActive;
     const inst = span.getAttribute('data-inst') || 'UFF';
     
     if (isActive) {
@@ -359,9 +376,70 @@ function toggleOffer(disciplinaCod, polo, element) {
         span.innerHTML = '✓ ' + inst;
         span.setAttribute('data-inst', inst);
     }
+    
+    try {
+        const response = await fetch('/save_offer', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sheet_id: sheetId,
+                disciplina_cod: disciplinaCod,
+                polo: polo,
+                status: novoStatus
+            })
+        });
+        const result = await response.json();
+        if (!result.success) {
+            console.error('Erro ao salvar:', result.error);
+            if (novoStatus) {
+                span.className = 'polo-inativo';
+                span.innerHTML = '—';
+            } else {
+                span.className = 'polo-ativo';
+                span.innerHTML = '✓ ' + inst;
+            }
+            alert('Erro ao salvar: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Erro na requisição:', error);
+        alert('Erro de conexão ao salvar');
+    }
 }
 
-function toggleAll(disciplinaCod, acao) {
+async function toggleAll(disciplinaCod, acao, sheetId) {
+    const novoStatus = (acao === 'Ativar');
+    const cells = document.querySelectorAll(`.polo-cell[data-disciplina="${disciplinaCod}"]`);
+    
+    for (const cell of cells) {
+        const span = cell.querySelector('span');
+        const polo = cell.getAttribute('data-polo');
+        const inst = span.getAttribute('data-inst') || 'UFF';
+        
+        if (novoStatus) {
+            span.className = 'polo-ativo';
+            span.innerHTML = '✓ ' + inst;
+            span.setAttribute('data-inst', inst);
+        } else {
+            span.className = 'polo-inativo';
+            span.innerHTML = '—';
+            span.removeAttribute('data-inst');
+        }
+        
+        try {
+            await fetch('/save_offer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    sheet_id: sheetId,
+                    disciplina_cod: disciplinaCod,
+                    polo: polo,
+                    status: novoStatus
+                })
+            });
+        } catch (error) {
+            console.error('Erro ao salvar:', error);
+        }
+    }
     alert(acao + ' todos: ' + disciplinaCod);
 }
 </script>
@@ -393,18 +471,15 @@ if 'Periodo' in df_filtrado.columns:
     for periodo in periodos_unicos:
         df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
         
-        # Cabeçalho do período
         html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
         
         for _, row in df_periodo.iterrows():
-            # Determinar colunas de código e nome
-            cod_col = 'Disciplina' if 'Disciplina' in df.columns else 'Código' if 'Código' in df.columns else df.columns[1]
+            cod_col = 'Disciplina' if 'Disciplina' in df.columns else df.columns[1]
             nome_col = 'Nome' if 'Nome' in df.columns else df.columns[2]
             
             disciplina_cod = str(row[cod_col]).replace("'", "\\'")
             disciplina_nome = str(row[nome_col]).replace("'", "\\'")
             
-            # Carga horária
             ch_col = 'Carga Horária' if 'Carga Horária' in df.columns else df.columns[3]
             ch = int(row[ch_col]) if pd.notna(row[ch_col]) else 0
             
@@ -414,7 +489,6 @@ if 'Periodo' in df_filtrado.columns:
             html_content += f'<td class="disciplina-nome">{disciplina_nome}</td>'
             html_content += f'<td class="texto-centro"><span class="carga">{ch}h</span></td>'
             
-            # Polos
             algum_ativo = False
             for polo in POLOS:
                 status = get_status(row, polo, df)
@@ -424,26 +498,24 @@ if 'Periodo' in df_filtrado.columns:
                 if is_active:
                     algum_ativo = True
                     html_content += f'''
-                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
+                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this, '{SHEET_ID}')" data-disciplina="{disciplina_cod}" data-polo="{polo}">
                         <span class="polo-ativo" data-inst="{inst}">✓ {inst}</span>
                     </td>
                     '''
                 else:
                     html_content += f'''
-                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this)">
+                    <td class="polo-cell" onclick="toggleOffer('{disciplina_cod}', '{polo}', this, '{SHEET_ID}')" data-disciplina="{disciplina_cod}" data-polo="{polo}">
                         <span class="polo-inativo">—</span>
                     </td>
                     '''
             
-            # Botão de ação
             if algum_ativo:
-                html_content += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\')">❌ Desativar todos</button></td>'
+                html_content += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\', \'{SHEET_ID}\')">❌ Desativar todos</button></td>'
             else:
-                html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\')">✅ Ativar todos</button></td>'
+                html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\', \'{SHEET_ID}\')">✅ Ativar todos</button></td>'
             
             html_content += '</tr>'
         
-        # Espaçador
         html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
 
 html_content += """
