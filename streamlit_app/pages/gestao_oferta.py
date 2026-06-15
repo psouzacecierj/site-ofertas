@@ -5,7 +5,6 @@ from datetime import datetime
 import streamlit.components.v1 as components
 import gspread
 from google.oauth2.service_account import Credentials
-import json
 
 # --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="Gestão de Oferta", layout="wide")
@@ -24,6 +23,61 @@ st.markdown("""
     }
 </style>
 """, unsafe_allow_html=True)
+
+# --- PROCESSAR SALVAMENTO VIA QUERY PARAMS ---
+query_params = st.query_params
+
+if "save" in query_params:
+    sheet_id = query_params.get("sheet_id")
+    disciplina_cod = query_params.get("disciplina_cod")
+    polo = query_params.get("polo")
+    novo_status = query_params.get("status") == "true"
+    
+    try:
+        creds_dict = st.secrets["gcp_service_account"]
+        scope = ['https://www.googleapis.com/auth/spreadsheets']
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+        client = gspread.authorize(creds)
+        
+        sheet = client.open_by_key(sheet_id).sheet1
+        data = sheet.get_all_values()
+        
+        # Encontrar cabeçalhos
+        header_row = 1
+        for i, row in enumerate(data):
+            if row and ('Disciplina' in row or 'Código' in row):
+                header_row = i
+                break
+        
+        headers = data[header_row]
+        
+        # Encontrar coluna do polo
+        polo_col = None
+        for i, col in enumerate(headers):
+            if col == polo:
+                polo_col = i
+                break
+        
+        if polo_col is not None:
+            status_col = polo_col + 1
+            cod_col = 1
+            
+            # Encontrar linha da disciplina
+            disciplina_row = None
+            for i in range(header_row + 1, len(data)):
+                if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
+                    disciplina_row = i
+                    break
+            
+            if disciplina_row is not None:
+                novo_valor = 'A' if novo_status else 'D'
+                sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
+                st.cache_data.clear()
+    except Exception as e:
+        pass
+    
+    st.query_params.clear()
+    st.rerun()
 
 # --- RECUPERAR DADOS DO CURSO ---
 if "sheet_id" not in st.session_state:
@@ -186,7 +240,7 @@ if status_sel != "Todos" and POLOS:
     else:
         df_filtrado = df_filtrado[[not m for m in mascara]]
 
-# --- CONSTRUIR TABELA HTML COM SALVAMENTO VIA FETCH (sem redirect) ---
+# --- CONSTRUIR TABELA HTML COM REDIRECIONAMENTO ---
 html_content = """
 <style>
     .tabela-wrapper {
@@ -290,7 +344,7 @@ html_content = """
 </style>
 
 <script>
-async function toggleOffer(disciplinaCod, polo, element, sheetId) {
+function toggleOffer(disciplinaCod, polo, element, sheetId) {
     const span = element.querySelector('span');
     const isActive = span.classList.contains('polo-ativo');
     const novoStatus = !isActive;
@@ -307,57 +361,16 @@ async function toggleOffer(disciplinaCod, polo, element, sheetId) {
         span.setAttribute('data-inst', inst);
     }
     
-    // Enviar requisição assíncrona para salvar (sem recarregar a página)
-    try {
-        const response = await fetch(window.location.href, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                sheet_id: sheetId,
-                disciplina_cod: disciplinaCod,
-                polo: polo,
-                status: novoStatus
-            })
-        });
-        const result = await response.json();
-        if (!result.success) {
-            console.error('Erro ao salvar:', result.error);
-        }
-    } catch (error) {
-        console.error('Erro na requisição:', error);
-    }
+    // Redirecionar para salvar (recarrega a página, mas o visual já mudou)
+    const url = window.location.href.split('?')[0];
+    window.location.href = url + '?save=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&polo=' + polo + '&status=' + novoStatus;
 }
 
 function toggleAll(disciplinaCod, acao, sheetId) {
     const novoStatus = (acao === 'Ativar');
-    const cells = document.querySelectorAll(`.polo-cell[data-disciplina="${disciplinaCod}"]`);
-    
-    for (const cell of cells) {
-        const span = cell.querySelector('span');
-        const polo = cell.getAttribute('data-polo');
-        const inst = span.getAttribute('data-inst') || 'UFF';
-        
-        if (novoStatus) {
-            span.className = 'polo-ativo';
-            span.innerHTML = '✓ ' + inst;
-            span.setAttribute('data-inst', inst);
-        } else {
-            span.className = 'polo-inativo';
-            span.innerHTML = '—';
-            span.removeAttribute('data-inst');
-        }
-        
-        fetch(window.location.href, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                sheet_id: sheetId,
-                disciplina_cod: disciplinaCod,
-                polo: polo,
-                status: novoStatus
-            })
-        }).catch(error => console.error('Erro:', error));
-    }
+    alert(acao + ' todos: ' + disciplinaCod + ' (recarregando para salvar)');
+    const url = window.location.href.split('?')[0];
+    window.location.href = url + '?save_all=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&status=' + novoStatus;
 }
 </script>
 
@@ -388,7 +401,7 @@ if 'Periodo' in df_filtrado.columns:
     for periodo in periodos_unicos:
         df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
         
-        html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></td>'
+        html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong><td></td>'
         
         for _, row in df_periodo.iterrows():
             cod_col = 'Disciplina' if 'Disciplina' in df.columns else df.columns[1]
@@ -431,7 +444,7 @@ if 'Periodo' in df_filtrado.columns:
             else:
                 html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\', \'{SHEET_ID}\')">✅ Ativar todos</button></td>'
             
-            html_content += '<tr>'
+            html_content += '</tr>'
         
         html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
 
@@ -440,63 +453,6 @@ html_content += """
 </table>
 </div>
 """
-
-# --- PROCESSAR REQUISIÇÕES POST (SALVAMENTO) ---
-if st.request.method == "POST":
-    try:
-        body = json.loads(st.request.body)
-        sheet_id = body.get('sheet_id')
-        disciplina_cod = body.get('disciplina_cod')
-        polo = body.get('polo')
-        novo_status = body.get('status')
-        
-        creds_dict = st.secrets["gcp_service_account"]
-        scope = ['https://www.googleapis.com/auth/spreadsheets']
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        client = gspread.authorize(creds)
-        
-        sheet = client.open_by_key(sheet_id).sheet1
-        data = sheet.get_all_values()
-        
-        # Encontrar cabeçalhos
-        header_row = 1
-        for i, row in enumerate(data):
-            if row and ('Disciplina' in row or 'Código' in row):
-                header_row = i
-                break
-        
-        headers = data[header_row]
-        
-        # Encontrar coluna do polo
-        polo_col = None
-        for i, col in enumerate(headers):
-            if col == polo:
-                polo_col = i
-                break
-        
-        if polo_col is not None:
-            status_col = polo_col + 1
-            cod_col = 1
-            
-            # Encontrar linha da disciplina
-            disciplina_row = None
-            for i in range(header_row + 1, len(data)):
-                if len(data[i]) > cod_col and data[i][cod_col] == disciplina_cod:
-                    disciplina_row = i
-                    break
-            
-            if disciplina_row is not None:
-                novo_valor = 'A' if novo_status else 'D'
-                sheet.update_cell(disciplina_row + 1, status_col + 1, novo_valor)
-                st.cache_data.clear()
-                st.json({"success": True})
-            else:
-                st.json({"success": False, "error": "Disciplina não encontrada"})
-        else:
-            st.json({"success": False, "error": "Polo não encontrado"})
-    except Exception as e:
-        st.json({"success": False, "error": str(e)})
-    st.stop()
 
 # Renderizar o HTML
 if html_content:
