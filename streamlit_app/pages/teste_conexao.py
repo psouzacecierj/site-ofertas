@@ -2,13 +2,14 @@
 import streamlit as st
 import gspread
 from google.oauth2.service_account import Credentials
+from datetime import datetime  # ← LINHA ADICIONADA!
 
 st.set_page_config(page_title="Teste de Conexão", layout="centered")
 
 st.title("🧪 Teste de Conexão com Google Sheets")
 
-# ID da planilha de Matemática - UFF
-SHEET_ID = "1mTD-q9WTqVIWOEnZOB1JjiZXeS4j6xujf-4vD9I98ks"
+# ID da planilha de teste (NOVA)
+SHEET_ID = "1i1dhZA0JhdjouUdbkKat_b4kkmap9x9A54rltw2Fwwk"
 
 st.write(f"📌 Planilha ID: `{SHEET_ID}`")
 
