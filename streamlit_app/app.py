@@ -20,6 +20,12 @@ st.markdown("""
     /* Reset de margens */
     .main .block-container {
         padding-top: 1rem;
+        padding-bottom: 2rem;
+    }
+    
+    /* Grid com gap maior entre os cards */
+    .st-key-grid-container {
+        gap: 1.5rem !important;
     }
     
     /* Cards clicáveis */
@@ -32,19 +38,23 @@ st.markdown("""
         cursor: pointer;
         height: 100%;
         border: 1px solid #e5e7eb;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
     .card-container:hover {
         transform: translateY(-4px);
         box-shadow: 0 4px 16px rgba(0,0,0,0.15);
     }
     .card-title {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 600;
         color: #1a3a5c;
         margin-bottom: 0.25rem;
+        line-height: 1.3;
     }
     .card-subtitle {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: #4a627a;
         margin-bottom: 0.75rem;
     }
@@ -54,33 +64,50 @@ st.markdown("""
         color: #1e3a8a;
         padding: 0.2rem 0.6rem;
         border-radius: 20px;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         font-weight: 500;
+        align-self: flex-start;
+    }
+    
+    /* Ajuste para as colunas terem espaçamento igual */
+    .stColumn {
+        padding: 0 0.5rem !important;
+    }
+    
+    /* Container do grid */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-top: 1rem;
+    }
+    
+    /* Responsivo: 2 colunas em telas menores */
+    @media (max-width: 768px) {
+        .grid-container {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        .card-title {
+            font-size: 0.9rem;
+        }
+    }
+    
+    /* Responsivo: 1 coluna em celular */
+    @media (max-width: 480px) {
+        .grid-container {
+            grid-template-columns: 1fr;
+        }
     }
 </style>
 
 <script>
-// Tornar o card inteiro clicável
 function abrirCurso(sheetId, cursoNome) {
-    // Criar um formulário para enviar os dados via POST
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '';
-    
-    const input1 = document.createElement('input');
-    input1.type = 'hidden';
-    input1.name = 'sheet_id';
-    input1.value = sheetId;
-    
-    const input2 = document.createElement('input');
-    input2.type = 'hidden';
-    input2.name = 'curso_nome';
-    input2.value = cursoNome;
-    
-    form.appendChild(input1);
-    form.appendChild(input2);
-    document.body.appendChild(form);
-    form.submit();
+    // Navegar via query params
+    const url = new URL(window.location.href);
+    url.searchParams.set('sheet_id', sheetId);
+    url.searchParams.set('curso_nome', cursoNome);
+    window.location.href = url.toString();
 }
 </script>
 """, unsafe_allow_html=True)
@@ -131,32 +158,33 @@ cursos_filtrados = [
     if busca.lower() in c["nome"].lower() or busca.lower() in c["instituicao"].lower()
 ]
 
-# --- EXIBIÇÃO DOS CARDS (SEM BOTÃO "ACESSAR") ---
+# --- EXIBIÇÃO DOS CARDS COM GRID CSS ---
 if not cursos_filtrados:
     st.info("Nenhum curso encontrado com esse termo.")
 else:
-    # Exibir em 4 colunas
-    cols = st.columns(4)
-    for idx, curso in enumerate(cursos_filtrados):
-        with cols[idx % 4]:
-            # Card inteiro clicável via JavaScript
-            card_html = f"""
-            <div class="card-container" onclick="abrirCurso('{curso['id']}', '{curso['nome']} - {curso['instituicao']}')">
+    # Construir HTML do grid manualmente para melhor controle do espaçamento
+    grid_html = '<div class="grid-container">'
+    
+    for curso in cursos_filtrados:
+        card_html = f'''
+        <div class="card-container" onclick="abrirCurso('{curso['id']}', '{curso['nome']} - {curso['instituicao']}')">
+            <div>
                 <div class="card-title">{curso['nome']}</div>
                 <div class="card-subtitle">{curso['instituicao']}</div>
-                <span class="card-badge">{curso['polos']} polos</span>
             </div>
-            """
-            st.markdown(card_html, unsafe_allow_html=True)
+            <span class="card-badge">{curso['polos']} polos</span>
+        </div>
+        '''
+        grid_html += card_html
     
-    st.caption(f"📊 Total: {len(cursos_filtrados)} oferta(s) de cursos")
+    grid_html += '</div>'
+    
+    st.markdown(grid_html, unsafe_allow_html=True)
+    
+    # Total de cursos
+    st.markdown(f"<p style='text-align: center; margin-top: 2rem; color: #6b7280; font-size: 0.8rem;'>📊 Total: {len(cursos_filtrados)} oferta(s) de cursos</p>", unsafe_allow_html=True)
 
-# --- PROCESSAR CLIQUE DO CARD (via session_state) ---
-# Verificar se houve um clique via POST
-import streamlit as st
-from streamlit.runtime.scriptrunner import get_script_run_ctx
-
-# Verificar parâmetros da URL para navegação
+# --- PROCESSAR CLIQUE DO CARD (via query_params) ---
 query_params = st.query_params
 if "sheet_id" in query_params:
     st.session_state["sheet_id"] = query_params["sheet_id"]
