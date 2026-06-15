@@ -165,36 +165,44 @@ def salvar_tudo():
         
         headers = data[header_row]
         
-        # Mapear polos para colunas
-        polo_colunas = {}
+        # Mapear polos para colunas de status
+        polo_status_col = {}
         for polo in POLOS:
             for i, col in enumerate(headers):
                 if col == polo:
-                    polo_colunas[polo] = i
+                    polo_status_col[polo] = i + 1  # coluna de status está à direita
                     break
         
         cod_col = 1
         
-        # Para cada disciplina
+        # Preparar atualizações em lote
+        updates = []
         for _, row in df.iterrows():
             cod = row['Disciplina']
             
-            # Encontrar linha
+            # Encontrar linha da disciplina
             linha = None
             for i in range(header_row + 1, len(data)):
                 if len(data[i]) > cod_col and data[i][cod_col] == cod:
-                    linha = i
+                    linha = i + 1  # +1 porque o gspread usa 1-based
                     break
             
             if linha is not None:
-                for polo in POLOS:
+                for polo, status_col in polo_status_col.items():
                     status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                     novo_valor = 'A' if status_atual else 'D'
-                    
-                    polo_col = polo_colunas.get(polo)
-                    if polo_col is not None:
-                        status_col = polo_col + 1
-                        sheet.update_cell(linha + 1, status_col + 1, novo_valor)
+                    updates.append({
+                        'range': f'{chr(64 + status_col)}{linha}',
+                        'values': [[novo_valor]]
+                    })
+        
+        # Executar todas as atualizações em lote
+        if updates:
+            batch_data = {
+                'valueInputOption': 'RAW',
+                'data': updates
+            }
+            sheet.batch_update(batch_data)
         
         st.cache_data.clear()
         return True
