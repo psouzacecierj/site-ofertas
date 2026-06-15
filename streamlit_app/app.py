@@ -12,6 +12,17 @@ st.set_page_config(
 # --- CSS PERSONALIZADO ---
 st.markdown("""
 <style>
+    /* Esconder elementos padrão do Streamlit */
+    #MainMenu {visibility: hidden;}
+    header {visibility: hidden;}
+    .stAppDeployButton {display: none;}
+    
+    /* Reset de margens */
+    .main .block-container {
+        padding-top: 1rem;
+    }
+    
+    /* Cards clicáveis */
     .card-container {
         background-color: white;
         border-radius: 12px;
@@ -46,26 +57,48 @@ st.markdown("""
         font-size: 0.7rem;
         font-weight: 500;
     }
-    /* Esconder o menu lateral padrão do Streamlit */
-    #MainMenu {visibility: hidden;}
-    header {visibility: hidden;}
-    .stAppDeployButton {display: none;}
 </style>
+
+<script>
+// Tornar o card inteiro clicável
+function abrirCurso(sheetId, cursoNome) {
+    // Criar um formulário para enviar os dados via POST
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '';
+    
+    const input1 = document.createElement('input');
+    input1.type = 'hidden';
+    input1.name = 'sheet_id';
+    input1.value = sheetId;
+    
+    const input2 = document.createElement('input');
+    input2.type = 'hidden';
+    input2.name = 'curso_nome';
+    input2.value = cursoNome;
+    
+    form.appendChild(input1);
+    form.appendChild(input2);
+    document.body.appendChild(form);
+    form.submit();
+}
+</script>
 """, unsafe_allow_html=True)
 
 # --- TÍTULO ---
 st.title("🎓 Gestão de Oferta de Disciplinas")
 st.caption("Cursos de graduação a distância - Universidades consorciadas CEDERJ")
 
-# --- LISTA DE CURSOS (COMPLETA COM SEUS LINKS) ---
-# app.py - LISTA DE CURSOS COMPLETA E CORRIGIDA
+# --- LISTA DE CURSOS COMPLETA (MATEMÁTICA UFF É O PRIMEIRO) ---
 cursos = [
+    # MATEMÁTICA UFF - PRIMEIRO!
+    {"id": "1oyUNJmT07bUcOFYZw9XEfPmkMkbIvSs_mrRnh88zdIE", "nome": "Matemática", "instituicao": "UFF", "polos": 17},
+    # Demais cursos
     {"id": "1mTD-q9WTqVIWOEnZOB1JjiZXeS4j6xujf-4vD9I98ks", "nome": "Administração", "instituicao": "UFF", "polos": 18},
     {"id": "1GIetae_LEYlzbHC8JoyTQNh_s50W3eGhul4U7Yn4lCA", "nome": "Ciências Biológicas", "instituicao": "UENF", "polos": 8},
     {"id": "1XxDyPDLW7eSwxIESnqsVAQQcyOc_OTjf9dWOme5MjEQ", "nome": "Ciências Biológicas", "instituicao": "UERJ", "polos": 6},
     {"id": "149OrpiWIi8VMNeCf0bKWltNMdynw3SXrhCZ9Om5bITU", "nome": "Ciências Biológicas", "instituicao": "UFRJ", "polos": 7},
-    {"id": "1vSGmy7o_SDrWvUsawz1UKXUVXDXulRskl1LcX0Gvm30", "nome": "Física", "instituicao": "UFRJ", "polos": 10}, # Link corrigido!
-    {"id": "1oyUNJmT07bUcOFYZw9XEfPmkMkbIvSs_mrRnh88zdIE", "nome": "Computação", "instituicao": "UFF", "polos": 19},
+    {"id": "1vSGmy7o_SDrWvUsawz1UKXUVXDXulRskl1LcX0Gvm30", "nome": "Física", "instituicao": "UFRJ", "polos": 10},
     {"id": "1qmcgaTolwAMVB0kwe5Zu-6MJ7kkLWLD6ad6xQJOWawM", "nome": "Administração", "instituicao": "UFRRJ", "polos": 18},
     {"id": "1-3uZrlXgDKh5RLzmfpnL-VdmH5u6v8RTUdrS1GdO_NQ", "nome": "Química", "instituicao": "UENF", "polos": 5},
     {"id": "1QwhTxDjUSdh7JkMabcgaLfzM8yiL8wKW2TJ_vPjJI14", "nome": "Química", "instituicao": "UFRJ", "polos": 5},
@@ -89,15 +122,16 @@ cursos = [
     {"id": "19Dn9fhDn5jl6tmA8cwsV5ejwLt6DRoO4m7YcvHg1QbE", "nome": "Design Gráfico", "instituicao": "IFF", "polos": 4},
     {"id": "1vtguRvG6x6Yz58pY6zMws5Ncs1q-8KcWBKNR628ZEbI", "nome": "Licenciatura em Administração", "instituicao": "UFRRJ", "polos": 8},
 ]
+
 # --- FILTRO DE BUSCA ---
-busca = st.text_input("🔍 Buscar curso ou instituição...", placeholder="Ex: Administração ou UFRRJ")
+busca = st.text_input("🔍 Buscar curso ou instituição...", placeholder="Ex: Matemática ou UFF")
 
 cursos_filtrados = [
     c for c in cursos 
     if busca.lower() in c["nome"].lower() or busca.lower() in c["instituicao"].lower()
 ]
 
-# --- EXIBIÇÃO DOS CARDS ---
+# --- EXIBIÇÃO DOS CARDS (SEM BOTÃO "ACESSAR") ---
 if not cursos_filtrados:
     st.info("Nenhum curso encontrado com esse termo.")
 else:
@@ -105,19 +139,26 @@ else:
     cols = st.columns(4)
     for idx, curso in enumerate(cursos_filtrados):
         with cols[idx % 4]:
-            with st.container():
-                st.markdown(f"""
-                <div class="card-container">
-                    <div class="card-title">{curso['nome']}</div>
-                    <div class="card-subtitle">{curso['instituicao']}</div>
-                    <span class="card-badge">{curso['polos']} polos</span>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Botão para abrir o curso
-                if st.button("Acessar", key=curso["id"], use_container_width=True):
-                    st.session_state["sheet_id"] = curso["id"]
-                    st.session_state["curso_nome"] = f"{curso['nome']} - {curso['instituicao']}"
-                    st.switch_page("pages/gestao_oferta.py")
+            # Card inteiro clicável via JavaScript
+            card_html = f"""
+            <div class="card-container" onclick="abrirCurso('{curso['id']}', '{curso['nome']} - {curso['instituicao']}')">
+                <div class="card-title">{curso['nome']}</div>
+                <div class="card-subtitle">{curso['instituicao']}</div>
+                <span class="card-badge">{curso['polos']} polos</span>
+            </div>
+            """
+            st.markdown(card_html, unsafe_allow_html=True)
     
     st.caption(f"📊 Total: {len(cursos_filtrados)} oferta(s) de cursos")
+
+# --- PROCESSAR CLIQUE DO CARD (via session_state) ---
+# Verificar se houve um clique via POST
+import streamlit as st
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+# Verificar parâmetros da URL para navegação
+query_params = st.query_params
+if "sheet_id" in query_params:
+    st.session_state["sheet_id"] = query_params["sheet_id"]
+    st.session_state["curso_nome"] = query_params.get("curso_nome", "Curso")
+    st.switch_page("pages/gestao_oferta.py")
