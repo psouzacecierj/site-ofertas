@@ -345,12 +345,13 @@ html_content = """
 
 <script>
 function toggleOffer(disciplinaCod, polo, element, sheetId) {
+    alert("TESTE: Clique em " + disciplinaCod + " - " + polo);  // ← ALERTA DE TESTE
+    
     const span = element.querySelector('span');
     const isActive = span.classList.contains('polo-ativo');
     const novoStatus = !isActive;
     const inst = span.getAttribute('data-inst') || 'UFF';
     
-    // Mudar visual imediatamente
     if (isActive) {
         span.className = 'polo-inativo';
         span.innerHTML = '—';
@@ -361,16 +362,8 @@ function toggleOffer(disciplinaCod, polo, element, sheetId) {
         span.setAttribute('data-inst', inst);
     }
     
-    // Redirecionar para salvar (recarrega a página, mas o visual já mudou)
     const url = window.location.href.split('?')[0];
     window.location.href = url + '?save=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&polo=' + polo + '&status=' + novoStatus;
-}
-
-function toggleAll(disciplinaCod, acao, sheetId) {
-    const novoStatus = (acao === 'Ativar');
-    alert(acao + ' todos: ' + disciplinaCod + ' (recarregando para salvar)');
-    const url = window.location.href.split('?')[0];
-    window.location.href = url + '?save_all=true&sheet_id=' + sheetId + '&disciplina_cod=' + encodeURIComponent(disciplinaCod) + '&status=' + novoStatus;
 }
 </script>
 
