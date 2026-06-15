@@ -154,6 +154,8 @@ def salvar_tudo():
         client = gspread.authorize(creds)
         
         sheet = client.open_by_key(SHEET_ID).sheet1
+        
+        # Obter todas as células de uma vez
         data = sheet.get_all_values()
         
         # Encontrar cabeçalhos
@@ -164,45 +166,44 @@ def salvar_tudo():
                 break
         
         headers = data[header_row]
+        cod_col = 1  # coluna B (índice 1)
         
-        # Mapear polos para colunas de status
-        polo_status_col = {}
+        # Criar um dicionário para encontrar as linhas das disciplinas
+        linha_por_codigo = {}
+        for i in range(header_row + 1, len(data)):
+            row = data[i]
+            if len(row) > cod_col and row[cod_col]:
+                codigo = row[cod_col]
+                linha_por_codigo[codigo] = i + 1  # 1-based para atualização
+        
+        # Para cada polo, encontrar a coluna de status
         for polo in POLOS:
+            # Encontrar coluna do polo
+            polo_col = None
             for i, col in enumerate(headers):
                 if col == polo:
-                    polo_status_col[polo] = i + 1  # coluna de status está à direita
-                    break
-        
-        cod_col = 1
-        
-        # Preparar atualizações em lote
-        updates = []
-        for _, row in df.iterrows():
-            cod = row['Disciplina']
-            
-            # Encontrar linha da disciplina
-            linha = None
-            for i in range(header_row + 1, len(data)):
-                if len(data[i]) > cod_col and data[i][cod_col] == cod:
-                    linha = i + 1  # +1 porque o gspread usa 1-based
+                    polo_col = i
                     break
             
-            if linha is not None:
-                for polo, status_col in polo_status_col.items():
-                    status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
-                    novo_valor = 'A' if status_atual else 'D'
-                    updates.append({
-                        'range': f'{chr(64 + status_col)}{linha}',
-                        'values': [[novo_valor]]
-                    })
-        
-        # Executar todas as atualizações em lote
-        if updates:
-            batch_data = {
-                'valueInputOption': 'RAW',
-                'data': updates
-            }
-            sheet.batch_update(batch_data)
+            if polo_col is not None:
+                status_col = polo_col + 1  # status está à direita
+                
+                # Preparar atualizações para este polo
+                cell_updates = []
+                for _, row in df.iterrows():
+                    cod = row['Disciplina']
+                    linha = linha_por_codigo.get(cod)
+                    if linha:
+                        status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
+                        novo_valor = 'A' if status_atual else 'D'
+                        cell_updates.append({
+                            'range': f"{gspread.utils.rowcol_to_a1(linha, status_col + 1)}",
+                            'values': [[novo_valor]]
+                        })
+                
+                # Atualizar em lote para este polo
+                if cell_updates:
+                    sheet.batch_update(cell_updates)
         
         st.cache_data.clear()
         return True
