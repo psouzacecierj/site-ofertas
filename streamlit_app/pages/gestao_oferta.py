@@ -533,6 +533,40 @@ else:
 # --- RODAPÉ ---
 st.divider()
 st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+# --- ENDPOINT PARA RECEBER REQUISIÇÕES DE SALVAMENTO ---
+import json
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+def handle_save_request():
+    if st.request.method == "POST":
+        try:
+            body = json.loads(st.request.body)
+            st.write(f"Recebido: {body}")  # Debug
+            
+            success, msg = salvar_na_planilha(
+                body.get('sheet_id'),
+                body.get('disciplina_cod'),
+                body.get('polo'),
+                body.get('status')
+            )
+            
+            if success:
+                st.json({"success": True, "message": msg})
+                # Limpar cache para recarregar dados
+                st.cache_data.clear()
+            else:
+                st.json({"success": False, "error": msg})
+        except Exception as e:
+            st.json({"success": False, "error": str(e)})
+
+# Registrar o endpoint apenas uma vez
+if "save_endpoint_registered" not in st.session_state:
+    st.session_state.save_endpoint_registered = True
+    st.experimental_endpoint("/save_offer", handle_save_request)
+
+# --- RODAPÉ ---
+st.divider()
+st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
 # --- BOTÃO VOLTAR ---
 if st.button("← Voltar para lista de cursos"):
