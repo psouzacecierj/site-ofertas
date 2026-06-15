@@ -394,22 +394,72 @@ if html_content:
     components.html(html_content, height=600, scrolling=True)
 else:
     st.info("Nenhuma disciplina encontrada com os filtros selecionados.")
-# --- BOTÃO DE TESTE (SALVAMENTO) ---
-if st.button("🧪 TESTE: Salvar algo na planilha"):
-    import gspread
-    from google.oauth2.service_account import Credentials
+
+# --- BOTÃO DE TESTE (SALVAMENTO COM ERRO DETALHADO) ---
+st.markdown("---")
+st.subheader("🔧 Diagnóstico de Conexão")
+
+if st.button("🧪 TESTE: Salvar algo na planilha", use_container_width=True):
+    st.write("### Debug - Passo a passo:")
     
+    # Passo 1: Verificar Secrets
+    st.write("1. Verificando Secrets...")
+    if "gcp_service_account" in st.secrets:
+        st.write("   ✅ Secrets 'gcp_service_account' encontrado!")
+        st.write(f"   - Tipo: {st.secrets['gcp_service_account'].get('type', 'não encontrado')}")
+        st.write(f"   - Project ID: {st.secrets['gcp_service_account'].get('project_id', 'não encontrado')}")
+    else:
+        st.error("   ❌ Secrets 'gcp_service_account' NÃO encontrado!")
+        st.stop()
+    
+    # Passo 2: Importar bibliotecas
+    st.write("2. Importando bibliotecas...")
+    try:
+        import gspread
+        from google.oauth2.service_account import Credentials
+        st.write("   ✅ Bibliotecas importadas com sucesso!")
+    except ImportError as e:
+        st.error(f"   ❌ Erro ao importar: {e}")
+        st.stop()
+    
+    # Passo 3: Criar credenciais
+    st.write("3. Criando credenciais...")
     try:
         creds_dict = st.secrets["gcp_service_account"]
         scope = ['https://www.googleapis.com/auth/spreadsheets']
         creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        client = gspread.authorize(creds)
-        
-        sheet = client.open_by_key(SHEET_ID).sheet1
-        sheet.update_cell(2, 2, "TESTE FUNCIONOU!")
-        st.success("✅ TESTE: Célula B2 foi atualizada! Verifique na planilha.")
+        st.write("   ✅ Credenciais criadas!")
     except Exception as e:
-        st.error(f"❌ Erro no teste: {str(e)}")
+        st.error(f"   ❌ Erro ao criar credenciais: {e}")
+        st.stop()
+    
+    # Passo 4: Conectar ao Google Sheets
+    st.write("4. Conectando ao Google Sheets...")
+    try:
+        client = gspread.authorize(creds)
+        st.write("   ✅ Cliente autorizado!")
+    except Exception as e:
+        st.error(f"   ❌ Erro ao autorizar cliente: {e}")
+        st.stop()
+    
+    # Passo 5: Abrir planilha
+    st.write(f"5. Abrindo planilha ID: {SHEET_ID[:10]}...")
+    try:
+        sheet = client.open_by_key(SHEET_ID).sheet1
+        st.write(f"   ✅ Planilha aberta! Título: {sheet.title}")
+    except Exception as e:
+        st.error(f"   ❌ Erro ao abrir planilha: {e}")
+        st.stop()
+    
+    # Passo 6: Atualizar célula
+    st.write("6. Atualizando célula B2...")
+    try:
+        sheet.update_cell(2, 2, "TESTE FUNCIONOU!")
+        st.success("✅ TESTE COMPLETO! Célula B2 foi atualizada! Verifique na planilha.")
+    except Exception as e:
+        st.error(f"   ❌ Erro ao atualizar célula: {e}")
+        st.stop()
+
 # --- RODAPÉ ---
 st.divider()
 st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
