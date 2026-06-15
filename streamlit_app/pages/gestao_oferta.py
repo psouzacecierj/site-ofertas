@@ -394,7 +394,22 @@ if html_content:
     components.html(html_content, height=600, scrolling=True)
 else:
     st.info("Nenhuma disciplina encontrada com os filtros selecionados.")
-
+# --- BOTÃO DE TESTE (SALVAMENTO) ---
+if st.button("🧪 TESTE: Salvar algo na planilha"):
+    import gspread
+    from google.oauth2.service_account import Credentials
+    
+    try:
+        creds_dict = st.secrets["gcp_service_account"]
+        scope = ['https://www.googleapis.com/auth/spreadsheets']
+        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+        client = gspread.authorize(creds)
+        
+        sheet = client.open_by_key(SHEET_ID).sheet1
+        sheet.update_cell(2, 2, "TESTE FUNCIONOU!")
+        st.success("✅ TESTE: Célula B2 foi atualizada! Verifique na planilha.")
+    except Exception as e:
+        st.error(f"❌ Erro no teste: {str(e)}")
 # --- RODAPÉ ---
 st.divider()
 st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
