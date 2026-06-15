@@ -23,9 +23,13 @@ st.markdown("""
         padding-bottom: 2rem;
     }
     
-    /* Grid com gap maior entre os cards */
-    .st-key-grid-container {
-        gap: 1.5rem !important;
+    /* Grid com gap entre os cards */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin-top: 1rem;
+        margin-bottom: 2rem;
     }
     
     /* Cards clicáveis */
@@ -36,11 +40,12 @@ st.markdown("""
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         transition: transform 0.2s, box-shadow 0.2s;
         cursor: pointer;
-        height: 100%;
         border: 1px solid #e5e7eb;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        height: 100%;
+        min-height: 120px;
     }
     .card-container:hover {
         transform: translateY(-4px);
@@ -67,22 +72,10 @@ st.markdown("""
         font-size: 0.65rem;
         font-weight: 500;
         align-self: flex-start;
+        margin-top: auto;
     }
     
-    /* Ajuste para as colunas terem espaçamento igual */
-    .stColumn {
-        padding: 0 0.5rem !important;
-    }
-    
-    /* Container do grid */
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-        margin-top: 1rem;
-    }
-    
-    /* Responsivo: 2 colunas em telas menores */
+    /* Responsivo */
     @media (max-width: 768px) {
         .grid-container {
             grid-template-columns: repeat(2, 1fr);
@@ -92,18 +85,28 @@ st.markdown("""
             font-size: 0.9rem;
         }
     }
-    
-    /* Responsivo: 1 coluna em celular */
     @media (max-width: 480px) {
         .grid-container {
             grid-template-columns: 1fr;
         }
     }
+    
+    /* Estilo do campo de busca */
+    .stTextInput > div > div > input {
+        border-radius: 20px !important;
+    }
+    
+    /* Total de cursos */
+    .total-text {
+        text-align: center;
+        margin-top: 1rem;
+        color: #6b7280;
+        font-size: 0.8rem;
+    }
 </style>
 
 <script>
 function abrirCurso(sheetId, cursoNome) {
-    // Navegar via query params
     const url = new URL(window.location.href);
     url.searchParams.set('sheet_id', sheetId);
     url.searchParams.set('curso_nome', cursoNome);
@@ -116,11 +119,10 @@ function abrirCurso(sheetId, cursoNome) {
 st.title("🎓 Gestão de Oferta de Disciplinas")
 st.caption("Cursos de graduação a distância - Universidades consorciadas CEDERJ")
 
-# --- LISTA DE CURSOS COMPLETA (MATEMÁTICA UFF É O PRIMEIRO) ---
+# --- LISTA DE CURSOS COMPLETA ---
 cursos = [
     # MATEMÁTICA UFF - PRIMEIRO!
     {"id": "1oyUNJmT07bUcOFYZw9XEfPmkMkbIvSs_mrRnh88zdIE", "nome": "Matemática", "instituicao": "UFF", "polos": 17},
-    # Demais cursos
     {"id": "1mTD-q9WTqVIWOEnZOB1JjiZXeS4j6xujf-4vD9I98ks", "nome": "Administração", "instituicao": "UFF", "polos": 18},
     {"id": "1GIetae_LEYlzbHC8JoyTQNh_s50W3eGhul4U7Yn4lCA", "nome": "Ciências Biológicas", "instituicao": "UENF", "polos": 8},
     {"id": "1XxDyPDLW7eSwxIESnqsVAQQcyOc_OTjf9dWOme5MjEQ", "nome": "Ciências Biológicas", "instituicao": "UERJ", "polos": 6},
@@ -162,12 +164,15 @@ cursos_filtrados = [
 if not cursos_filtrados:
     st.info("Nenhum curso encontrado com esse termo.")
 else:
-    # Construir HTML do grid manualmente para melhor controle do espaçamento
+    # Construir HTML do grid
     grid_html = '<div class="grid-container">'
     
     for curso in cursos_filtrados:
+        # Escape de aspas para evitar quebrar o JavaScript
+        curso_nome_escape = f"{curso['nome']} - {curso['instituicao']}".replace("'", "\\'")
+        
         card_html = f'''
-        <div class="card-container" onclick="abrirCurso('{curso['id']}', '{curso['nome']} - {curso['instituicao']}')">
+        <div class="card-container" onclick="abrirCurso('{curso['id']}', '{curso_nome_escape}')">
             <div>
                 <div class="card-title">{curso['nome']}</div>
                 <div class="card-subtitle">{curso['instituicao']}</div>
@@ -180,9 +185,7 @@ else:
     grid_html += '</div>'
     
     st.markdown(grid_html, unsafe_allow_html=True)
-    
-    # Total de cursos
-    st.markdown(f"<p style='text-align: center; margin-top: 2rem; color: #6b7280; font-size: 0.8rem;'>📊 Total: {len(cursos_filtrados)} oferta(s) de cursos</p>", unsafe_allow_html=True)
+    st.markdown(f'<div class="total-text">📊 Total: {len(cursos_filtrados)} oferta(s) de cursos</div>', unsafe_allow_html=True)
 
 # --- PROCESSAR CLIQUE DO CARD (via query_params) ---
 query_params = st.query_params
