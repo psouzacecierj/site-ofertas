@@ -171,14 +171,12 @@ def salvar_tudo():
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
-        # Mapear polos para colunas de STATUS
-        # A coluna de status é a que está imediatamente à direita do polo
+        # Mapear polos para colunas de STATUS (APENAS colunas de status)
         polo_status_col = {}
         for i, col in enumerate(headers):
             if col in POLOS:
-                # A coluna de status está à direita
-                if i + 1 < len(headers):
-                    polo_status_col[col] = i + 1  # +1 porque gspread é 1-based
+                if i + 1 < len(headers) and headers[i + 1] == 'Status':
+                    polo_status_col[col] = i + 1
         
         # Preparar TODAS as atualizações em uma lista
         updates = []
@@ -195,14 +193,12 @@ def salvar_tudo():
                     status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                     novo_valor = 'A' if status_atual else 'D'
                     
-                    # Adicionar à lista de atualizações
                     updates.append({
                         'range': f'{gspread.utils.rowcol_to_a1(linha, status_col)}',
                         'values': [[novo_valor]]
                     })
         
         if updates:
-            # Enviar TODAS as atualizações em UMA ÚNICA requisição
             sheet.batch_update(updates)
         
         st.cache_data.clear()
