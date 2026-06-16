@@ -143,7 +143,7 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR (BATCH UPDATE CORRETO) ---
+# --- FUNÇÃO PARA SALVAR (APENAS ALTERAÇÕES) ---
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -171,15 +171,16 @@ def salvar_tudo():
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
-        # Mapear polos para colunas de STATUS (APENAS colunas de status)
+        # Mapear polos para colunas de STATUS
         polo_status_col = {}
         for i, col in enumerate(headers):
             if col in POLOS:
                 if i + 1 < len(headers) and headers[i + 1] == 'Status':
                     polo_status_col[col] = i + 1
         
-        # Preparar TODAS as atualizações em uma lista
+        # Preparar APENAS as atualizações que mudaram
         updates = []
+        total_alteracoes = 0
         
         for _, row in df.iterrows():
             cod = row['Disciplina']
@@ -187,22 +188,31 @@ def salvar_tudo():
             if not linha:
                 continue
             
+            # Obter status original da planilha para esta disciplina
+            status_original = {}
+            for polo in POLOS:
+                status_original[polo] = get_status(row, polo, df)
+            
             for polo in POLOS:
                 status_col = polo_status_col.get(polo)
                 if status_col:
+                    # Status atual (modificado pelo usuário)
                     status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                     novo_valor = 'A' if status_atual else 'D'
                     
-                    updates.append({
-                        'range': f'{gspread.utils.rowcol_to_a1(linha, status_col)}',
-                        'values': [[novo_valor]]
-                    })
+                    # Verificar se houve alteração
+                    if status_original.get(polo, 'D') != novo_valor:
+                        total_alteracoes += 1
+                        updates.append({
+                            'range': f'{gspread.utils.rowcol_to_a1(linha, status_col)}',
+                            'values': [[novo_valor]]
+                        })
         
         if updates:
             sheet.batch_update(updates)
         
         st.cache_data.clear()
-        return True, len(updates)
+        return True, total_alteracoes
     except Exception as e:
         return False, str(e)
 
@@ -217,10 +227,10 @@ st.markdown(f"""
 # --- BOTÃO SALVAR ---
 col_s1, col_s2, col_s3 = st.columns([1, 2, 1])
 with col_s2:
-    if st.button("💾 SALVAR TODAS AS ALTERAÇÕES NA PLANILHA", use_container_width=True):
+    if st.button("💾 SALVAR ALTERAÇÕES NA PLANILHA", use_container_width=True):
         success, resultado = salvar_tudo()
         if success:
-            st.success(f"✅ {resultado} células atualizadas na planilha!")
+            st.success(f"✅ {resultado} alterações salvas na planilha!")
             st.rerun()
         else:
             st.error(f"❌ Erro: {resultado}")
