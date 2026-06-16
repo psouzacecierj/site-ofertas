@@ -143,7 +143,8 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR (COM BATCH UPDATE) ---
+# --- FUNÇÃO PARA SALVAR ---
+
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -171,15 +172,15 @@ def salvar_tudo():
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
-        # Mapear polos para colunas de STATUS (não a coluna do polo em si)
+        # Mapear polos para colunas de STATUS
         polo_status_col = {}
         for i, col in enumerate(headers):
             if col in POLOS:
-                # A coluna de status está à direita do polo
-                polo_status_col[col] = i + 1  # +1 porque gspread é 1-based
+                polo_status_col[col] = i + 1
         
-        # Atualizar cada disciplina
-        atualizados = 0
+        # Preparar TODAS as atualizações em uma lista
+        updates = []
+        
         for _, row in df.iterrows():
             cod = row['Disciplina']
             linha = linha_por_codigo.get(cod)
@@ -192,14 +193,18 @@ def salvar_tudo():
                     status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                     novo_valor = 'A' if status_atual else 'D'
                     
-                    # Debug
-                    st.write(f"Atualizando {cod} - {polo}: {novo_valor} na linha {linha}, coluna {status_col}")
-                    
-                    sheet.update_cell(linha, status_col, novo_valor)
-                    atualizados += 1
+                    # Adicionar à lista de atualizações
+                    updates.append({
+                        'range': f'{gspread.utils.rowcol_to_a1(linha, status_col)}',
+                        'values': [[novo_valor]]
+                    })
+        
+        if updates:
+            # Enviar TODAS as atualizações em UMA ÚNICA requisição
+            sheet.batch_update(updates)
         
         st.cache_data.clear()
-        return True, atualizados
+        return True, len(updates)
     except Exception as e:
         return False, str(e)
 
