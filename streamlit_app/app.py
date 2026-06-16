@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# --- CSS PERSONALIZADO COM FONTES MAIORES ---
+# --- CSS PERSONALIZADO COM BOTÃO MICROSOFT ---
 st.markdown("""
 <style>
     /* Esconder elementos padrão do Streamlit */
@@ -91,20 +91,25 @@ st.markdown("""
         align-self: flex-start;
     }
     
-    /* Botão Acessar */
+    /* BOTÃO MICROSOFT (AZUL) */
     .stButton > button {
         font-size: 0.9rem !important;
         padding: 0.6rem !important;
-        border-radius: 8px !important;
-        background: #2d6a4f !important;
+        border-radius: 6px !important;
+        background: #0078d4 !important;  /* Azul Microsoft */
         color: white !important;
         font-weight: 500 !important;
         border: none !important;
         margin-top: 0.3rem;
+        transition: background 0.15s, transform 0.1s !important;
     }
     .stButton > button:hover {
-        background: #1b4d3e !important;
-        transform: translateY(-1px);
+        background: #106ebe !important;  /* Azul Microsoft hover */
+        transform: translateY(-1px) !important;
+    }
+    .stButton > button:active {
+        background: #005a9e !important;  /* Azul Microsoft active */
+        transform: scale(0.98) !important;
     }
     
     /* Total de cursos */
@@ -131,6 +136,10 @@ st.markdown("""
         .stTextInput > div > div > input {
             font-size: 1rem !important;
             padding: 0.6rem 1rem !important;
+        }
+        .stButton > button {
+            font-size: 0.85rem !important;
+            padding: 0.5rem !important;
         }
     }
 </style>
