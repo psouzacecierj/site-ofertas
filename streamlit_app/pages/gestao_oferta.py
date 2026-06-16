@@ -142,13 +142,15 @@ if "estado_ofertas" not in st.session_state:
             status = get_status(row, polo, df)
             st.session_state.estado_ofertas[f"{cod}_{polo}"] = (status == 'A')
 
-# --- FUNÇÃO PARA ALTERNAR ---
+# --- FUNÇÃO PARA ALTERNAR (SEM RERUN) ---
 def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR NA PLANILHA ---
+# --- FUNÇÃO PARA SALVAR NA PLANILHA (COM DEBUG) ---
 def salvar_tudo():
+    st.write("=== DEBUG: Iniciando salvamento ===")
+    
     try:
         creds_dict = st.secrets["gcp_service_account"]
         scope = ['https://www.googleapis.com/auth/spreadsheets']
@@ -156,6 +158,20 @@ def salvar_tudo():
         client = gspread.authorize(creds)
         
         sheet = client.open_by_key(SHEET_ID).sheet1
+        st.write(f"✅ Planilha aberta: {sheet.title}")
+        
+        # Mostrar quantas alterações vamos salvar
+        total_alteracoes = 0
+        for _, row in df.iterrows():
+            cod = row['Disciplina']
+            for polo in POLOS:
+                status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
+                status_original = get_status(row, polo, df) == 'A'
+                if status_atual != status_original:
+                    total_alteracoes += 1
+        
+        st.write(f"📊 Total de alterações a serem salvas: {total_alteracoes}")
+        
         data = sheet.get_all_values()
         
         # Encontrar cabeçalhos
@@ -192,9 +208,11 @@ def salvar_tudo():
                     if linha:
                         status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                         novo_valor = 'A' if status_atual else 'D'
+                        st.write(f"Atualizando {cod} - {polo}: {novo_valor}")
                         sheet.update_cell(linha, status_col + 1, novo_valor)
         
         st.cache_data.clear()
+        st.write("=== DEBUG: Salvamento concluído ===")
         return True
     except Exception as e:
         st.error(f"Erro: {str(e)}")
@@ -280,11 +298,9 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
                     if is_active:
                         if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}", use_container_width=True):
                             toggle(cod, polo)
-                            st.rerun()
                     else:
                         if st.button(f"❌ {polo}", key=f"{cod}_{polo}", use_container_width=True):
                             toggle(cod, polo)
-                            st.rerun()
     
     st.markdown("---")
 
