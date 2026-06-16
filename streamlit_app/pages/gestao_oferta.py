@@ -53,11 +53,9 @@ st.markdown("""
 
 # --- RECUPERAR DADOS DO CURSO ---
 if "sheet_id" not in st.session_state:
-    st.warning("⚠️ Nenhum curso selecionado. Volte para a página inicial.")
+    st.warning("⚠️ Nenhum curso selecionado. Redirecionando para a página inicial...")
+    st.switch_page("app.py")
     st.stop()
-
-SHEET_ID = st.session_state["sheet_id"]
-CURSO_NOME = st.session_state.get("curso_nome", "Curso")
 
 # --- FUNÇÃO PARA CARREGAR DADOS ---
 @st.cache_data(ttl=60)
