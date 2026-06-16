@@ -143,7 +143,7 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR (APENAS ALTERAÇÕES) ---
+# --- FUNÇÃO PARA SALVAR ---
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -162,21 +162,26 @@ def salvar_tudo():
                 break
         
         headers = data[header_row]
-        cod_col = 1
+        cod_col = 1  # Coluna B (índice 1)
         
-        # Mapear código da disciplina para linha
+        # Mapear código da disciplina para linha (1-based)
         linha_por_codigo = {}
         for i in range(header_row + 1, len(data)):
             row = data[i]
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
-        # Mapear polos para colunas de STATUS
-        polo_status_col = {}
+        # Mapear APENAS colunas de Status (aquelas com nome exato "Status")
+        status_colunas = {}
         for i, col in enumerate(headers):
-            if col in POLOS:
-                if i + 1 < len(headers) and headers[i + 1] == 'Status':
-                    polo_status_col[col] = i + 1
+            if col == 'Status':
+                # Encontrar qual polo está à esquerda desta coluna Status
+                if i > 0:
+                    polo_esquerda = headers[i - 1]
+                    if polo_esquerda in POLOS:
+                        status_colunas[polo_esquerda] = i + 1  # 1-based
+        
+        st.write(f"📍 Colunas de Status encontradas: {status_colunas}")
         
         # Preparar APENAS as atualizações que mudaram
         updates = []
@@ -188,28 +193,25 @@ def salvar_tudo():
             if not linha:
                 continue
             
-            # Obter status original da planilha para esta disciplina
-            status_original = {}
             for polo in POLOS:
-                status_original[polo] = get_status(row, polo, df)
-            
-            for polo in POLOS:
-                status_col = polo_status_col.get(polo)
+                status_col = status_colunas.get(polo)
                 if status_col:
-                    # Status atual (modificado pelo usuário)
                     status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                     novo_valor = 'A' if status_atual else 'D'
                     
-                    # Verificar se houve alteração
-                    if status_original.get(polo, 'D') != novo_valor:
+                    # Verificar se mudou
+                    status_original = get_status(row, polo, df)
+                    if status_original != novo_valor:
                         total_alteracoes += 1
                         updates.append({
                             'range': f'{gspread.utils.rowcol_to_a1(linha, status_col)}',
                             'values': [[novo_valor]]
                         })
+                        st.write(f"🔄 {cod} - {polo}: {status_original} → {novo_valor} (linha {linha}, coluna {status_col})")
         
         if updates:
             sheet.batch_update(updates)
+            st.write(f"✅ {len(updates)} atualizações enviadas em lote")
         
         st.cache_data.clear()
         return True, total_alteracoes
