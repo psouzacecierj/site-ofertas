@@ -171,38 +171,35 @@ def salvar_tudo():
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
-        # Preparar TODAS as atualizações em uma lista
-        updates = []
+        # Mapear polos para colunas de STATUS (não a coluna do polo em si)
+        polo_status_col = {}
+        for i, col in enumerate(headers):
+            if col in POLOS:
+                # A coluna de status está à direita do polo
+                polo_status_col[col] = i + 1  # +1 porque gspread é 1-based
         
+        # Atualizar cada disciplina
+        atualizados = 0
         for _, row in df.iterrows():
             cod = row['Disciplina']
             linha = linha_por_codigo.get(cod)
-            if linha:
-                for polo in POLOS:
-                    # Encontrar coluna do polo
-                    polo_col = None
-                    for i, col in enumerate(headers):
-                        if col == polo:
-                            polo_col = i
-                            break
+            if not linha:
+                continue
+            
+            for polo in POLOS:
+                status_col = polo_status_col.get(polo)
+                if status_col:
+                    status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
+                    novo_valor = 'A' if status_atual else 'D'
                     
-                    if polo_col is not None:
-                        status_col = polo_col + 1
-                        status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
-                        novo_valor = 'A' if status_atual else 'D'
-                        
-                        # Adicionar à lista de atualizações
-                        updates.append({
-                            'range': f'{gspread.utils.rowcol_to_a1(linha, status_col + 1)}',
-                            'values': [[novo_valor]]
-                        })
-        
-        if updates:
-            # Enviar TODAS as atualizações em UMA ÚNICA requisição
-            sheet.batch_update(updates)
+                    # Debug
+                    st.write(f"Atualizando {cod} - {polo}: {novo_valor} na linha {linha}, coluna {status_col}")
+                    
+                    sheet.update_cell(linha, status_col, novo_valor)
+                    atualizados += 1
         
         st.cache_data.clear()
-        return True, len(updates)
+        return True, atualizados
     except Exception as e:
         return False, str(e)
 
