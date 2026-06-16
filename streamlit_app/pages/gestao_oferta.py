@@ -149,7 +149,7 @@ def toggle(cod, polo):
 
 # --- FUNÇÃO PARA SALVAR NA PLANILHA (COM DEBUG) ---
 def salvar_tudo():
-    st.write("=== DEBUG: Iniciando salvamento ===")
+    st.write("=== DEBUG: Iniciando salvamento em lote ===")
     
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -160,56 +160,39 @@ def salvar_tudo():
         sheet = client.open_by_key(SHEET_ID).sheet1
         st.write(f"✅ Planilha aberta: {sheet.title}")
         
-        # Mostrar quantas alterações vamos salvar
-        total_alteracoes = 0
+        # Preparar lista de atualizações em lote
+        batch_updates = []
+        
+        # Para cada disciplina e polo, preparar a atualização
         for _, row in df.iterrows():
             cod = row['Disciplina']
             for polo in POLOS:
                 status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                 status_original = get_status(row, polo, df) == 'A'
+                
                 if status_atual != status_original:
-                    total_alteracoes += 1
+                    novo_valor = 'A' if status_atual else 'D'
+                    
+                    # Encontrar a célula correta
+                    celula_codigo = sheet.find(cod)
+                    if celula_codigo:
+                        linha = celula_codigo.row
+                        celula_polo = sheet.find(polo)
+                        if celula_polo:
+                            coluna_status = celula_polo.col + 1
+                            
+                            # Adicionar à lista de atualizações em lote
+                            batch_updates.append({
+                                'range': f'{gspread.utils.rowcol_to_a1(linha, coluna_status)}',
+                                'values': [[novo_valor]]
+                            })
         
-        st.write(f"📊 Total de alterações a serem salvas: {total_alteracoes}")
-        
-        data = sheet.get_all_values()
-        
-        # Encontrar cabeçalhos
-        header_row = 1
-        for i, row in enumerate(data):
-            if row and ('Disciplina' in row or 'Código' in row):
-                header_row = i
-                break
-        
-        headers = data[header_row]
-        cod_col = 1
-        
-        # Mapear código da disciplina para linha
-        linha_por_codigo = {}
-        for i in range(header_row + 1, len(data)):
-            row = data[i]
-            if len(row) > cod_col and row[cod_col]:
-                linha_por_codigo[row[cod_col]] = i + 1
-        
-        # Para cada polo, atualizar
-        for polo in POLOS:
-            # Encontrar coluna do polo
-            polo_col = None
-            for i, col in enumerate(headers):
-                if col == polo:
-                    polo_col = i
-                    break
-            
-            if polo_col is not None:
-                status_col = polo_col + 1
-                for _, row in df.iterrows():
-                    cod = row['Disciplina']
-                    linha = linha_por_codigo.get(cod)
-                    if linha:
-                        status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
-                        novo_valor = 'A' if status_atual else 'D'
-                        st.write(f"Atualizando {cod} - {polo}: {novo_valor}")
-                        sheet.update_cell(linha, status_col + 1, novo_valor)
+        if batch_updates:
+            st.write(f"📊 Atualizando {len(batch_updates)} células em lote...")
+            sheet.batch_update(batch_updates)
+            st.write("✅ Lote enviado com sucesso!")
+        else:
+            st.write("📊 Nenhuma alteração para salvar.")
         
         st.cache_data.clear()
         st.write("=== DEBUG: Salvamento concluído ===")
