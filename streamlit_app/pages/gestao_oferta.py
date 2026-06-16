@@ -143,8 +143,7 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR ---
-
+# --- FUNÇÃO PARA SALVAR (BATCH UPDATE CORRETO) ---
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -173,10 +172,13 @@ def salvar_tudo():
                 linha_por_codigo[row[cod_col]] = i + 1
         
         # Mapear polos para colunas de STATUS
+        # A coluna de status é a que está imediatamente à direita do polo
         polo_status_col = {}
         for i, col in enumerate(headers):
             if col in POLOS:
-                polo_status_col[col] = i + 1
+                # A coluna de status está à direita
+                if i + 1 < len(headers):
+                    polo_status_col[col] = i + 1  # +1 porque gspread é 1-based
         
         # Preparar TODAS as atualizações em uma lista
         updates = []
