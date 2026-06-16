@@ -143,7 +143,7 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR NA PLANILHA (SIMPLIFICADA) ---
+# --- FUNÇÃO PARA SALVAR (COM BATCH UPDATE) ---
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -171,8 +171,9 @@ def salvar_tudo():
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
-        # Para cada disciplina, atualizar
-        atualizados = 0
+        # Preparar TODAS as atualizações em uma lista
+        updates = []
+        
         for _, row in df.iterrows():
             cod = row['Disciplina']
             linha = linha_por_codigo.get(cod)
@@ -189,11 +190,19 @@ def salvar_tudo():
                         status_col = polo_col + 1
                         status_atual = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                         novo_valor = 'A' if status_atual else 'D'
-                        sheet.update_cell(linha, status_col + 1, novo_valor)
-                        atualizados += 1
+                        
+                        # Adicionar à lista de atualizações
+                        updates.append({
+                            'range': f'{gspread.utils.rowcol_to_a1(linha, status_col + 1)}',
+                            'values': [[novo_valor]]
+                        })
+        
+        if updates:
+            # Enviar TODAS as atualizações em UMA ÚNICA requisição
+            sheet.batch_update(updates)
         
         st.cache_data.clear()
-        return True, atualizados
+        return True, len(updates)
     except Exception as e:
         return False, str(e)
 
