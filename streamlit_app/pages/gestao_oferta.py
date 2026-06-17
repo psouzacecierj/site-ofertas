@@ -28,15 +28,11 @@ st.markdown("""
         padding: 0.25rem 0.5rem;
         border: none;
         width: 100%;
-        min-height: 32px;
-        line-height: 1.2;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
     .stButton > button:hover {
         background: #1b4d3e;
     }
+    /* Botão inativo (cinza) */
     .stButton > button[kind="secondary"] {
         background: #f3f4f6;
         color: #9ca3af;
@@ -44,6 +40,7 @@ st.markdown("""
     .stButton > button[kind="secondary"]:hover {
         background: #e5e7eb;
     }
+    /* Expander com estilo mais compacto */
     .streamlit-expanderHeader {
         font-size: 0.85rem !important;
         font-weight: 500 !important;
@@ -51,19 +48,12 @@ st.markdown("""
     .streamlit-expanderContent {
         padding-top: 0.5rem !important;
     }
-    /* Grid para os polos */
-    .polo-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-        gap: 6px;
-    }
 </style>
 """, unsafe_allow_html=True)
 
 # --- RECUPERAR DADOS DO CURSO ---
 if "sheet_id" not in st.session_state:
-    st.warning("⚠️ Nenhum curso selecionado. Redirecionando...")
-    st.switch_page("app.py")
+    st.warning("⚠️ Nenhum curso selecionado. Volte para a página inicial.")
     st.stop()
 
 SHEET_ID = st.session_state["sheet_id"]
@@ -156,9 +146,6 @@ if 'Periodo' not in df.columns:
 
 # --- IDENTIFICAR POLOS ---
 POLOS = detectar_polos(df)
-if not POLOS:
-    st.warning("⚠️ Nenhum polo detectado!")
-    st.stop()
 
 # --- INICIALIZAR ESTADO DAS OFERTAS NA SESSION ---
 if "estado_ofertas" not in st.session_state:
@@ -174,7 +161,7 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR ---
+# --- FUNÇÃO PARA SALVAR (APENAS ALTERAÇÕES) ---
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -185,6 +172,7 @@ def salvar_tudo():
         sheet = client.open_by_key(SHEET_ID).sheet1
         data = sheet.get_all_values()
         
+        # Encontrar cabeçalhos
         header_row = 1
         for i, row in enumerate(data):
             if row and ('Disciplina' in row or 'Código' in row):
@@ -194,12 +182,14 @@ def salvar_tudo():
         headers = data[header_row]
         cod_col = 1
         
+        # Mapear código da disciplina para linha
         linha_por_codigo = {}
         for i in range(header_row + 1, len(data)):
             row = data[i]
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
+        # Mapear APENAS colunas de Status
         status_colunas = {}
         for i, col in enumerate(headers):
             if col == 'Status':
@@ -208,6 +198,7 @@ def salvar_tudo():
                     if polo_esquerda in POLOS:
                         status_colunas[polo_esquerda] = i + 1
         
+        # Preparar APENAS as atualizações que mudaram
         updates = []
         total_alteracoes = 0
         
@@ -298,7 +289,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES STREAMLIT (COM INSTITUIÇÃO) ---
+# --- EXIBIR TABELA COM BOTÕES STREAMLIT (NATIVOS) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
@@ -316,15 +307,13 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
             for i, polo in enumerate(POLOS):
                 with cols[i]:
                     is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
-                    inst = get_inst(row, polo)  # ← PEGA A INSTITUIÇÃO
+                    inst = get_inst(row, polo)
                     
                     if is_active:
-                        # ✅ BOTÃO ATIVO COM INSTITUIÇÃO
-                        if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}_ativo", use_container_width=True):
+                        if st.button(f"✅ {polo}", key=f"{cod}_{polo}_ativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
                     else:
-                        # ❌ BOTÃO INATIVO (APENAS POLO)
                         if st.button(f"❌ {polo}", key=f"{cod}_{polo}_inativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
