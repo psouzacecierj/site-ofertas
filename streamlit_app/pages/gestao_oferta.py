@@ -28,11 +28,11 @@ st.markdown("""
         padding: 0.25rem 0.5rem;
         border: none;
         width: 100%;
+        min-height: 32px;
     }
     .stButton > button:hover {
         background: #1b4d3e;
     }
-    /* Botão inativo (cinza) */
     .stButton > button[kind="secondary"] {
         background: #f3f4f6;
         color: #9ca3af;
@@ -40,7 +40,6 @@ st.markdown("""
     .stButton > button[kind="secondary"]:hover {
         background: #e5e7eb;
     }
-    /* Expander com estilo mais compacto */
     .streamlit-expanderHeader {
         font-size: 0.85rem !important;
         font-weight: 500 !important;
@@ -53,7 +52,8 @@ st.markdown("""
 
 # --- RECUPERAR DADOS DO CURSO ---
 if "sheet_id" not in st.session_state:
-    st.warning("⚠️ Nenhum curso selecionado. Volte para a página inicial.")
+    st.warning("⚠️ Nenhum curso selecionado. Redirecionando...")
+    st.switch_page("app.py")
     st.stop()
 
 SHEET_ID = st.session_state["sheet_id"]
@@ -289,7 +289,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES STREAMLIT (NATIVOS) ---
+# --- EXIBIR TABELA COM BOTÕES STREAMLIT (COM INSTITUIÇÃO) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
@@ -310,7 +310,7 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
                     inst = get_inst(row, polo)
                     
                     if is_active:
-                        if st.button(f"✅ {polo}", key=f"{cod}_{polo}_ativo", use_container_width=True):
+                        if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}_ativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
                     else:
