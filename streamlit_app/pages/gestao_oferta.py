@@ -333,7 +333,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES STREAMLIT (NATIVOS) ---
+# --- EXIBIR TABELA COM BOTÕES STREAMLIT (COM INSTITUIÇÃO) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
@@ -351,13 +351,15 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
             for i, polo in enumerate(POLOS):
                 with cols[i]:
                     is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
-                    inst = get_inst(row, polo)
+                    inst = get_inst(row, polo)  # ← PEGA A INSTITUIÇÃO
                     
                     if is_active:
-                        if st.button(f"✅ {polo}", key=f"{cod}_{polo}_ativo", use_container_width=True):
+                        # ✅ BOTÃO ATIVO COM INSTITUIÇÃO
+                        if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}_ativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
                     else:
+                        # ❌ BOTÃO INATIVO (APENAS POLO)
                         if st.button(f"❌ {polo}", key=f"{cod}_{polo}_inativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
