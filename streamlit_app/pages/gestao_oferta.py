@@ -55,7 +55,7 @@ st.markdown("""
 if "sheet_id" not in st.session_state:
     st.warning("⚠️ Nenhum curso selecionado. Redirecionando...")
     st.switch_page("app.py")
-    st.stop()  # Impede a execução do resto do código
+    st.stop()
 
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
@@ -93,22 +93,42 @@ def carregar_dados(sheet_id):
     st.error("❌ Erro ao carregar planilha.")
     return None
 
-# --- FUNÇÃO PARA DETECTAR POLOS ---
+# --- FUNÇÃO PARA DETECTAR POLOS (CORRIGIDA) ---
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
+    
+    # Lista de todos os polos conhecidos (expanda conforme necessário)
     polos_conhecidos = [
         'ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
         'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
-        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO',  # ← ADICIONAR AQUI
-        'BJE', 'ITA', 'ITO', 'MAC', 'PET', 'SFI', 'SFR', 'SGO'  # ← JÁ ESTÃO
+        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO',
+        'BJE', 'ITA', 'ITO', 'MAC', 'PET', 'SFI', 'SFR', 'SGO'
     ]
     
+    # Primeiro, tenta encontrar polos de 3 letras maiúsculas (padrão)
     for col in colunas:
         col_str = str(col).strip()
-        if (len(col_str) == 3 and col_str.isupper()) or col_str in polos_conhecidos:
-            if col_str not in polos and col_str not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD']:
+        # Se for uma string de 3 letras maiúsculas e não for uma coluna comum
+        if len(col_str) == 3 and col_str.isupper() and col_str not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD']:
+            if col_str not in polos:
                 polos.append(col_str)
+    
+    # Depois, adiciona polos da lista conhecida que não foram encontrados
+    for polo in polos_conhecidos:
+        if polo not in polos and polo in colunas:
+            polos.append(polo)
+    
+    # Se ainda não encontrou polos, tenta encontrar qualquer coluna que pareça um polo
+    if not polos:
+        for col in colunas:
+            col_str = str(col).strip()
+            # Procura por colunas que têm "Status" à direita
+            for i, c in enumerate(colunas):
+                if i > 0 and c == 'Status' and colunas[i-1] == col_str:
+                    if col_str not in polos and col_str not in ['Periodo', 'Disciplina', 'Nome', 'Carga Horária']:
+                        polos.append(col_str)
+    
     return polos
 
 # --- FUNÇÃO PARA OBTER STATUS DE UM POLO ---
@@ -150,6 +170,26 @@ if 'Periodo' not in df.columns:
 
 # --- IDENTIFICAR POLOS ---
 POLOS = detectar_polos(df)
+
+# FORÇAR A DETECÇÃO DE POLOS (CORREÇÃO)
+if not POLOS:
+    # Tentar encontrar polos manualmente olhando as colunas
+    for col in df.columns:
+        col_str = str(col).strip()
+        # Se tiver Status à direita, provavelmente é um polo
+        try:
+            col_idx = df.columns.get_loc(col)
+            if col_idx + 1 < len(df.columns) and df.columns[col_idx + 1] == 'Status':
+                if col_str not in POLOS and col_str not in ['Periodo', 'Disciplina', 'Nome', 'Carga Horária']:
+                    POLOS.append(col_str)
+        except:
+            pass
+
+# Se ainda não tiver polos, exibir aviso
+if not POLOS:
+    st.warning("⚠️ Nenhum polo detectado! Verifique a estrutura da planilha.")
+    st.write("Colunas encontradas:", df.columns.tolist())
+    st.stop()
 
 # --- INICIALIZAR ESTADO DAS OFERTAS NA SESSION ---
 if "estado_ofertas" not in st.session_state:
