@@ -97,9 +97,12 @@ def carregar_dados(sheet_id):
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
-    polos_conhecidos = ['ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
-                        'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
-                        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO']
+    polos_conhecidos = [
+        'ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
+        'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
+        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO',  # ← ADICIONAR AQUI
+        'BJE', 'ITA', 'ITO', 'MAC', 'PET', 'SFI', 'SFR', 'SGO'  # ← JÁ ESTÃO
+    ]
     
     for col in colunas:
         col_str = str(col).strip()
