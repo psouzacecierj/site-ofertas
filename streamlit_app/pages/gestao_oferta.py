@@ -314,7 +314,7 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
                             toggle(cod, polo)
                             st.rerun()
                     else:
-                        if st.button(f"❌ {polo}", key=f"{cod}_{polo}_inativo", use_container_width=True):
+                        if st.button(f"❌ {polo} - {inst}", key=f"{cod}_{polo}_inativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
             
