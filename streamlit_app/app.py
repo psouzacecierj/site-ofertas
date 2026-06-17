@@ -149,7 +149,7 @@ st.markdown("""
 st.title("🎓 Gestão de Oferta de Disciplinas")
 st.caption("Cursos de graduação a distância - Universidades consorciadas CEDERJ")
 
-# --- LISTA DE CURSOS ---
+# --- LISTA DE CURSOS (SEM ADMINISTRAÇÃO - UFF) ---
 cursos = [
     {"id": "1mTD-q9WTqVIWOEnZOB1JjiZXeS4j6xujf-4vD9I98ks", "nome": "Matemática", "instituicao": "UFF", "polos": 17},
     {"id": "1GIetae_LEYlzbHC8JoyTQNh_s50W3eGhul4U7Yn4lCA", "nome": "Ciências Biológicas", "instituicao": "UENF", "polos": 8},
@@ -179,7 +179,6 @@ cursos = [
     {"id": "19Dn9fhDn5jl6tmA8cwsV5ejwLt6DRoO4m7YcvHg1QbE", "nome": "Design Gráfico", "instituicao": "IFF", "polos": 4},
     {"id": "1vtguRvG6x6Yz58pY6zMws5Ncs1q-8KcWBKNR628ZEbI", "nome": "Licenciatura em Administração", "instituicao": "UFRRJ", "polos": 8},
 ]
-   
 
 # --- FILTRO DE BUSCA ---
 busca = st.text_input("🔍 Buscar curso ou instituição...", placeholder="Ex: Matemática ou UFF")
