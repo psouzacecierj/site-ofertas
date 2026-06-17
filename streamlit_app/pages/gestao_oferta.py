@@ -26,9 +26,27 @@ st.markdown("""
         border-radius: 6px;
         font-size: 0.7rem;
         padding: 0.25rem 0.5rem;
+        border: none;
+        width: 100%;
     }
     .stButton > button:hover {
         background: #1b4d3e;
+    }
+    /* Botão inativo (cinza) */
+    .stButton > button[kind="secondary"] {
+        background: #f3f4f6;
+        color: #9ca3af;
+    }
+    .stButton > button[kind="secondary"]:hover {
+        background: #e5e7eb;
+    }
+    /* Expander com estilo mais compacto */
+    .streamlit-expanderHeader {
+        font-size: 0.85rem !important;
+        font-weight: 500 !important;
+    }
+    .streamlit-expanderContent {
+        padding-top: 0.5rem !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -271,254 +289,50 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- CONSTRUIR TABELA HTML COM SCROLL NO TOPO ---
-html_content = """
-<style>
-    .tabela-wrapper {
-        overflow-x: auto;
-        overflow-y: auto;
-        border-radius: 10px;
-        border: 1px solid #e5e7eb;
-        background: white;
-        max-height: 600px;
-        position: relative;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .tabela-ofertas {
-        width: 100%;
-        border-collapse: collapse;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 12px;
-        min-width: 800px;
-        margin-top: 0;
-    }
-    
-    .tabela-ofertas th {
-        background: #2d6a4f;
-        color: white;
-        padding: 10px 6px;
-        text-align: center;
-        font-weight: 600;
-        font-size: 10px;
-        white-space: nowrap;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-    
-    .tabela-ofertas td {
-        padding: 8px 6px;
-        border-bottom: 1px solid #f3f4f6;
-        vertical-align: middle;
-    }
-    
-    .tabela-ofertas tr:hover {
-        background: #f9fafb;
-    }
-    
-    .periodo-badge {
-        background: #e0e7ff;
-        color: #3730a3;
-        padding: 3px 9px;
-        border-radius: 12px;
-        font-size: 11px;
-        font-weight: 600;
-        display: inline-block;
-        white-space: nowrap;
-    }
-    
-    .disciplina-code {
-        font-family: monospace;
-        font-size: 11px;
-        color: #6b7280;
-        white-space: nowrap;
-    }
-    
-    .disciplina-nome {
-        font-weight: 500;
-        text-align: left;
-        max-width: 200px;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .carga {
-        font-size: 11px;
-        color: #9ca3af;
-        white-space: nowrap;
-    }
-    
-    .polo-cell {
-        text-align: center;
-        cursor: pointer;
-    }
-    
-    .polo-ativo {
-        background: #dcfce7;
-        color: #166534;
-        padding: 4px 8px;
-        border-radius: 16px;
-        font-size: 10px;
-        font-weight: 600;
-        display: inline-block;
-        white-space: nowrap;
-    }
-    
-    .polo-inativo {
-        background: #f3f4f6;
-        color: #9ca3af;
-        padding: 4px 8px;
-        border-radius: 16px;
-        font-size: 10px;
-        display: inline-block;
-        white-space: nowrap;
-    }
-    
-    .btn-acao {
-        background: #fee2e2;
-        color: #991b1b;
-        border: none;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 10px;
-        font-weight: 600;
-        cursor: pointer;
-        width: 100%;
-        white-space: nowrap;
-    }
-    
-    .btn-acao-ativar {
-        background: #dcfce7;
-        color: #166534;
-    }
-    
-    .section-header td {
-        background: #f1f5f9;
-        padding: 8px 12px;
-        font-weight: 700;
-        color: #475569;
-    }
-    
-    .section-spacer td {
-        height: 12px;
-        background: #f4f6f9;
-        border: none;
-    }
-    
-    .texto-centro {
-        text-align: center;
-    }
-</style>
-
-<script>
-// Garantir que a barra de rolagem fique no topo
-function fixScrollBar() {
-    const wrapper = document.querySelector('.tabela-wrapper');
-    if (wrapper) {
-        wrapper.scrollTop = 0;
-        wrapper.scrollLeft = 0;
-    }
-}
-
-// Executar quando a página carregar
-document.addEventListener('DOMContentLoaded', function() {
-    fixScrollBar();
-    // Executar novamente após um pequeno atraso
-    setTimeout(fixScrollBar, 200);
-});
-
-// Observar mudanças na tabela
-const observer = new MutationObserver(function() {
-    fixScrollBar();
-});
-observer.observe(document.body, { childList: true, subtree: true });
-</script>
-
-<div class="tabela-wrapper">
-<table class="tabela-ofertas">
-    <thead>
-        <tr>
-            <th>Período</th>
-            <th>Código</th>
-            <th style="text-align:left">Disciplina</th>
-            <th>CH</th>
-"""
-
-for polo in POLOS:
-    html_content += f"<th>{polo}</th>"
-
-html_content += """
-            <th>Ação</th>
-        </tr>
-    </thead>
-    <tbody>
-"""
-
-# Agrupar por período
+# --- EXIBIR TABELA COM BOTÕES STREAMLIT (NATIVOS) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
+    st.markdown(f"#### 📌 PERÍODO {periodo}")
+    
     df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
     
-    html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
-    
     for _, row in df_periodo.iterrows():
-        cod_col = 'Disciplina' if 'Disciplina' in df.columns else df.columns[1]
-        nome_col = 'Nome' if 'Nome' in df.columns else df.columns[2]
+        cod = row['Disciplina']
+        nome = row['Nome']
+        ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
         
-        disciplina_cod = str(row[cod_col]).replace("'", "\\'")
-        disciplina_nome = str(row[nome_col]).replace("'", "\\'")
-        
-        ch_col = 'Carga Horária' if 'Carga Horária' in df.columns else df.columns[3]
-        ch = int(row[ch_col]) if pd.notna(row[ch_col]) else 0
-        
-        html_content += '<tr>'
-        html_content += f'<td class="texto-centro"><span class="periodo-badge">{periodo}</span></td>'
-        html_content += f'<td class="texto-centro"><span class="disciplina-code">{disciplina_cod}</span></td>'
-        html_content += f'<td class="disciplina-nome">{disciplina_nome}</td>'
-        html_content += f'<td class="texto-centro"><span class="carga">{ch}h</span></td>'
-        
-        algum_ativo = False
-        for polo in POLOS:
-            status = get_status(row, polo, df)
-            inst = get_inst(row, polo)
-            is_active = (status == 'A')
+        with st.expander(f"[{periodo}] {cod} - {nome} ({ch}h)"):
+            # Criar colunas para os polos + ação
+            cols = st.columns(len(POLOS) + 1)
             
-            if is_active:
-                algum_ativo = True
-                html_content += f'''
-                <td class="polo-cell">
-                    <span class="polo-ativo" data-inst="{inst}">✓ {inst}</span>
-                </td>
-                '''
-            else:
-                html_content += f'''
-                <td class="polo-cell">
-                    <span class="polo-inativo">—</span>
-                </td>
-                '''
-        
-        if algum_ativo:
-            html_content += f'<td><button class="btn-acao">❌ Desativar todos</button></td>'
-        else:
-            html_content += f'<td><button class="btn-acao btn-acao-ativar">✅ Ativar todos</button></td>'
-        
-        html_content += '</tr>'
+            for i, polo in enumerate(POLOS):
+                with cols[i]:
+                    is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
+                    inst = get_inst(row, polo)
+                    
+                    if is_active:
+                        if st.button(f"✅ {polo}", key=f"{cod}_{polo}_ativo", use_container_width=True):
+                            toggle(cod, polo)
+                            st.rerun()
+                    else:
+                        if st.button(f"❌ {polo}", key=f"{cod}_{polo}_inativo", use_container_width=True):
+                            toggle(cod, polo)
+                            st.rerun()
+            
+            # Botão para ativar/desativar todos
+            with cols[-1]:
+                any_active = any(st.session_state.estado_ofertas.get(f"{cod}_{polo}", False) for polo in POLOS)
+                if any_active:
+                    if st.button(f"❌ Desativar todos", key=f"all_{cod}_desativar", use_container_width=True):
+                        for polo in POLOS:
+                            toggle(cod, polo)
+                        st.rerun()
+                else:
+                    if st.button(f"✅ Ativar todos", key=f"all_{cod}_ativar", use_container_width=True):
+                        for polo in POLOS:
+                            toggle(cod, polo)
+                        st.rerun()
     
-    html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
-
-html_content += """
-    </tbody>
-</table>
-</div>
-"""
-
-# Renderizar o HTML
-if html_content:
-    st.markdown(html_content, unsafe_allow_html=True)
-else:
-    st.info("Nenhuma disciplina encontrada com os filtros selecionados.")
+    st.markdown("---")
 
 # --- RODAPÉ ---
 st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
