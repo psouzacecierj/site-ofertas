@@ -21,10 +21,10 @@ st.markdown("""
         max-width: 100%;
     }
     
-    /* Grid para os botões dos polos */
+    /* Grid com 5 colunas fixas para os botões dos polos */
     .grid-container {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+        grid-template-columns: repeat(5, 1fr);
         gap: 6px;
         margin-bottom: 8px;
     }
@@ -81,6 +81,13 @@ st.markdown("""
     }
     .streamlit-expanderContent {
         padding-top: 0.5rem !important;
+    }
+    
+    /* Responsivo: se a tela for pequena, reduz para 3 colunas */
+    @media (max-width: 600px) {
+        .grid-container {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -347,7 +354,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES EM GRID ---
+# --- EXIBIR TABELA COM BOTÕES EM GRID (5 POR LINHA) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
@@ -359,7 +366,7 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
         ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
         
         with st.expander(f"[{periodo}] {cod} - {nome} ({ch}h)"):
-            # Abrir grid
+            # Abrir grid (5 colunas)
             st.markdown('<div class="grid-container">', unsafe_allow_html=True)
             
             # Criar botões para cada polo dentro do grid
