@@ -21,17 +21,17 @@ st.markdown("""
         max-width: 100%;
     }
     
-    /* Botões dos polos (dentro dos expanders) */
+    /* Botões dos polos (dentro dos expanders) - FONTE MENOR AINDA */
     div[data-testid="stExpander"] .stButton > button {
         background: #2d6a4f !important;
         color: white !important;
-        border-radius: 6px !important;
-        font-size: 0.6rem !important;
-        padding: 0.2rem 0.3rem !important;
+        border-radius: 4px !important;
+        font-size: 0.5rem !important;
+        padding: 0.1rem 0.15rem !important;
         border: none !important;
         width: 100% !important;
-        min-height: 30px !important;
-        line-height: 1.2 !important;
+        min-height: 24px !important;
+        line-height: 1.1 !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
