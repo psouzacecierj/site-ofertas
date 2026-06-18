@@ -99,17 +99,24 @@ def carregar_dados(sheet_id):
     st.error("❌ Erro ao carregar planilha.")
     return None
 
-# --- FUNÇÃO PARA DETECTAR POLOS ---
+# --- FUNÇÃO PARA DETECTAR POLOS (ATUALIZADA) ---
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
-    polos_conhecidos = ['ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
-                        'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
-                        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO']
+    polos_conhecidos = [
+        # Polos comuns
+        'ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
+        'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
+        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO',
+        # Polos específicos de Sistemas de Computação
+        'BPI', 'DCA', 'ITG', 'NIT', 'PTY', 'RFL', 'TRI'
+    ]
     
     for col in colunas:
         col_str = str(col).strip()
+        # Verifica se é um polo: 3 letras maiúsculas ou está na lista conhecida
         if (len(col_str) == 3 and col_str.isupper()) or col_str in polos_conhecidos:
+            # Exclui colunas que não são polos
             if col_str not in polos and col_str not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD']:
                 polos.append(col_str)
     return polos
@@ -153,6 +160,10 @@ if 'Periodo' not in df.columns:
 
 # --- IDENTIFICAR POLOS ---
 POLOS = detectar_polos(df)
+
+# DEBUG: Mostrar polos detectados (opcional - pode remover)
+# st.write("### 🔍 Polos detectados:")
+# st.write(POLOS)
 
 # --- INICIALIZAR ESTADO DAS OFERTAS NA SESSION ---
 if "estado_ofertas" not in st.session_state:
