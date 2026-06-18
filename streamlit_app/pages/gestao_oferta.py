@@ -28,12 +28,9 @@ st.markdown("""
         gap: 6px;
         margin-bottom: 8px;
     }
-    .grid-item {
-        min-width: 0;
-    }
     
     /* Botões dentro do grid */
-    .grid-item .stButton > button {
+    .grid-container .stButton > button {
         background: #2d6a4f !important;
         color: white !important;
         border-radius: 6px !important;
@@ -47,14 +44,14 @@ st.markdown("""
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
-    .grid-item .stButton > button:hover {
+    .grid-container .stButton > button:hover {
         background: #1b4d3e !important;
     }
-    .grid-item .stButton > button[kind="secondary"] {
+    .grid-container .stButton > button[kind="secondary"] {
         background: #f3f4f6 !important;
         color: #9ca3af !important;
     }
-    .grid-item .stButton > button[kind="secondary"]:hover {
+    .grid-container .stButton > button[kind="secondary"]:hover {
         background: #e5e7eb !important;
     }
     
