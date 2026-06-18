@@ -20,26 +20,34 @@ st.markdown("""
         padding-bottom: 0rem;
         max-width: 100%;
     }
-    .stButton > button {
-        background: #2d6a4f;
-        color: white;
-        border-radius: 6px;
-        font-size: 0.7rem;
-        padding: 0.25rem 0.5rem;
-        border: none;
-        width: 100%;
-        min-height: 32px;
+    
+    /* Botões dos polos (dentro dos expanders) - FONTE MENOR */
+    div[data-testid="stExpander"] .stButton > button {
+        background: #2d6a4f !important;
+        color: white !important;
+        border-radius: 6px !important;
+        font-size: 0.55rem !important;
+        padding: 0.15rem 0.2rem !important;
+        border: none !important;
+        width: 100% !important;
+        min-height: 28px !important;
+        line-height: 1.2 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
-    .stButton > button:hover {
-        background: #1b4d3e;
+    div[data-testid="stExpander"] .stButton > button:hover {
+        background: #1b4d3e !important;
     }
-    .stButton > button[kind="secondary"] {
-        background: #f3f4f6;
-        color: #9ca3af;
+    div[data-testid="stExpander"] .stButton > button[kind="secondary"] {
+        background: #f3f4f6 !important;
+        color: #9ca3af !important;
     }
-    .stButton > button[kind="secondary"]:hover {
-        background: #e5e7eb;
+    div[data-testid="stExpander"] .stButton > button[kind="secondary"]:hover {
+        background: #e5e7eb !important;
     }
+    
+    /* Expander com estilo mais compacto */
     .streamlit-expanderHeader {
         font-size: 0.85rem !important;
         font-weight: 500 !important;
