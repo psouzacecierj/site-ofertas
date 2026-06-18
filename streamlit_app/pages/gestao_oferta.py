@@ -20,34 +20,26 @@ st.markdown("""
         padding-bottom: 0rem;
         max-width: 100%;
     }
-    
-    /* Botões dos polos (dentro dos expanders) - FONTE MENOR AINDA */
-    div[data-testid="stExpander"] .stButton > button {
-        background: #2d6a4f !important;
-        color: white !important;
-        border-radius: 4px !important;
-        font-size: 0.5rem !important;
-        padding: 0.1rem 0.15rem !important;
-        border: none !important;
-        width: 100% !important;
-        min-height: 24px !important;
-        line-height: 1.1 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+    .stButton > button {
+        background: #2d6a4f;
+        color: white;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+        border: none;
+        width: 100%;
+        min-height: 32px;
     }
-    div[data-testid="stExpander"] .stButton > button:hover {
-        background: #1b4d3e !important;
+    .stButton > button:hover {
+        background: #1b4d3e;
     }
-    div[data-testid="stExpander"] .stButton > button[kind="secondary"] {
-        background: #f3f4f6 !important;
-        color: #9ca3af !important;
+    .stButton > button[kind="secondary"] {
+        background: #f3f4f6;
+        color: #9ca3af;
     }
-    div[data-testid="stExpander"] .stButton > button[kind="secondary"]:hover {
-        background: #e5e7eb !important;
+    .stButton > button[kind="secondary"]:hover {
+        background: #e5e7eb;
     }
-    
-    /* Expander com estilo mais compacto */
     .streamlit-expanderHeader {
         font-size: 0.85rem !important;
         font-weight: 500 !important;
@@ -320,7 +312,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES STREAMLIT (INSTITUIÇÃO SÓ NO ATIVO) ---
+# --- EXIBIR TABELA COM BOTÕES STREAMLIT (COM INSTITUIÇÃO) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
@@ -341,13 +333,11 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
                     inst = get_inst(row, polo)
                     
                     if is_active:
-                        # ATIVO: mostra ✅ + polo + instituição (ex: ✅ ARE - UFF)
                         if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}_ativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
                     else:
-                        # INATIVO: mostra apenas ❌ + polo (ex: ❌ ARE)
-                        if st.button(f"❌ {polo}", key=f"{cod}_{polo}_inativo", use_container_width=True):
+                        if st.button(f"❌ {polo} - {inst}", key=f"{cod}_{polo}_inativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
             
