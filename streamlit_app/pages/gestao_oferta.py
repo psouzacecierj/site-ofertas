@@ -28,12 +28,9 @@ st.markdown("""
         gap: 6px;
         margin-bottom: 8px;
     }
-    .grid-item {
-        min-width: 0;
-    }
     
     /* Botões dentro do grid */
-    .grid-item .stButton > button {
+    .grid-container .stButton > button {
         background: #2d6a4f !important;
         color: white !important;
         border-radius: 6px !important;
@@ -47,14 +44,14 @@ st.markdown("""
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
-    .grid-item .stButton > button:hover {
+    .grid-container .stButton > button:hover {
         background: #1b4d3e !important;
     }
-    .grid-item .stButton > button[kind="secondary"] {
+    .grid-container .stButton > button[kind="secondary"] {
         background: #f3f4f6 !important;
         color: #9ca3af !important;
     }
-    .grid-item .stButton > button[kind="secondary"]:hover {
+    .grid-container .stButton > button[kind="secondary"]:hover {
         background: #e5e7eb !important;
     }
     
@@ -127,17 +124,22 @@ def carregar_dados(sheet_id):
     st.error("❌ Erro ao carregar planilha.")
     return None
 
-# --- FUNÇÃO PARA DETECTAR POLOS ---
+# --- FUNÇÃO PARA DETECTAR POLOS (EXPANDIDA) ---
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
-    polos_conhecidos = ['ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
-                        'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
-                        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO']
+    polos_conhecidos = [
+        'ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
+        'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
+        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO',
+        'BPI', 'DCA', 'ITG', 'NIT', 'PTY', 'RFL', 'TRI'
+    ]
     
     for col in colunas:
         col_str = str(col).strip()
+        # Verifica se é um polo: 3 letras maiúsculas ou está na lista conhecida
         if (len(col_str) == 3 and col_str.isupper()) or col_str in polos_conhecidos:
+            # Exclui colunas que não são polos
             if col_str not in polos and col_str not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD']:
                 polos.append(col_str)
     return polos
@@ -347,7 +349,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES EM GRID ---
+# --- EXIBIR TABELA COM BOTÕES EM GRID (COM SALVAMENTO VIA BOTÃO) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
