@@ -21,16 +21,16 @@ st.markdown("""
         max-width: 100%;
     }
     
-    /* Botões dos polos (dentro dos expanders) - FONTE MENOR */
+    /* Botões dos polos (dentro dos expanders) */
     div[data-testid="stExpander"] .stButton > button {
         background: #2d6a4f !important;
         color: white !important;
         border-radius: 6px !important;
-        font-size: 0.55rem !important;
-        padding: 0.15rem 0.2rem !important;
+        font-size: 0.6rem !important;
+        padding: 0.2rem 0.3rem !important;
         border: none !important;
         width: 100% !important;
-        min-height: 28px !important;
+        min-height: 30px !important;
         line-height: 1.2 !important;
         white-space: nowrap !important;
         overflow: hidden !important;
@@ -320,7 +320,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES STREAMLIT (COM INSTITUIÇÃO) ---
+# --- EXIBIR TABELA COM BOTÕES STREAMLIT (INSTITUIÇÃO SÓ NO ATIVO) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
@@ -341,11 +341,13 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
                     inst = get_inst(row, polo)
                     
                     if is_active:
+                        # ATIVO: mostra ✅ + polo + instituição (ex: ✅ ARE - UFF)
                         if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}_ativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
                     else:
-                        if st.button(f"❌ {polo} - {inst}", key=f"{cod}_{polo}_inativo", use_container_width=True):
+                        # INATIVO: mostra apenas ❌ + polo (ex: ❌ ARE)
+                        if st.button(f"❌ {polo}", key=f"{cod}_{polo}_inativo", use_container_width=True):
                             toggle(cod, polo)
                             st.rerun()
             
