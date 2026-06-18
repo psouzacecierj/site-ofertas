@@ -8,7 +8,7 @@ from google.oauth2.service_account import Credentials
 # --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="Gestão de Oferta", layout="wide")
 
-# --- CSS PERSONALIZADO ---
+# --- CSS PERSONALIZADO (sem grid, apenas ajustes gerais) ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -21,16 +21,8 @@ st.markdown("""
         max-width: 100%;
     }
     
-    /* Grid com 5 colunas fixas para os botões dos polos */
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 6px;
-        margin-bottom: 8px;
-    }
-    
-    /* Botões dentro do grid */
-    .grid-container .stButton > button {
+    /* Botões dentro dos expanders */
+    div[data-testid="stExpander"] .stButton > button {
         background: #2d6a4f !important;
         color: white !important;
         border-radius: 6px !important;
@@ -44,32 +36,15 @@ st.markdown("""
         overflow: hidden !important;
         text-overflow: ellipsis !important;
     }
-    .grid-container .stButton > button:hover {
+    div[data-testid="stExpander"] .stButton > button:hover {
         background: #1b4d3e !important;
     }
-    .grid-container .stButton > button[kind="secondary"] {
+    div[data-testid="stExpander"] .stButton > button[kind="secondary"] {
         background: #f3f4f6 !important;
         color: #9ca3af !important;
     }
-    .grid-container .stButton > button[kind="secondary"]:hover {
+    div[data-testid="stExpander"] .stButton > button[kind="secondary"]:hover {
         background: #e5e7eb !important;
-    }
-    
-    /* Botão "Desativar todos" */
-    .btn-acao {
-        background: #fee2e2 !important;
-        color: #991b1b !important;
-        border: none !important;
-        padding: 0.2rem 0.5rem !important;
-        border-radius: 20px !important;
-        font-size: 0.65rem !important;
-        font-weight: 600 !important;
-        width: 100% !important;
-        cursor: pointer !important;
-    }
-    .btn-acao-ativar {
-        background: #dcfce7 !important;
-        color: #166534 !important;
     }
     
     .streamlit-expanderHeader {
@@ -78,13 +53,6 @@ st.markdown("""
     }
     .streamlit-expanderContent {
         padding-top: 0.5rem !important;
-    }
-    
-    /* Responsivo: se a tela for pequena, reduz para 3 colunas */
-    @media (max-width: 600px) {
-        .grid-container {
-            grid-template-columns: repeat(3, 1fr);
-        }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -351,7 +319,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES EM GRID (5 POR LINHA) ---
+# --- EXIBIR TABELA COM BOTÕES (5 POR LINHA USANDO st.columns) ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
@@ -363,15 +331,15 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
         ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
         
         with st.expander(f"[{periodo}] {cod} - {nome} ({ch}h)"):
-            # Abrir grid (5 colunas)
-            st.markdown('<div class="grid-container">', unsafe_allow_html=True)
+            # Criar 5 colunas
+            cols = st.columns(5)
             
-            # Criar botões para cada polo dentro do grid
-            for polo in POLOS:
-                is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
-                inst = get_inst(row, polo)
-                
-                with st.container():
+            # Para cada polo, colocar na coluna correspondente (i % 5)
+            for i, polo in enumerate(POLOS):
+                with cols[i % 5]:
+                    is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
+                    inst = get_inst(row, polo)
+                    
                     if is_active:
                         if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}_ativo", use_container_width=True):
                             toggle(cod, polo)
@@ -381,10 +349,7 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
                             toggle(cod, polo)
                             st.rerun()
             
-            # Fechar grid
-            st.markdown('</div>', unsafe_allow_html=True)
-            
-            # Botão para ativar/desativar todos (fora do grid)
+            # Botão para ativar/desativar todos
             any_active = any(st.session_state.estado_ofertas.get(f"{cod}_{polo}", False) for polo in POLOS)
             if any_active:
                 if st.button(f"❌ Desativar todos", key=f"all_{cod}_desativar", use_container_width=True):
