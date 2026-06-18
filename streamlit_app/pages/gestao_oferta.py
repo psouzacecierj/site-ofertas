@@ -230,7 +230,7 @@ def salvar_tudo():
     except Exception as e:
         return False, str(e)
 
-# --- TÍTULO (AZUL MICROSOFT, SEM NEGRITO, CURSO MAIOR) ---
+# --- TÍTULO (AZUL MICROSOFT) ---
 st.markdown(f"""
 <div style="background: #0078d4; padding: 0.8rem 2rem; border-radius: 10px; margin-bottom: 1rem;">
     <h1 style="color: white; margin: 0; font-size: 1.1rem; font-weight: 400;">📚 Gestão de Oferta de Disciplinas</h1>
@@ -238,13 +238,13 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- BOTÃO SALVAR (AZUL MICROSOFT) ---
+# --- BOTÃO SALVAR (CINZA) ---
 st.markdown("""
 <style>
-    /* Botão Salvar no estilo Microsoft */
+    /* Botão Salvar no estilo discreto (cinza) */
     div.stButton > button {
-        background: #0078d4 !important;
-        color: white !important;
+        background: #e0e0e0 !important;
+        color: #333333 !important;
         border-radius: 6px !important;
         padding: 0.6rem 1.5rem !important;
         font-size: 1rem !important;
@@ -254,10 +254,10 @@ st.markdown("""
         transition: background 0.2s !important;
     }
     div.stButton > button:hover {
-        background: #106ebe !important;
+        background: #cccccc !important;
     }
     div.stButton > button:active {
-        background: #005a9e !important;
+        background: #b3b3b3 !important;
     }
 </style>
 """, unsafe_allow_html=True)
