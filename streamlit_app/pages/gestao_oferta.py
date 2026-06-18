@@ -8,7 +8,7 @@ from google.oauth2.service_account import Credentials
 # --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="Gestão de Oferta", layout="wide")
 
-# --- CSS PERSONALIZADO (sem grid, apenas ajustes gerais) ---
+# --- CSS PERSONALIZADO ---
 st.markdown("""
 <style>
     #MainMenu {visibility: hidden;}
@@ -21,40 +21,171 @@ st.markdown("""
         max-width: 100%;
     }
     
-    /* Botões dentro dos expanders */
-    div[data-testid="stExpander"] .stButton > button {
-        background: #2d6a4f !important;
-        color: white !important;
-        border-radius: 6px !important;
-        font-size: 0.65rem !important;
-        padding: 0.2rem 0.3rem !important;
-        border: none !important;
-        width: 100% !important;
-        min-height: 30px !important;
-        line-height: 1.2 !important;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
-    }
-    div[data-testid="stExpander"] .stButton > button:hover {
-        background: #1b4d3e !important;
-    }
-    div[data-testid="stExpander"] .stButton > button[kind="secondary"] {
-        background: #f3f4f6 !important;
-        color: #9ca3af !important;
-    }
-    div[data-testid="stExpander"] .stButton > button[kind="secondary"]:hover {
-        background: #e5e7eb !important;
+    /* Tabela com scroll no topo */
+    .tabela-wrapper {
+        overflow-x: auto;
+        overflow-y: auto;
+        border-radius: 10px;
+        border: 1px solid #e5e7eb;
+        background: white;
+        max-height: 600px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
     }
     
-    .streamlit-expanderHeader {
-        font-size: 0.85rem !important;
-        font-weight: 500 !important;
+    .tabela-ofertas {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-size: 12px;
+        min-width: 800px;
+        margin-top: 0;
     }
-    .streamlit-expanderContent {
-        padding-top: 0.5rem !important;
+    
+    .tabela-ofertas th {
+        background: #2d6a4f;
+        color: white;
+        padding: 10px 6px;
+        text-align: center;
+        font-weight: 600;
+        font-size: 10px;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .tabela-ofertas td {
+        padding: 8px 6px;
+        border-bottom: 1px solid #f3f4f6;
+        vertical-align: middle;
+    }
+    
+    .tabela-ofertas tr:hover {
+        background: #f9fafb;
+    }
+    
+    .periodo-badge {
+        background: #e0e7ff;
+        color: #3730a3;
+        padding: 3px 9px;
+        border-radius: 12px;
+        font-size: 11px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+    }
+    
+    .disciplina-code {
+        font-family: monospace;
+        font-size: 11px;
+        color: #6b7280;
+        white-space: nowrap;
+    }
+    
+    .disciplina-nome {
+        font-weight: 500;
+        text-align: left;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    
+    .carga {
+        font-size: 11px;
+        color: #9ca3af;
+        white-space: nowrap;
+    }
+    
+    .polo-cell {
+        text-align: center;
+        cursor: pointer;
+        padding: 4px 2px;
+    }
+    
+    .polo-ativo {
+        background: #dcfce7;
+        color: #166534;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 10px;
+        font-weight: 600;
+        display: inline-block;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+    
+    .polo-inativo {
+        background: #f3f4f6;
+        color: #9ca3af;
+        padding: 4px 8px;
+        border-radius: 16px;
+        font-size: 10px;
+        display: inline-block;
+        white-space: nowrap;
+        cursor: pointer;
+    }
+    
+    .btn-acao {
+        background: #fee2e2;
+        color: #991b1b;
+        border: none;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        white-space: nowrap;
+    }
+    
+    .btn-acao-ativar {
+        background: #dcfce7;
+        color: #166534;
+    }
+    
+    .section-header td {
+        background: #f1f5f9;
+        padding: 8px 12px;
+        font-weight: 700;
+        color: #475569;
+    }
+    
+    .section-spacer td {
+        height: 12px;
+        background: #f4f6f9;
+        border: none;
+    }
+    
+    .texto-centro {
+        text-align: center;
     }
 </style>
+
+<script>
+// Garantir que a barra de rolagem fique no topo
+function fixScrollBar() {
+    const wrapper = document.querySelector('.tabela-wrapper');
+    if (wrapper) {
+        wrapper.scrollTop = 0;
+        wrapper.scrollLeft = 0;
+    }
+}
+
+// Executar quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    fixScrollBar();
+    setTimeout(fixScrollBar, 200);
+});
+
+// Observar mudanças na tabela
+const observer = new MutationObserver(function() {
+    fixScrollBar();
+});
+observer.observe(document.body, { childList: true, subtree: true });
+</script>
 """, unsafe_allow_html=True)
 
 # --- RECUPERAR DADOS DO CURSO ---
@@ -104,19 +235,15 @@ def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
     polos_conhecidos = [
-        # Polos comuns
         'ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
         'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
         'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO',
-        # Polos específicos de Sistemas de Computação
         'BPI', 'DCA', 'ITG', 'NIT', 'PTY', 'RFL', 'TRI'
     ]
     
     for col in colunas:
         col_str = str(col).strip()
-        # Verifica se é um polo: 3 letras maiúsculas ou está na lista conhecida
         if (len(col_str) == 3 and col_str.isupper()) or col_str in polos_conhecidos:
-            # Exclui colunas que não são polos
             if col_str not in polos and col_str not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD']:
                 polos.append(col_str)
     return polos
@@ -161,10 +288,6 @@ if 'Periodo' not in df.columns:
 # --- IDENTIFICAR POLOS ---
 POLOS = detectar_polos(df)
 
-# DEBUG: Mostrar polos detectados (opcional - pode remover)
-# st.write("### 🔍 Polos detectados:")
-# st.write(POLOS)
-
 # --- INICIALIZAR ESTADO DAS OFERTAS NA SESSION ---
 if "estado_ofertas" not in st.session_state:
     st.session_state.estado_ofertas = {}
@@ -179,7 +302,7 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR (APENAS ALTERAÇÕES) ---
+# --- FUNÇÃO PARA SALVAR ---
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -190,7 +313,6 @@ def salvar_tudo():
         sheet = client.open_by_key(SHEET_ID).sheet1
         data = sheet.get_all_values()
         
-        # Encontrar cabeçalhos
         header_row = 1
         for i, row in enumerate(data):
             if row and ('Disciplina' in row or 'Código' in row):
@@ -200,14 +322,12 @@ def salvar_tudo():
         headers = data[header_row]
         cod_col = 1
         
-        # Mapear código da disciplina para linha
         linha_por_codigo = {}
         for i in range(header_row + 1, len(data)):
             row = data[i]
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
-        # Mapear APENAS colunas de Status
         status_colunas = {}
         for i, col in enumerate(headers):
             if col == 'Status':
@@ -216,7 +336,6 @@ def salvar_tudo():
                     if polo_esquerda in POLOS:
                         status_colunas[polo_esquerda] = i + 1
         
-        # Preparar APENAS as atualizações que mudaram
         updates = []
         total_alteracoes = 0
         
@@ -259,7 +378,6 @@ st.markdown(f"""
 # --- BOTÃO SALVAR (CINZA) ---
 st.markdown("""
 <style>
-    /* Botão Salvar no estilo discreto (cinza) */
     div.stButton > button {
         background: #e0e0e0 !important;
         color: #333333 !important;
@@ -312,7 +430,7 @@ st.markdown("""
         <span style="background: #f3f4f6; color: #9ca3af; padding: 2px 10px; border-radius: 4px;">— Sem oferta</span>
     </div>
     <div style="display: flex; align-items: center; gap: 6px;">
-        <span>🔘 Clique no botão para alternar</span>
+        <span>🔘 Clique na célula para alternar</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -330,50 +448,96 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES (5 POR LINHA USANDO st.columns) ---
+# --- CONSTRUIR TABELA HTML ---
+html_content = '<div class="tabela-wrapper"><table class="tabela-ofertas"><thead><tr><th>Período</th><th>Código</th><th style="text-align:left">Disciplina</th><th>CH</th>'
+
+for polo in POLOS:
+    html_content += f"<th>{polo}</th>"
+
+html_content += '<th>Ação</th></tr></thead><tbody>'
+
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
-    st.markdown(f"#### 📌 PERÍODO {periodo}")
-    
     df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
     
-    for _, row in df_periodo.iterrows():
-        cod = row['Disciplina']
-        nome = row['Nome']
-        ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
-        
-        with st.expander(f"[{periodo}] {cod} - {nome} ({ch}h)"):
-            # Criar 5 colunas
-            cols = st.columns(5)
-            
-            # Para cada polo, colocar na coluna correspondente (i % 5)
-            for i, polo in enumerate(POLOS):
-                with cols[i % 5]:
-                    is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
-                    inst = get_inst(row, polo)
-                    
-                    if is_active:
-                        if st.button(f"✅ {polo} - {inst}", key=f"{cod}_{polo}_ativo", use_container_width=True):
-                            toggle(cod, polo)
-                            st.rerun()
-                    else:
-                        if st.button(f"❌ {polo}", key=f"{cod}_{polo}_inativo", use_container_width=True):
-                            toggle(cod, polo)
-                            st.rerun()
-            
-            # Botão para ativar/desativar todos
-            any_active = any(st.session_state.estado_ofertas.get(f"{cod}_{polo}", False) for polo in POLOS)
-            if any_active:
-                if st.button(f"❌ Desativar todos", key=f"all_{cod}_desativar", use_container_width=True):
-                    for polo in POLOS:
-                        toggle(cod, polo)
-                    st.rerun()
-            else:
-                if st.button(f"✅ Ativar todos", key=f"all_{cod}_ativar", use_container_width=True):
-                    for polo in POLOS:
-                        toggle(cod, polo)
-                    st.rerun()
+    html_content += f'<tr class="section-header"><td colspan="{len(POLOS)+4}"><strong>📌 PERÍODO {periodo}</strong></td></tr>'
     
-    st.markdown("---")
+    for _, row in df_periodo.iterrows():
+        cod_col = 'Disciplina' if 'Disciplina' in df.columns else df.columns[1]
+        nome_col = 'Nome' if 'Nome' in df.columns else df.columns[2]
+        
+        disciplina_cod = str(row[cod_col]).replace("'", "\\'")
+        disciplina_nome = str(row[nome_col]).replace("'", "\\'")
+        
+        ch_col = 'Carga Horária' if 'Carga Horária' in df.columns else df.columns[3]
+        ch = int(row[ch_col]) if pd.notna(row[ch_col]) else 0
+        
+        html_content += '<tr>'
+        html_content += f'<td class="texto-centro"><span class="periodo-badge">{periodo}</span></td>'
+        html_content += f'<td class="texto-centro"><span class="disciplina-code">{disciplina_cod}</span></td>'
+        html_content += f'<td class="disciplina-nome">{disciplina_nome}</td>'
+        html_content += f'<td class="texto-centro"><span class="carga">{ch}h</span></td>'
+        
+        algum_ativo = False
+        for polo in POLOS:
+            status = get_status(row, polo, df)
+            inst = get_inst(row, polo)
+            is_active = (status == 'A')
+            
+            if is_active:
+                algum_ativo = True
+                html_content += f'<td class="polo-cell" onclick="toggleOffer(\'{disciplina_cod}\', \'{polo}\', this, \'{SHEET_ID}\')"><span class="polo-ativo" data-inst="{inst}">✅ {inst}</span></td>'
+            else:
+                html_content += f'<td class="polo-cell" onclick="toggleOffer(\'{disciplina_cod}\', \'{polo}\', this, \'{SHEET_ID}\')"><span class="polo-inativo">❌ {polo}</span></td>'
+        
+        if algum_ativo:
+            html_content += f'<td><button class="btn-acao" onclick="toggleAll(\'{disciplina_cod}\', \'Desativar\', \'{SHEET_ID}\')">❌ Desativar todos</button></td>'
+        else:
+            html_content += f'<td><button class="btn-acao btn-acao-ativar" onclick="toggleAll(\'{disciplina_cod}\', \'Ativar\', \'{SHEET_ID}\')">✅ Ativar todos</button></td>'
+        
+        html_content += '</tr>'
+    
+    html_content += f'<tr class="section-spacer"><td colspan="{len(POLOS)+4}"></td></tr>'
+
+html_content += '</tbody></table></div>'
+
+# --- JAVASCRIPT PARA TOGGLE E SALVAMENTO ---
+html_content += f"""
+<script>
+function toggleOffer(disciplinaCod, polo, element, sheetId) {{
+    const span = element.querySelector('span');
+    const isActive = span.classList.contains('polo-ativo');
+    const novoStatus = !isActive;
+    const inst = span.getAttribute('data-inst') || 'UFF';
+    
+    if (isActive) {{
+        span.className = 'polo-inativo';
+        span.innerHTML = '❌ ' + polo;
+    }} else {{
+        span.className = 'polo-ativo';
+        span.innerHTML = '✅ ' + inst;
+        span.setAttribute('data-inst', inst);
+    }}
+    
+    fetch(window.location.href, {{
+        method: 'POST',
+        headers: {{ 'Content-Type': 'application/json' }},
+        body: JSON.stringify({{
+            sheet_id: sheetId,
+            disciplina_cod: disciplinaCod,
+            polo: polo,
+            status: novoStatus
+        }})
+    }}).catch(error => console.error('Erro:', error));
+}}
+
+function toggleAll(disciplinaCod, acao, sheetId) {{
+    alert(acao + ' todos: ' + disciplinaCod + ' (em desenvolvimento)');
+}}
+</script>
+"""
+
+# Renderizar
+st.markdown(html_content, unsafe_allow_html=True)
 
 # --- RODAPÉ ---
 st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
