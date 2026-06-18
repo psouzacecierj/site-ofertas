@@ -230,15 +230,38 @@ def salvar_tudo():
     except Exception as e:
         return False, str(e)
 
-# --- TÍTULO ---
+# --- TÍTULO (AZUL MICROSOFT, SEM NEGRITO, CURSO MAIOR) ---
 st.markdown(f"""
-<div style="background: #2d6a4f; padding: 0.8rem 2rem; border-radius: 10px; margin-bottom: 1rem;">
-    <h1 style="color: white; margin: 0; font-size: 1.1rem;">📚 Gestão de Oferta de Disciplinas</h1>
-    <p style="color: rgba(255,255,255,0.8); margin: 0.2rem 0 0 0; font-size: 0.7rem;">{CURSO_NOME} | 2º semestre / 2026</p>
+<div style="background: #0078d4; padding: 0.8rem 2rem; border-radius: 10px; margin-bottom: 1rem;">
+    <h1 style="color: white; margin: 0; font-size: 1.1rem; font-weight: 400;">📚 Gestão de Oferta de Disciplinas</h1>
+    <p style="color: rgba(255,255,255,0.9); margin: 0.2rem 0 0 0; font-size: 1rem;">{CURSO_NOME} | 2º semestre / 2026</p>
 </div>
 """, unsafe_allow_html=True)
 
-# --- BOTÃO SALVAR ---
+# --- BOTÃO SALVAR (AZUL MICROSOFT) ---
+st.markdown("""
+<style>
+    /* Botão Salvar no estilo Microsoft */
+    div.stButton > button {
+        background: #0078d4 !important;
+        color: white !important;
+        border-radius: 6px !important;
+        padding: 0.6rem 1.5rem !important;
+        font-size: 1rem !important;
+        font-weight: 500 !important;
+        border: none !important;
+        width: 100% !important;
+        transition: background 0.2s !important;
+    }
+    div.stButton > button:hover {
+        background: #106ebe !important;
+    }
+    div.stButton > button:active {
+        background: #005a9e !important;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 col_s1, col_s2, col_s3 = st.columns([1, 2, 1])
 with col_s2:
     if st.button("💾 SALVAR ALTERAÇÕES NA PLANILHA", use_container_width=True):
