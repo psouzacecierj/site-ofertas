@@ -21,10 +21,10 @@ st.markdown("""
         max-width: 100%;
     }
     
-    /* Grid com 5 colunas fixas para os botões dos polos */
+    /* Grid para os botões dos polos */
     .grid-container {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);  /* ← 5 COLUNAS FIXAS */
+        grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
         gap: 6px;
         margin-bottom: 8px;
     }
@@ -111,14 +111,18 @@ def carregar_dados(sheet_id):
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
+    
+    # Colunas que não são polos (comuns)
     colunas_ignorar = ['Periodo', 'Disciplina', 'Nome', 'Carga Horária', 'Status']
     
     for col in colunas:
         col_str = str(col).strip()
+        # Verifica se é um polo: 3 letras maiúsculas e não está na lista de ignorados
         if len(col_str) == 3 and col_str.isupper() and col_str not in colunas_ignorar:
             if col_str not in polos:
                 polos.append(col_str)
     
+    # Se não encontrou nenhum polo, tenta encontrar colunas que têm "Status" à direita
     if not polos:
         for i, col in enumerate(colunas):
             col_str = str(col).strip()
@@ -165,11 +169,17 @@ if 'Periodo' not in df.columns:
     st.error("❌ Coluna 'Periodo' não encontrada")
     st.stop()
 
-# --- IDENTIFICAR POLOS ---
+# --- IDENTIFICAR POLOS (AUTOMATICAMENTE) ---
 POLOS = detectar_polos(df)
 
+# DEBUG: Mostrar polos detectados (opcional)
+# st.write("### 🔍 Polos detectados:")
+# st.write(POLOS)
+
+# Se não encontrou polos, exibir aviso
 if not POLOS:
-    st.warning("⚠️ Nenhum polo detectado!")
+    st.warning("⚠️ Nenhum polo detectado! Verifique a estrutura da planilha.")
+    st.write("Colunas encontradas:", df.columns.tolist())
     st.stop()
 
 # --- INICIALIZAR ESTADO DAS OFERTAS NA SESSION ---
@@ -186,7 +196,7 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR ---
+# --- FUNÇÃO PARA SALVAR (APENAS ALTERAÇÕES) ---
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -197,6 +207,7 @@ def salvar_tudo():
         sheet = client.open_by_key(SHEET_ID).sheet1
         data = sheet.get_all_values()
         
+        # Encontrar cabeçalhos
         header_row = 1
         for i, row in enumerate(data):
             if row and ('Disciplina' in row or 'Código' in row):
@@ -206,12 +217,14 @@ def salvar_tudo():
         headers = data[header_row]
         cod_col = 1
         
+        # Mapear código da disciplina para linha
         linha_por_codigo = {}
         for i in range(header_row + 1, len(data)):
             row = data[i]
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
+        # Mapear APENAS colunas de Status
         status_colunas = {}
         for i, col in enumerate(headers):
             if col == 'Status':
@@ -220,6 +233,7 @@ def salvar_tudo():
                     if polo_esquerda in POLOS:
                         status_colunas[polo_esquerda] = i + 1
         
+        # Preparar APENAS as atualizações que mudaram
         updates = []
         total_alteracoes = 0
         
@@ -262,6 +276,7 @@ st.markdown(f"""
 # --- BOTÃO SALVAR (CINZA) ---
 st.markdown("""
 <style>
+    /* Botão Salvar no estilo discreto (cinza) */
     div.stButton > button {
         background: #e0e0e0 !important;
         color: #333333 !important;
@@ -332,7 +347,7 @@ if status_sel != "Todos":
     else:
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
-# --- EXIBIR TABELA COM BOTÕES EM GRID (5 COLUNAS FIXAS) ---
+# --- EXIBIR TABELA COM BOTÕES EM GRID ---
 for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
     st.markdown(f"#### 📌 PERÍODO {periodo}")
     
@@ -344,9 +359,10 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
         ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
         
         with st.expander(f"[{periodo}] {cod} - {nome} ({ch}h)"):
-            # Abrir grid (5 colunas fixas)
+            # Abrir grid
             st.markdown('<div class="grid-container">', unsafe_allow_html=True)
             
+            # Criar botões para cada polo dentro do grid
             for polo in POLOS:
                 is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                 inst = get_inst(row, polo)
@@ -361,9 +377,10 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
                             toggle(cod, polo)
                             st.rerun()
             
+            # Fechar grid
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # Botão para ativar/desativar todos
+            # Botão para ativar/desativar todos (fora do grid)
             any_active = any(st.session_state.estado_ofertas.get(f"{cod}_{polo}", False) for polo in POLOS)
             if any_active:
                 if st.button(f"❌ Desativar todos", key=f"all_{cod}_desativar", use_container_width=True):
