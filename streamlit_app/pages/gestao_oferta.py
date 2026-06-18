@@ -107,23 +107,29 @@ def carregar_dados(sheet_id):
     st.error("❌ Erro ao carregar planilha.")
     return None
 
-# --- FUNÇÃO PARA DETECTAR POLOS (CORRIGIDA) ---
+# --- FUNÇÃO PARA DETECTAR POLOS (AUTOMÁTICA) ---
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
-    polos_conhecidos = [
-        'ARE', 'BJE', 'CAN', 'CGR', 'ITA', 'ITO', 'MAC', 'NIG', 
-        'PAR', 'PIR', 'RBO', 'RES', 'SAQ', 'SFI', 'SFR', 'SPE', 'VRE',
-        'BRO', 'MAG', 'NFR', 'PET', 'ROC', 'SGO',
-        # Polos específicos de Sistemas de Computação
-        'BPI', 'DCA', 'ITG', 'NIT', 'PTY', 'RFL', 'TRI'
-    ]
+    
+    # Colunas que não são polos (comuns)
+    colunas_ignorar = ['Periodo', 'Disciplina', 'Nome', 'Carga Horária', 'Status']
     
     for col in colunas:
         col_str = str(col).strip()
-        if (len(col_str) == 3 and col_str.isupper()) or col_str in polos_conhecidos:
-            if col_str not in polos and col_str not in ['PER', 'DIS', 'NOM', 'CAR', 'EAD']:
+        # Verifica se é um polo: 3 letras maiúsculas e não está na lista de ignorados
+        if len(col_str) == 3 and col_str.isupper() and col_str not in colunas_ignorar:
+            if col_str not in polos:
                 polos.append(col_str)
+    
+    # Se não encontrou nenhum polo, tenta encontrar colunas que têm "Status" à direita
+    if not polos:
+        for i, col in enumerate(colunas):
+            col_str = str(col).strip()
+            if i + 1 < len(colunas) and colunas[i + 1] == 'Status':
+                if col_str not in colunas_ignorar and col_str not in polos:
+                    polos.append(col_str)
+    
     return polos
 
 # --- FUNÇÃO PARA OBTER STATUS DE UM POLO ---
@@ -163,12 +169,18 @@ if 'Periodo' not in df.columns:
     st.error("❌ Coluna 'Periodo' não encontrada")
     st.stop()
 
-# --- IDENTIFICAR POLOS ---
+# --- IDENTIFICAR POLOS (AUTOMATICAMENTE) ---
 POLOS = detectar_polos(df)
 
 # DEBUG: Mostrar polos detectados (opcional)
 # st.write("### 🔍 Polos detectados:")
 # st.write(POLOS)
+
+# Se não encontrou polos, exibir aviso
+if not POLOS:
+    st.warning("⚠️ Nenhum polo detectado! Verifique a estrutura da planilha.")
+    st.write("Colunas encontradas:", df.columns.tolist())
+    st.stop()
 
 # --- INICIALIZAR ESTADO DAS OFERTAS NA SESSION ---
 if "estado_ofertas" not in st.session_state:
