@@ -343,16 +343,17 @@ for p in df_filtrado['Periodo'].unique():
         continue
     periodos_unicos.append(str(p))
 
+# Função de ordenação: numéricos, depois Optativa, depois Outras
 def ordenar_periodo(p):
-    if p == 'Optativa':
-        return 999  # Optativas depois dos numéricos
-    elif p == 'Outros':
-        return 1000  # Outras por último
+    if p == 'Outras':
+        return 999  # Outras por último
+    elif p == 'Optativa':
+        return 500  # Optativas depois dos numéricos
     else:
         try:
             return int(float(p))  # Numéricos na ordem
         except:
-            return 500
+            return 100
 
 for periodo_label in sorted(periodos_unicos, key=ordenar_periodo):
     df_periodo = df_filtrado[df_filtrado['Periodo'].astype(str) == periodo_label]
@@ -360,11 +361,11 @@ for periodo_label in sorted(periodos_unicos, key=ordenar_periodo):
     if df_periodo.empty:
         continue
     
-    # Ajustar rótulo para Optativa e Outros
+    # Ajustar rótulo para Optativa e Outras
     if periodo_label == 'Optativa':
         st.markdown(f"#### 📌 Optativas")
-    elif periodo_label == 'Outros':
-        st.markdown(f"#### 📌 PERÍODO Outras")
+    elif periodo_label == 'Outras':
+        st.markdown(f"#### Outras")
     else:
         st.markdown(f"#### 📌 PERÍODO {periodo_label}")
     
