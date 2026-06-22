@@ -345,12 +345,12 @@ for p in df_filtrado['Periodo'].unique():
 
 def ordenar_periodo(p):
     if p == 'Optativa':
-        return 999
+        return 1  # Optativas primeiro
     elif p == 'Outros':
-        return 1000
+        return 999  # Outras no final
     else:
         try:
-            return int(float(p))
+            return int(float(p)) + 10  # Numéricos no meio
         except:
             return 500
 
@@ -364,7 +364,7 @@ for periodo_label in sorted(periodos_unicos, key=ordenar_periodo):
     if periodo_label == 'Optativa':
         st.markdown(f"#### 📌 Optativas")
     elif periodo_label == 'Outros':
-        st.markdown(f"#### 📌 Outras")
+        st.markdown(f"#### Outras")
     else:
         st.markdown(f"#### 📌 PERÍODO {periodo_label}")
     
