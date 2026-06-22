@@ -299,7 +299,10 @@ with col_f1:
     busca = st.text_input("🔍 Buscar disciplina", placeholder="Nome ou código...")
 with col_f2:
     periodos = sorted([p for p in df['Periodo'].dropna().unique() if str(p) != 'nan' and str(p) != ''], key=lambda x: str(x))
-    periodo_sel = st.selectbox("Período", ["Todos", "Sem período"] + list(periodos))
+    if 'Optativa' in periodos:
+        periodos.remove('Optativa')
+        periodos.append('Optativa')
+    periodo_sel = st.selectbox("Período", ["Todos"] + list(periodos))
 with col_f3:
     status_sel = st.selectbox("Status", ["Todos", "Com oferta", "Sem oferta"])
 
@@ -324,9 +327,7 @@ if busca:
     df_filtrado = df_filtrado[df_filtrado['Nome'].astype(str).str.contains(busca, case=False, na=False) |
                               df_filtrado['Disciplina'].astype(str).str.contains(busca, case=False, na=False)]
 
-if periodo_sel == "Sem período":
-    df_filtrado = df_filtrado[df_filtrado['Periodo'].isna() | (df_filtrado['Periodo'].astype(str).str.strip() == '')]
-elif periodo_sel != "Todos":
+if periodo_sel != "Todos":
     df_filtrado = df_filtrado[df_filtrado['Periodo'].astype(str) == str(periodo_sel)]
 
 if status_sel != "Todos":
@@ -339,15 +340,22 @@ if status_sel != "Todos":
 periodos_unicos = []
 for p in df_filtrado['Periodo'].unique():
     if pd.isna(p) or str(p).strip() == '':
-        periodos_unicos.append('Sem período')
-    else:
-        periodos_unicos.append(str(p))
+        continue
+    periodos_unicos.append(str(p))
 
-for periodo_label in sorted(periodos_unicos, key=lambda x: 0 if x == 'Sem período' else 1):
-    if periodo_label == 'Sem período':
-        df_periodo = df_filtrado[df_filtrado['Periodo'].isna() | (df_filtrado['Periodo'].astype(str).str.strip() == '')]
+def ordenar_periodo(p):
+    if p == 'Optativa':
+        return 999
+    elif p == 'Outros':
+        return 1000
     else:
-        df_periodo = df_filtrado[df_filtrado['Periodo'].astype(str) == periodo_label]
+        try:
+            return int(float(p))
+        except:
+            return 500
+
+for periodo_label in sorted(periodos_unicos, key=ordenar_periodo):
+    df_periodo = df_filtrado[df_filtrado['Periodo'].astype(str) == periodo_label]
     
     if df_periodo.empty:
         continue
