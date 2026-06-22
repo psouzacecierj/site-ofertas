@@ -21,7 +21,6 @@ st.markdown("""
         max-width: 100%;
     }
     
-    /* Grid para os botões dos polos */
     .grid-container {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
@@ -29,7 +28,6 @@ st.markdown("""
         margin-bottom: 8px;
     }
     
-    /* Botões dentro do grid */
     .grid-container .stButton > button {
         background: #2d6a4f !important;
         color: white !important;
@@ -111,18 +109,14 @@ def carregar_dados(sheet_id):
 def detectar_polos(df):
     colunas = df.columns.tolist()
     polos = []
-    
-    # Colunas que não são polos (comuns)
     colunas_ignorar = ['Periodo', 'Disciplina', 'Nome', 'Carga Horária', 'Status']
     
     for col in colunas:
         col_str = str(col).strip()
-        # Verifica se é um polo: 3 letras maiúsculas e não está na lista de ignorados
         if len(col_str) == 3 and col_str.isupper() and col_str not in colunas_ignorar:
             if col_str not in polos:
                 polos.append(col_str)
     
-    # Se não encontrou nenhum polo, tenta encontrar colunas que têm "Status" à direita
     if not polos:
         for i, col in enumerate(colunas):
             col_str = str(col).strip()
@@ -169,16 +163,11 @@ if 'Periodo' not in df.columns:
     st.error("❌ Coluna 'Periodo' não encontrada")
     st.stop()
 
-# --- IDENTIFICAR POLOS (AUTOMATICAMENTE) ---
+# --- IDENTIFICAR POLOS ---
 POLOS = detectar_polos(df)
 
-# DEBUG: Mostrar polos detectados (opcional)
-# st.write("### 🔍 Polos detectados:")
-# st.write(POLOS)
-
-# Se não encontrou polos, exibir aviso
 if not POLOS:
-    st.warning("⚠️ Nenhum polo detectado! Verifique a estrutura da planilha.")
+    st.warning("⚠️ Nenhum polo detectado!")
     st.write("Colunas encontradas:", df.columns.tolist())
     st.stop()
 
@@ -196,7 +185,7 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO PARA SALVAR (APENAS ALTERAÇÕES) ---
+# --- FUNÇÃO PARA SALVAR ---
 def salvar_tudo():
     try:
         creds_dict = st.secrets["gcp_service_account"]
@@ -207,7 +196,6 @@ def salvar_tudo():
         sheet = client.open_by_key(SHEET_ID).sheet1
         data = sheet.get_all_values()
         
-        # Encontrar cabeçalhos
         header_row = 1
         for i, row in enumerate(data):
             if row and ('Disciplina' in row or 'Código' in row):
@@ -217,14 +205,12 @@ def salvar_tudo():
         headers = data[header_row]
         cod_col = 1
         
-        # Mapear código da disciplina para linha
         linha_por_codigo = {}
         for i in range(header_row + 1, len(data)):
             row = data[i]
             if len(row) > cod_col and row[cod_col]:
                 linha_por_codigo[row[cod_col]] = i + 1
         
-        # Mapear APENAS colunas de Status
         status_colunas = {}
         for i, col in enumerate(headers):
             if col == 'Status':
@@ -233,7 +219,6 @@ def salvar_tudo():
                     if polo_esquerda in POLOS:
                         status_colunas[polo_esquerda] = i + 1
         
-        # Preparar APENAS as atualizações que mudaram
         updates = []
         total_alteracoes = 0
         
@@ -265,7 +250,7 @@ def salvar_tudo():
     except Exception as e:
         return False, str(e)
 
-# --- TÍTULO (AZUL MICROSOFT) ---
+# --- TÍTULO ---
 st.markdown(f"""
 <div style="background: #0078d4; padding: 0.8rem 2rem; border-radius: 10px; margin-bottom: 1rem;">
     <h1 style="color: white; margin: 0; font-size: 1.1rem; font-weight: 400;">📚 Gestão de Oferta de Disciplinas</h1>
@@ -273,10 +258,9 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- BOTÃO SALVAR (CINZA) ---
+# --- BOTÃO SALVAR ---
 st.markdown("""
 <style>
-    /* Botão Salvar no estilo discreto (cinza) */
     div.stButton > button {
         background: #e0e0e0 !important;
         color: #333333 !important;
@@ -314,8 +298,8 @@ col_f1, col_f2, col_f3 = st.columns([2, 1, 1])
 with col_f1:
     busca = st.text_input("🔍 Buscar disciplina", placeholder="Nome ou código...")
 with col_f2:
-    periodos = sorted([p for p in df['Periodo'].dropna().unique() if str(p) != 'nan'], key=lambda x: str(x))
-    periodo_sel = st.selectbox("Período", ["Todos"] + list(periodos))
+    periodos = sorted([p for p in df['Periodo'].dropna().unique() if str(p) != 'nan' and str(p) != ''], key=lambda x: str(x))
+    periodo_sel = st.selectbox("Período", ["Todos", "Sem período"] + list(periodos))
 with col_f3:
     status_sel = st.selectbox("Status", ["Todos", "Com oferta", "Sem oferta"])
 
@@ -339,8 +323,12 @@ df_filtrado = df.copy()
 if busca:
     df_filtrado = df_filtrado[df_filtrado['Nome'].astype(str).str.contains(busca, case=False, na=False) |
                               df_filtrado['Disciplina'].astype(str).str.contains(busca, case=False, na=False)]
-if periodo_sel != "Todos":
+
+if periodo_sel == "Sem período":
+    df_filtrado = df_filtrado[df_filtrado['Periodo'].isna() | (df_filtrado['Periodo'].astype(str).str.strip() == '')]
+elif periodo_sel != "Todos":
     df_filtrado = df_filtrado[df_filtrado['Periodo'].astype(str) == str(periodo_sel)]
+
 if status_sel != "Todos":
     if status_sel == "Com oferta":
         df_filtrado = df_filtrado[[any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
@@ -348,21 +336,32 @@ if status_sel != "Todos":
         df_filtrado = df_filtrado[[not any(st.session_state.estado_ofertas.get(f"{row['Disciplina']}_{polo}", False) for polo in POLOS) for _, row in df_filtrado.iterrows()]]
 
 # --- EXIBIR TABELA COM BOTÕES EM GRID ---
-for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: str(x)):
-    st.markdown(f"#### 📌 PERÍODO {periodo}")
+periodos_unicos = []
+for p in df_filtrado['Periodo'].unique():
+    if pd.isna(p) or str(p).strip() == '':
+        periodos_unicos.append('Sem período')
+    else:
+        periodos_unicos.append(str(p))
+
+for periodo_label in sorted(periodos_unicos, key=lambda x: 0 if x == 'Sem período' else 1):
+    if periodo_label == 'Sem período':
+        df_periodo = df_filtrado[df_filtrado['Periodo'].isna() | (df_filtrado['Periodo'].astype(str).str.strip() == '')]
+    else:
+        df_periodo = df_filtrado[df_filtrado['Periodo'].astype(str) == periodo_label]
     
-    df_periodo = df_filtrado[df_filtrado['Periodo'] == periodo]
+    if df_periodo.empty:
+        continue
+        
+    st.markdown(f"#### 📌 PERÍODO {periodo_label}")
     
     for _, row in df_periodo.iterrows():
         cod = row['Disciplina']
         nome = row['Nome']
         ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
         
-        with st.expander(f"[{periodo}] {cod} - {nome} ({ch}h)"):
-            # Abrir grid
+        with st.expander(f"[{periodo_label}] {cod} - {nome} ({ch}h)"):
             st.markdown('<div class="grid-container">', unsafe_allow_html=True)
             
-            # Criar botões para cada polo dentro do grid
             for polo in POLOS:
                 is_active = st.session_state.estado_ofertas.get(f"{cod}_{polo}", False)
                 inst = get_inst(row, polo)
@@ -377,10 +376,8 @@ for periodo in sorted(df_filtrado['Periodo'].dropna().unique(), key=lambda x: st
                             toggle(cod, polo)
                             st.rerun()
             
-            # Fechar grid
             st.markdown('</div>', unsafe_allow_html=True)
             
-            # Botão para ativar/desativar todos (fora do grid)
             any_active = any(st.session_state.estado_ofertas.get(f"{cod}_{polo}", False) for polo in POLOS)
             if any_active:
                 if st.button(f"❌ Desativar todos", key=f"all_{cod}_desativar", use_container_width=True):
