@@ -359,8 +359,14 @@ for periodo_label in sorted(periodos_unicos, key=ordenar_periodo):
     
     if df_periodo.empty:
         continue
-        
-    st.markdown(f"#### 📌 PERÍODO {periodo_label}")
+    
+    # Ajustar rótulo para Optativa e Outros
+    if periodo_label == 'Optativa':
+        st.markdown(f"#### 📌 Optativas")
+    elif periodo_label == 'Outros':
+        st.markdown(f"#### 📌 Outras")
+    else:
+        st.markdown(f"#### 📌 PERÍODO {periodo_label}")
     
     for _, row in df_periodo.iterrows():
         cod = row['Disciplina']
