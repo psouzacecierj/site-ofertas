@@ -380,7 +380,7 @@ st.markdown("""
 # --- CONTAR DISCIPLINAS SEM OFERTA ---
 disciplinas_sem_oferta_lista = validar_ofertas(df, POLOS)
 if disciplinas_sem_oferta_lista:
-    st.warning(f"⚠️ {len(disciplinas_sem_oferta_lista)} disciplina(s) sem nenhum polo ativo. Corrija antes de salvar.")
+    st.warning(f"⚠️ {len(disciplinas_sem_oferta_lista)} disciplina(s) sem nenhum polo ativo.")
 
 # --- FILTRAR DADOS ---
 df_filtrado = df.copy()
@@ -444,7 +444,7 @@ for periodo_label in sorted(periodos_unicos, key=ordenar_periodo):
         
         with st.expander(titulo):
             if not any_active:
-                st.markdown('<div class="alerta-sem-oferta">⚠️ Esta disciplina não tem nenhum polo ativo. Ative pelo menos um polo.</div>', unsafe_allow_html=True)
+                st.markdown('<div class="alerta-sem-oferta">⚠️ Esta disciplina não tem nenhum polo ativo.</div>', unsafe_allow_html=True)
             
             st.markdown('<div class="grid-container">', unsafe_allow_html=True)
             
