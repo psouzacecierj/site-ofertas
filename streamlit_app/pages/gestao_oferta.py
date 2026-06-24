@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime
 import gspread
 from google.oauth2.service_account import Credentials
+import hashlib
 
 # --- CONFIGURAÇÃO ---
 st.set_page_config(page_title="Gestão de Oferta", layout="wide")
@@ -60,6 +61,16 @@ st.markdown("""
     .streamlit-expanderContent {
         padding-top: 0.5rem !important;
     }
+    
+    .alerta-sem-oferta {
+        background: #fef2f2 !important;
+        border-left: 4px solid #dc2626 !important;
+        padding: 0.3rem 0.8rem !important;
+        border-radius: 4px !important;
+        margin-bottom: 0.5rem !important;
+        font-size: 0.85rem !important;
+        color: #991b1b !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -68,6 +79,21 @@ if "sheet_id" not in st.session_state:
     st.warning("⚠️ Nenhum curso selecionado. Redirecionando...")
     st.switch_page("app.py")
     st.stop()
+
+# --- GERAR ID ÚNICO PARA O CURSO ATUAL ---
+curso_id_atual = st.session_state["sheet_id"]
+curso_hash = hashlib.md5(curso_id_atual.encode()).hexdigest()
+
+# --- VERIFICAR SE O CURSO MUDOU ---
+if "curso_hash_anterior" not in st.session_state:
+    st.session_state.curso_hash_anterior = None
+
+if st.session_state.curso_hash_anterior != curso_hash:
+    # O curso mudou! Limpar cache e estado
+    st.cache_data.clear()
+    if "estado_ofertas" in st.session_state:
+        del st.session_state["estado_ofertas"]
+    st.session_state.curso_hash_anterior = curso_hash
 
 SHEET_ID = st.session_state["sheet_id"]
 CURSO_NOME = st.session_state.get("curso_nome", "Curso")
@@ -172,21 +198,51 @@ if not POLOS:
     st.stop()
 
 # --- INICIALIZAR ESTADO DAS OFERTAS NA SESSION ---
+# Sempre recria o estado quando a página carrega para garantir consistência
 if "estado_ofertas" not in st.session_state:
     st.session_state.estado_ofertas = {}
-    for _, row in df.iterrows():
-        cod = row['Disciplina']
-        for polo in POLOS:
+    
+for _, row in df.iterrows():
+    cod = row['Disciplina']
+    for polo in POLOS:
+        key = f"{cod}_{polo}"
+        if key not in st.session_state.estado_ofertas:
             status = get_status(row, polo, df)
-            st.session_state.estado_ofertas[f"{cod}_{polo}"] = (status == 'A')
+            st.session_state.estado_ofertas[key] = (status == 'A')
 
 # --- FUNÇÃO PARA ALTERNAR ---
 def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
+# --- FUNÇÃO DE VALIDAÇÃO ---
+def validar_ofertas(df, POLOS):
+    """Verifica se alguma disciplina tem todos os polos desativados"""
+    disciplinas_sem_oferta = []
+    
+    for _, row in df.iterrows():
+        cod = row['Disciplina']
+        nome = row['Nome']
+        tem_ativa = any(st.session_state.estado_ofertas.get(f"{cod}_{polo}", False) for polo in POLOS)
+        
+        if not tem_ativa:
+            disciplinas_sem_oferta.append(f"{cod} - {nome}")
+    
+    return disciplinas_sem_oferta
+
 # --- FUNÇÃO PARA SALVAR ---
 def salvar_tudo():
+    # Primeiro, validar
+    problematicas = validar_ofertas(df, POLOS)
+    
+    if problematicas:
+        # Mostra erro e impede o salvamento
+        st.error(f"❌ As seguintes disciplinas estão sem nenhum polo ativo:")
+        for disc in problematicas:
+            st.write(f"   • {disc}")
+        st.info("💡 Ative pelo menos um polo para cada disciplina antes de salvar.")
+        return False, "Validação falhou"
+    
     try:
         creds_dict = st.secrets["gcp_service_account"]
         scope = ['https://www.googleapis.com/auth/spreadsheets']
@@ -321,6 +377,11 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+# --- CONTAR DISCIPLINAS SEM OFERTA ---
+disciplinas_sem_oferta_lista = validar_ofertas(df, POLOS)
+if disciplinas_sem_oferta_lista:
+    st.warning(f"⚠️ {len(disciplinas_sem_oferta_lista)} disciplina(s) sem nenhum polo ativo. Corrija antes de salvar.")
+
 # --- FILTRAR DADOS ---
 df_filtrado = df.copy()
 if busca:
@@ -373,7 +434,18 @@ for periodo_label in sorted(periodos_unicos, key=ordenar_periodo):
         nome = row['Nome']
         ch = int(row['Carga Horária']) if pd.notna(row['Carga Horária']) else 0
         
-        with st.expander(f"[{periodo_label}] {cod} - {nome} ({ch}h)"):
+        any_active = any(st.session_state.estado_ofertas.get(f"{cod}_{polo}", False) for polo in POLOS)
+        
+        # Definir título com alerta se não tiver oferta
+        if not any_active:
+            titulo = f"⚠️ [{periodo_label}] {cod} - {nome} ({ch}h) - SEM OFERTA!"
+        else:
+            titulo = f"[{periodo_label}] {cod} - {nome} ({ch}h)"
+        
+        with st.expander(titulo):
+            if not any_active:
+                st.markdown('<div class="alerta-sem-oferta">⚠️ Esta disciplina não tem nenhum polo ativo. Ative pelo menos um polo.</div>', unsafe_allow_html=True)
+            
             st.markdown('<div class="grid-container">', unsafe_allow_html=True)
             
             for polo in POLOS:
@@ -392,7 +464,6 @@ for periodo_label in sorted(periodos_unicos, key=ordenar_periodo):
             
             st.markdown('</div>', unsafe_allow_html=True)
             
-            any_active = any(st.session_state.estado_ofertas.get(f"{cod}_{polo}", False) for polo in POLOS)
             if any_active:
                 if st.button(f"❌ Desativar todos", key=f"all_{cod}_desativar", use_container_width=True):
                     for polo in POLOS:
@@ -413,6 +484,9 @@ st.caption(f"🔄 Última atualização: {datetime.now().strftime('%d/%m/%Y %H:%
 if st.button("← Voltar para lista de cursos"):
     if "estado_ofertas" in st.session_state:
         del st.session_state["estado_ofertas"]
+    if "curso_hash_anterior" in st.session_state:
+        del st.session_state["curso_hash_anterior"]
     del st.session_state["sheet_id"]
     del st.session_state["curso_nome"]
+    st.cache_data.clear()
     st.switch_page("app.py")
