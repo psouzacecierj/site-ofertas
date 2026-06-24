@@ -215,9 +215,9 @@ def toggle(cod, polo):
     key = f"{cod}_{polo}"
     st.session_state.estado_ofertas[key] = not st.session_state.estado_ofertas[key]
 
-# --- FUNÇÃO DE VALIDAÇÃO ---
-def validar_ofertas(df, POLOS):
-    """Verifica se alguma disciplina tem todos os polos desativados"""
+# --- FUNÇÃO PARA VERIFICAR DISCIPLINAS SEM OFERTA (apenas informativo) ---
+def verificar_disciplinas_sem_oferta(df, POLOS):
+    """Verifica se alguma disciplina tem todos os polos desativados (apenas para exibição)"""
     disciplinas_sem_oferta = []
     
     for _, row in df.iterrows():
@@ -232,17 +232,6 @@ def validar_ofertas(df, POLOS):
 
 # --- FUNÇÃO PARA SALVAR ---
 def salvar_tudo():
-    # Primeiro, validar
-    problematicas = validar_ofertas(df, POLOS)
-    
-    if problematicas:
-        # Mostra erro e impede o salvamento
-        st.error(f"❌ As seguintes disciplinas estão sem nenhum polo ativo:")
-        for disc in problematicas:
-            st.write(f"   • {disc}")
-        st.info("💡 Ative pelo menos um polo para cada disciplina antes de salvar.")
-        return False, "Validação falhou"
-    
     try:
         creds_dict = st.secrets["gcp_service_account"]
         scope = ['https://www.googleapis.com/auth/spreadsheets']
@@ -377,10 +366,10 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# --- CONTAR DISCIPLINAS SEM OFERTA ---
-disciplinas_sem_oferta_lista = validar_ofertas(df, POLOS)
+# --- CONTAR DISCIPLINAS SEM OFERTA (apenas informativo) ---
+disciplinas_sem_oferta_lista = verificar_disciplinas_sem_oferta(df, POLOS)
 if disciplinas_sem_oferta_lista:
-    st.warning(f"⚠️ {len(disciplinas_sem_oferta_lista)} disciplina(s) sem nenhum polo ativo.")
+    st.info(f"ℹ️ {len(disciplinas_sem_oferta_lista)} disciplina(s) sem nenhum polo ativo.")
 
 # --- FILTRAR DADOS ---
 df_filtrado = df.copy()
