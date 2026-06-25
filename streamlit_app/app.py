@@ -149,7 +149,7 @@ st.markdown("""
 st.title("🎓 Gestão de Oferta de Disciplinas")
 st.caption("Cursos de graduação a distância - Universidades consorciadas CEDERJ")
 
-# --- LISTA DE CURSOS (SEM ADMINISTRAÇÃO - UFF) ---
+# --- LISTA DE CURSOS ---
 cursos = [
     {"id": "1mTD-q9WTqVIWOEnZOB1JjiZXeS4j6xujf-4vD9I98ks", "nome": "Matemática", "instituicao": "UFF", "polos": 17},
     {"id": "1GIetae_LEYlzbHC8JoyTQNh_s50W3eGhul4U7Yn4lCA", "nome": "Ciências Biológicas", "instituicao": "UENF", "polos": 8},
@@ -172,6 +172,7 @@ cursos = [
     {"id": "1GRIR0yuszPuOEwP1k4kVtHlOlGL2bo4Ef_87d8hyJKU", "nome": "Geografia", "instituicao": "UERJ", "polos": 11},
     {"id": "1000X6WksETcccZJIunrwmIMrbT0wzoIwRqi8ZKKl4Ms", "nome": "Segurança Pública", "instituicao": "UFF", "polos": 12},
     {"id": "1ring7lzrz7FNJwZuPi-yko5QOvd0d9g2AfT4939QkrQ", "nome": "Engenharia de Produção", "instituicao": "UFF", "polos": 5},
+    {"id": "14JFwnblHVRnnWh7QPDtaKr_X6JewKDMbQbHVM3sh9dI", "nome": "Engenharia de Produção", "instituicao": "CEFET-RJ", "polos": 5},
     {"id": "1J28novyPrlNvDBGUvi4OKEyA_JXVa_5dj-Zy1spHK84", "nome": "Ciências Contábeis", "instituicao": "UFF", "polos": 7},
     {"id": "1Yj1XBF03-p5bT3Ir0YXxohDbPK6Zy_TC4ZHAGfdxrD4", "nome": "Ciências Contábeis", "instituicao": "UFRJ", "polos": 7},
     {"id": "1R-CQLxB7Ng7-ejp1fP1VD7puDn631mNiiH7x-z9Nrmo", "nome": "Engenharia Meteorológica", "instituicao": "UENF", "polos": 1},
